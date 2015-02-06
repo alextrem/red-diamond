@@ -33,30 +33,14 @@
  * @name    PCM1792A register names
  * @{
  */
-#define LIS302DL_WHO_AM_I               0x0F
-#define LIS302DL_CTRL_REG1              0x20
-#define LIS302DL_CTRL_REG2              0x21
-#define LIS302DL_CTRL_REG3              0x22
-#define LIS302DL_HP_FILTER_RESET        0x23
-#define LIS302DL_STATUS_REG             0x27
-#define LIS302DL_OUTX                   0x29
-#define LIS302DL_OUTY                   0x2B
-#define LIS302DL_OUTZ                   0x2D
-#define LIS302DL_FF_WU_CFG1             0x30
-#define LIS302DL_FF_WU_SRC1             0x31
-#define LIS302DL_FF_WU_THS1             0x32
-#define LIS302DL_FF_WU_DURATION1        0x33
-#define LIS302DL_FF_WU_CFG2             0x34
-#define LIS302DL_FF_WU_SRC2             0x35
-#define LIS302DL_FF_WU_THS2             0x36
-#define LIS302DL_FF_WU_DURATION2        0x37
-#define LIS302DL_CLICK_CFG              0x38
-#define LIS302DL_CLICK_SRC              0x39
-#define LIS302DL_CLICK_THSY_X           0x3B
-#define LIS302DL_CLICK_THSZ             0x3C
-#define LIS302DL_CLICK_TIMELIMIT        0x3D
-#define LIS302DL_CLICK_LATENCY          0x3E
-#define LIS302DL_CLICK_WINDOW           0x3F
+#define PCM1792A_ATTENUATION_LEFT       0x10
+#define PCM1792A_ATTENUATION_RIGHT      0x11
+#define PCM1792A_ATTENUATION_CTRL       0x12
+#define PCM1792A_AUDIO_INTERFACE        0x13
+#define PCM1792A_DEEMPHASIS             0x14
+#define PCM1792A_DEVICEID               0x17
+
+
 /** @} */
 
 /*===========================================================================*/
@@ -71,16 +55,39 @@
 /* Driver data structures and types.                                         */
 /*===========================================================================*/
 
-typedef struct AdcProxy ADC_t;
-struct AdcProxy {
-    uint32_t sampling;
-    uint32_t attenuation;
-    uint32_t deemphasis;
-    uint32_t mute;
-    uint32_t dac_enable;
-    uint32_t rolloff;
+typedef struct DacProxy {
+    uint32_t sampling;    /* ! chosen samplingrate for the dac */
+    uint32_t attenuation; /* ! attenuation steps in 0.5 dB */
+    uint32_t audio_format /* ! */
+    uint32_t deemphasis;  /* ! */
+    uint32_t mute;        /* ! soft mute */
+    uint32_t dac_enable;  /* ! */
+    uint32_t rolloff;     /* ! */
     uint32_t reset;
-};
+    uint32_t deviceID;    /* ! */
+} DAC_t;
+
+typedef enum AudioFormat {
+    RIGHT_JUSTIFIED_16BIT,  /* ! Right justified 16 bit data */
+    RIGHT_JUSTIFIED_20BIT,  /* ! Right justified 20 bit data */
+    RIGHT_JUSTIFIED_24BIT,  /* ! Right justified 24 bit data */
+    LEFT_JUSTIFIED_24BIT,   /* ! Left justified 24 bit data MSB */
+    I2S_16BIT,              /* ! I2S with 16 bit data */
+    I2S_24BIT               /* ! I2S with 24 bit data */
+} AudioFormat_t;
+
+typedef enum AttenuationRate {
+    LRCK1,
+    LRCK2,
+    LRCK4,
+    LRCK8
+} AttenuationRate_t;
+
+typedef enum OversamplingRate {
+    FS_64,  /* ! Oversampling 64 times the sampling rate */
+    FS_32,  /* ! Oversampling 32 times the sampling rate */
+    FS_128  /* ! Oversampling 128 times the sampling rate */
+} Oversampling_t;
 
 /*===========================================================================*/
 /* Driver macros.                                                            */
@@ -95,8 +102,11 @@ extern "C" {
 #endif
   uint8_t pcm1792aReadRegister(SPIDriver *spip, uint8_t reg);
   void pcm1792aWriteRegister(SPIDriver *spip, uint8_t reg, uint8_t value);
-  void Adc_initialize(ADC_t* const me);
-  void Adc_configure(ADC_t* const me);
+  void DAC_initialize(DAC_t* const me);
+  void DAC_configure(DAC_t* const me);
+  void DAC_attenuate(DAC_t* const me);
+  void DAC_outputEnable(DAC_t* const me);
+  void DAC_deviceID(DAC_t* const me);
 #ifdef __cplusplus
 }
 #endif
