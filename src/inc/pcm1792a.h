@@ -80,7 +80,7 @@ struct AdcProxy {
     uint32_t dac_enable;
     uint32_t rolloff;
     uint32_t reset;
-}
+};
 
 /*===========================================================================*/
 /* Driver macros.                                                            */
