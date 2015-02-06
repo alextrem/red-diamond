@@ -116,4 +116,14 @@ void pcm1792aWriteRegister(SPIDriver *spip, uint8_t reg, uint8_t value) {
   }
 }
 
+
+void Adc_initialize(ADC_t* const me) {
+
+}
+
+
+void Adc_configure(ADC_t* const me) {
+
+}
+
 /** @} */
