@@ -15,12 +15,12 @@
 */
 
 /**
- * @defgroup lis302dl Interface module for LIS302DL MEMS
+ * @defgroup pcm1792a Interface module for PCM1792A DAC
  *
- * @brief   Interface module for LIS302DL MEMS.
- * @details This module implements a generic interface for the LIS302DL
- *          STMicroelectronics MEMS device. The communication is performed
+ * @brief   Interface module for PCM1792A DAC.
+ * @details This module implements a generic interface for the PCM1792A
+ *          Texas INstruments DAC device. The communication is performed
  *          through a standard SPI driver.
  *
- * @ingroup accel
+ * @ingroup dac
  */
