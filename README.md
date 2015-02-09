@@ -9,7 +9,7 @@ The processor is using [ChibiOS] (http://www.chibios.org/dokuwiki/doku.php?id=st
 * HDMI RX
 * Analog
 * Phono
-* Radio
+* FM Radio
 
 ## Amplifier
 * Class A Design
