@@ -115,6 +115,7 @@ void DAC_configure(DAC_t* const me) {
  * @param[in] attenuation   attenuation value in 0.5 dB steps
  */
 void DAC_attenuate(DAC_t* const me, const uint8_t attenuation) {
+  //TODO: Check if value is in range 0 .. 255
   me->attenuation = attenuation;
 
   pcm1792aWriteRegister(&SPID1, PCM1792A_ATTENUATION_LEFT, me->attenuation);
@@ -134,6 +135,12 @@ void DAC_mute(DAC_t* const me) {
 
 }
 
+/** 
+ * @brief Sets the audio format used by the DAC interface
+ *
+ * @param[in] me        pointer to the DAC interface
+ * @param[in] format    chosen interface
+ */
 void DAC_SetInterface(DAC_t* const me, AudioFormat_t format) {
 
 }
