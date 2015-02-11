@@ -1,5 +1,5 @@
 /*
-    ChibiOS/RT - Copyright (C) 2006-2013 Giovanni Di Sirio
+    ChibiOS/RT - Copyright (C) 2015 Alexander Geissler
 
     Licensed under the Apache License, Version 2.0 (the "License");
     you may not use this file except in compliance with the License.
@@ -81,33 +81,9 @@ void pcm1792aWriteRegister(SPIDriver *spip, uint8_t reg, uint8_t value) {
   default:
     /* Reserved register must not be written, according to the datasheet
        this could permanently damage the device.*/
-    chDbgAssert(FALSE, "lis302dlWriteRegister(), #1", "reserved register");
-  case LIS302DL_WHO_AM_I:
-  case LIS302DL_HP_FILTER_RESET:
-  case LIS302DL_STATUS_REG:
-  case LIS302DL_OUTX:
-  case LIS302DL_OUTY:
-  case LIS302DL_OUTZ:
-  case LIS302DL_FF_WU_SRC1:
-  case LIS302DL_FF_WU_SRC2:
-  case LIS302DL_CLICK_SRC:
+    chDbgAssert(FALSE, "pcm1792aWriteRegister(), #1", "reserved register");
+
     /* Read only registers cannot be written, the command is ignored.*/
-    return;
-  case LIS302DL_CTRL_REG1:
-  case LIS302DL_CTRL_REG2:
-  case LIS302DL_CTRL_REG3:
-  case LIS302DL_FF_WU_CFG1:
-  case LIS302DL_FF_WU_THS1:
-  case LIS302DL_FF_WU_DURATION1:
-  case LIS302DL_FF_WU_CFG2:
-  case LIS302DL_FF_WU_THS2:
-  case LIS302DL_FF_WU_DURATION2:
-  case LIS302DL_CLICK_CFG:
-  case LIS302DL_CLICK_THSY_X:
-  case LIS302DL_CLICK_THSZ:
-  case LIS302DL_CLICK_TIMELIMIT:
-  case LIS302DL_CLICK_LATENCY:
-  case LIS302DL_CLICK_WINDOW:
     spiSelect(spip);
     txbuf[0] = reg;
     txbuf[1] = value;
@@ -116,14 +92,59 @@ void pcm1792aWriteRegister(SPIDriver *spip, uint8_t reg, uint8_t value) {
   }
 }
 
-
-void Adc_initialize(ADC_t* const me) {
+/**
+ * @brief Initilize DAC with system default values
+ *
+ * @param[in] me    pointer tp the DAC instance
+ */
+void DAC_initialize(DAC_t* const me) {
 
 }
 
+/**
+ * @brief Configures DAC
+ */
+void DAC_configure(DAC_t* const me) {
 
-void Adc_configure(ADC_t* const me) {
+}
 
+/**
+ * @brief Attenuation is performed symetricaly on left and right channels
+ *
+ * @param[in] me            pointer to the DAC instance
+ * @param[in] attenuation   attenuation value in 0.5 dB steps
+ */
+void DAC_attenuate(DAC_t* const me, const uint8_t attenuation) {
+  me->attenuation = attenuation;
+
+  pcm1792aWriteRegister(&SPID1, PCM1792A_ATTENUATION_LEFT, me->attenuation);
+  pcm1792aWriteRegister(&SPID1, PCM1792A_ATTENUATION_RIGHT, me->attenuation);
+
+  pcm1792aWriteRegister(&SPID1, PCM1792A_ATTENUATION_LOAD_CTRL, PCM1792A_ATLD(1));
+  pcm1792aWriteRegister(&SPID1, PCM1792A_ATTENUATION_LOAD_CTRL, PCM1792A_ATLD(0));
+}
+
+/**
+ * @brief mutes the output
+ *
+ * @param[in] me
+ */
+
+void DAC_mute(DAC_t* const me) {
+
+}
+
+void DAC_SetInterface(DAC_t* const me, AudioFormat_t format) {
+
+}
+
+/**
+ * @brief Get the DACs device ID
+ *
+ * @param[in] me    pointer to DAC instance
+ */
+void DAC_deviceID(DAC_t* const me) {
+    me->deviceID = pcm1792aReadRegister(&SPID1, PCM1792A_DEVICEID);
 }
 
 /** @} */
