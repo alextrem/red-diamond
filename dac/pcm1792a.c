@@ -98,14 +98,12 @@ void pcm1792aWriteRegister(SPIDriver *spip, uint8_t reg, uint8_t value) {
  * @param[in] me    pointer tp the DAC instance
  */
 void DAC_initialize(DAC_t* const me) {
-
-}
-
-/**
- * @brief Configures DAC
- */
-void DAC_configure(DAC_t* const me) {
-
+  me->attenuation = 0;
+  me->sampling = I2S_24BIT;
+  me->deemphasis = 0;
+  me->mute = 0;
+  me->rolloff = 0;
+  me->oversampling = FS_128;
 }
 
 /**
@@ -114,7 +112,7 @@ void DAC_configure(DAC_t* const me) {
  * @param[in] me            pointer to the DAC instance
  * @param[in] attenuation   attenuation value in 0.5 dB steps
  */
-void DAC_attenuate(DAC_t* const me, const uint8_t attenuation) {
+void DAC_attenuate(DAC_t* const me, uint8_t attenuation) {
   //TODO: Check if value is in range 0 .. 255
   me->attenuation = attenuation;
 
@@ -128,21 +126,43 @@ void DAC_attenuate(DAC_t* const me, const uint8_t attenuation) {
 /**
  * @brief mutes the output
  *
- * @param[in] me
+ * @param[in] me    pointer to the DAC instance
  */
-
 void DAC_mute(DAC_t* const me) {
 
 }
 
-/** 
+/**
+ * @brief Set attenuation by value
+ *
+ * @param[in] me    pointer to the DAC interface
+ */
+void DAC_SetAttenuation(DAC_t* const me) {
+  pcm1792aWriteRegister(&SPID1, 16, me->attenuation);
+}
+
+/**
+ * @brief Sets the attenuation rate of the DAC
+ *
+ * @param[in] me    pointer to the DAC interface
+ * @param[in] rate  Chosen attenuation rate
+ */
+void DAC_SetAttenuationRate(DAC_t* const me, AttenuationRate_t rate) {
+  me->attenuation_rate = rate;
+
+  pcm1792aWriteRegister(&SPID1, 16, me->attenuation_rate);
+}
+
+/**
  * @brief Sets the audio format used by the DAC interface
  *
  * @param[in] me        pointer to the DAC interface
  * @param[in] format    chosen interface
  */
 void DAC_SetInterface(DAC_t* const me, AudioFormat_t format) {
+  me->audio_format = format;
 
+  pcm1792aWriteRegister(&SPID1, 17, me->audio_format);
 }
 
 /**
