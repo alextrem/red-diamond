@@ -55,20 +55,6 @@
 /* Driver data structures and types.                                         */
 /*===========================================================================*/
 
-typedef struct Dac {
-  uint32_t sampling;                    /** chosen samplingrate for the dac */
-  uint8_t attenuation;                  /** attenuation steps in 0.5 dB */
-  AttenuationRate_t attenuation_rate    /** */
-  AudioFormat_t audio_format            /** I2S, right or left justified */
-  uint32_t deemphasis;                  /** */
-  uint32_t mute;                        /** soft mute */
-  uint32_t dac_enable;                  /** activate dac output */
-  uint32_t rolloff;                     /** set filter roll off */
-  uint32_t reset;                       /** */
-  Oversampling_t oversampling           /** choose from three oversampling rates */
-  uint32_t deviceID;                    /** chip device id */
-} DAC_t;
-
 typedef enum AudioFormat {
   RIGHT_JUSTIFIED_16BIT,  /** Right justified 16 bit data */
   RIGHT_JUSTIFIED_20BIT,  /** Right justified 20 bit data */
@@ -91,6 +77,20 @@ typedef enum OversamplingRate {
   FS_128  /** Oversampling 128 times the sampling rate */
 } Oversampling_t;
 
+typedef struct Dac {
+  uint32_t sampling;                    /** chosen samplingrate for the dac */
+  uint8_t attenuation;                  /** attenuation steps in 0.5 dB */
+  AttenuationRate_t attenuation_rate;   /** */
+  AudioFormat_t audio_format;           /** I2S, right or left justified */
+  uint32_t deemphasis;                  /** */
+  uint32_t mute;                        /** soft mute */
+  uint32_t dac_enable;                  /** activate dac output */
+  uint32_t rolloff;                     /** set filter roll off */
+  uint32_t reset;                       /** */
+  Oversampling_t oversampling;          /** choose from three oversampling rates */
+  uint32_t deviceID;                    /** chip device id */
+} DAC_t;
+
 /*===========================================================================*/
 /* Driver macros.                                                            */
 /*===========================================================================*/
@@ -112,7 +112,7 @@ extern "C" {
   void DAC_configure(DAC_t* const me);
   void DAC_attenuate(DAC_t* const me, uint8_t attenuation);
   void DAC_SetAttenuationRate(DAC_t* const me, AttenuationRate_t rate);
-  void DAC_SetInterface(DAC_t const me, AudioFormat_t format);
+  void DAC_SetInterface(DAC_t* const me, AudioFormat_t format);
   void DAC_outputEnable(DAC_t* const me);
   void DAC_deviceID(DAC_t* const me);
 #ifdef __cplusplus
