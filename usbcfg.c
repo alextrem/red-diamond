@@ -148,11 +148,10 @@ static const uint8_t vcom_string0[] = {
  * Vendor string.
  */
 static const uint8_t vcom_string1[] = {
-  USB_DESC_BYTE(38),                    /* bLength.                         */
+  USB_DESC_BYTE(24),                    /* bLength.                         */
   USB_DESC_BYTE(USB_DESCRIPTOR_STRING), /* bDescriptorType.                 */
-  'S', 0, 'T', 0, 'M', 0, 'i', 0, 'c', 0, 'r', 0, 'o', 0, 'e', 0,
-  'l', 0, 'e', 0, 'c', 0, 't', 0, 'r', 0, 'o', 0, 'n', 0, 'i', 0,
-  'c', 0, 's', 0
+  'R', 0, 'e', 0, 'd', 0, '-', 0, 'D', 0, 'i', 0, 'a', 0, 'm', 0,
+  'o', 0, 'n', 0, 'd', 0
 };
 
 /*
@@ -307,6 +306,13 @@ const USBConfig usbcfg = {
  * Serial over USB driver configuration.
  */
 const SerialUSBConfig serusbcfg = {
+  &USBD1,
+  USBD1_DATA_REQUEST_EP,
+  USBD1_DATA_AVAILABLE_EP,
+  USBD1_INTERRUPT_REQUEST_EP
+};
+
+const AudioUSBConfig audiousbcfg = {
   &USBD1,
   USBD1_DATA_REQUEST_EP,
   USBD1_DATA_AVAILABLE_EP,
