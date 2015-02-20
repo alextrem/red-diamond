@@ -47,6 +47,14 @@ static void cmd_mem(BaseSequentialStream *chp, int argc, char *argv[]) {
   chprintf(chp, "heap free total  : %u bytes\r\n", size);
 }
 
+static void cmd_dac(BaseSequentialStream *chp, int argc, car *argv[]) {
+  (void)argv;
+  if (argc > 0) {
+    chprintf(chp, "Usage: dac\r\n");
+    return;
+  }
+}
+
 static void cmd_threads(BaseSequentialStream *chp, int argc, char *argv[]) {
   static const char *states[] = {THD_STATE_NAMES};
   Thread *tp;
@@ -86,6 +94,7 @@ static void cmd_test(BaseSequentialStream *chp, int argc, char *argv[]) {
 
 static const ShellCommand commands[] = {
   {"mem", cmd_mem},
+  {"dac", cmd_dac},
   {"threads", cmd_threads},
   {"test", cmd_test},
   {NULL, NULL}
@@ -146,11 +155,6 @@ static const SPIConfig spi2cfg = {
   0
 };
 
-/*
- * This is a periodic thread that reads accelerometer and outputs
- * result to SPI2 and PWM.
- */
-static WORKING_AREA(waThread1, 128);
 /*===========================================================================*/
 /* Initialization and main thread.                                           */
 /*===========================================================================*/
