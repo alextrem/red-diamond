@@ -44,7 +44,7 @@ endif
 # Enables the use of FPU on Cortex-M4.
 # Enable this if you really want to use the STM FWLib.
 ifeq ($(USE_FPU),)
-  USE_FPU = no
+  USE_FPU = yes
 endif
 
 # Enable this if you really want to use the STM FWLib.
@@ -209,7 +209,7 @@ ULIBS =
 ##############################################################################
 
 ifeq ($(USE_FPU),yes)
-  USE_OPT += -mfloat-abi=softfp -mfpu=fpv4-sp-d16 -fsingle-precision-constant
+  USE_OPT += -mfloat-abi=hard -mfpu=fpv4-sp-d16 -fsingle-precision-constant
   DDEFS += -DCORTEX_USE_FPU=TRUE
 else
   DDEFS += -DCORTEX_USE_FPU=FALSE
