@@ -47,7 +47,7 @@ static void cmd_mem(BaseSequentialStream *chp, int argc, char *argv[]) {
   chprintf(chp, "heap free total  : %u bytes\r\n", size);
 }
 
-static void cmd_dac(BaseSequentialStream *chp, int argc, car *argv[]) {
+static void cmd_dac(BaseSequentialStream *chp, int argc, char *argv[]) {
   (void)argv;
   if (argc > 0) {
     chprintf(chp, "Usage: dac\r\n");
