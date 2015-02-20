@@ -130,6 +130,14 @@ static const PWMConfig pwmcfg = {
 };
 
 /*
+ * SD card configuration structure
+ *
+ */
+static const SDCConfig sdcfg = {
+  0
+};
+
+/*
  * SPI1 configuration structure.
  * Speed 5.25MHz, CPHA=1, CPOL=1, 8bits frames, MSb transmitted first.
  * The slave select line is the pin GPIOE_CS_SPI on the port GPIOE.
@@ -203,6 +211,13 @@ int main(void) {
   sdStart(&SD2, NULL);
   palSetPadMode(GPIOA, 2, PAL_MODE_ALTERNATE(7));
   palSetPadMode(GPIOA, 3, PAL_MODE_ALTERNATE(7));
+
+  /*
+   * Activates the SD card interface
+   * The SD-Card will be used for logging voltages and errors.
+   * It is also possible to use it for update or configuration of the amp
+   */
+  sdcStart(&SDCD1, &sdcfg);
 
   /*
    * Initializes the SPI driver 1 in order to access the MEMS. The signals
