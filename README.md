@@ -13,3 +13,26 @@ The processor is using [ChibiOS] (http://www.chibios.org/dokuwiki/doku.php?id=st
 
 ## FPGA
 A Cyclone IV EP4CE22C8N is used to implement all digital(AES/EBU, HDMI) and anlog interfaces.
+
+## Microcontroller
+To be able to handle the use of the alternate functions of the I/O pads the following table will help:
+
+{|LQFP100
+ |Alternate Function
+ |DAC
+ |FPGA
+ |LEDs
+ |ADC
+ |USB
+ |SDC
+ |-
+ |PB12
+ |SPI2_NSS
+ |CS
+ |
+ |
+ |
+ |
+ |
+ |-
+}
