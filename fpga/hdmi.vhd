@@ -7,7 +7,8 @@
 -- Project Name:    red-diamond
 -- Target Device:   EP4CE22C8N
 -- Tool Versions:   14.0
--- Description:
+-- Description:     Audio interface of
+-- ADV7612
 --
 -- Dependencies:
 --
