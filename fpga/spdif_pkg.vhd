@@ -29,35 +29,36 @@ package spdif_pkg is
     constant CHANNELS : integer := 2;
     constant SUBFRAME : integer := 32;
 
+    -- channel status description
     type byte_0 is record
         channel_use : std_logic := "1";
-        pcm : std_logic;
+        pcm         : std_logic;
         preemphasis : std_logic_vector(2 downto 0);
         --
         sample_frequency : std_logic_vector(1 downto 0);
     end record byte_0;
 
     type byte_1 is record
-        channel_mode : std_logic_vector(3 downto 0);
-        user_bit : std_logic_vector(3 downto 0);
+        channel_mode    : std_logic_vector(3 downto 0);
+        user_bit        : std_logic_vector(3 downto 0);
     end record byte_1;
 
     type byte_2 is record
-        aux_sample_bits : std_logic_vector(2 downto 0);
-        sample_word_length : std_logic_vector(2 downto 0);
-        alignment_level : std_logic_vector(1 downto 0);
+        aux_sample_bits     : std_logic_vector(2 downto 0);
+        sample_word_length  : std_logic_vector(2 downto 0);
+        alignment_level     : std_logic_vector(1 downto 0);
     end record byte_2;
 
     type byte_3 is record
-        multichannel_mode : std_logic_vector(6 downto 0);
-        channel_number : std_logc;
+        multichannel_mode   : std_logic_vector(6 downto 0);
+        channel_number      : std_logic;
     end record byte_3;
 
     type byte_4 is record
-        reference_signal : std_logic_vector(1 downto 0);
-        reserved : std_logic;
-        sampling_frequency : std_logic_vector(3 downto 0);
-        frequency_scaling : std_logic;
+        reference_signal    : std_logic_vector(1 downto 0);
+        reserved            : std_logic;
+        sampling_frequency  : std_logic_vector(3 downto 0);
+        frequency_scaling   : std_logic;
     end record byte_4;
 
     type byte_6 is record
