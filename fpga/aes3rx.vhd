@@ -17,6 +17,12 @@ entity aes3rx is
 end aes3rx;
 
 architecture rtl of aes3rx is
+
+    signal sl_preamble_detected : std_logic := '0'; -- Asserted when preamble has been detected
+    signal sl_x_detected        : std_logic := '0'; -- Asserted when x preamble has been detected
+    signal sl_y_detected        : std_logic := '0'; -- Asserted when y preamble has been detected
+    signal sl_z_detected        : std_logic := '0'; -- Asserted when z preamble has been detected
+
 begin
 
 end rtl;
