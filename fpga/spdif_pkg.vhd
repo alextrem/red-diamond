@@ -20,9 +20,13 @@ use IEEE.std_logic_1164.all;
 use IEEE.std_logic_unsigned.all;
 
 package spdif_pkg is
+    -- statemachine type
+    type aes3_statemachine_type is (unlocked, confirming, locked);
+
     constant X_PREAMBLE : std_logic_vector(7 downto 0) := "01000111";
     constant Y_PREAMBLE : std_logic_vector(7 downto 0) := "00100111";
     constant Z_PREAMBLE : std_logic_vector(7 downto 0) := "00010111";
+
     -- AES3/EBU or SPDIF stream constants
     constant FRAMES : integer := 192;
     subtype FRAME_WIDTH is integer range FRAMES-1 downto 0;
@@ -69,7 +73,7 @@ package spdif_pkg is
         channel_destination : string (0 to 3);
     end record byte_10;
 
-    type CHANNEL_STATUS is record
+    type channel_status is record
         reg_0 : byte_0;
         reg_1 : byte_1;
         reg_2 : byte_2;
@@ -78,7 +82,7 @@ package spdif_pkg is
         origin : byte_6;
         destination : byte_10;
         crc : std_logic_vector(7 downto 0) := "11111111";
-    end record CHANNEL_STATUS;
+    end record channel_status;
 
     -- RX data will be 5 times oversampled
     -- 192000 Hz : 24,576  MHz
