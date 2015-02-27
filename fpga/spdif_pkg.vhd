@@ -35,7 +35,7 @@ package spdif_pkg is
 
     -- channel status description
     type byte_0 is record
-        channel_use : std_logic := "1";
+        channel_use : std_logic;
         pcm         : std_logic;
         preemphasis : std_logic_vector(2 downto 0);
         --
@@ -65,13 +65,13 @@ package spdif_pkg is
         frequency_scaling   : std_logic;
     end record byte_4;
 
-    type byte_6 is record
-        channel_origin : string (0 to 3);
-    end record byte_6;
+    --type byte_6 is record
+        --channel_origin : string (0 to 3);
+    --end record byte_6;
 
-    type byte_10 is record
-        channel_destination : string (0 to 3);
-    end record byte_10;
+    --type byte_10 is record
+        --channel_destination : string (0 to 3);
+    --end record byte_10;
 
     type channel_status is record
         reg_0 : byte_0;
@@ -79,9 +79,9 @@ package spdif_pkg is
         reg_2 : byte_2;
         reg_3 : byte_3;
         reg_4 : byte_4;
-        origin : byte_6;
-        destination : byte_10;
-        crc : std_logic_vector(7 downto 0) := "11111111";
+        --origin : byte_6;
+        --destination : byte_10;
+        crc : std_logic_vector(7 downto 0);
     end record channel_status;
 
     -- RX data will be 5 times oversampled
