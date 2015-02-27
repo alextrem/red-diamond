@@ -19,6 +19,7 @@ library IEEE;
 use IEEE.STD_LOGIC_1164.ALL;
 use IEEE.STD_LOGIC_ARITH.ALL;
 use IEEE.STD_LOGIC_UNSIGNED.ALL;
+use work.spdif_pkg.ALL;
 
 entity aes3rx is
     port (
@@ -28,18 +29,50 @@ entity aes3rx is
         clk     : in std_logic;
         -- aes/ebu, spdif compatible stream
         aes3    : in std_logic;
-        -- receiver has valid input data
-        active  : out std_logic := 0;
+		  -- left audio data
+		  audio_left	: out std_logic_vector(23 downto 0);
+		  -- right audio data
+		  audio_right	: out std_logic_vector(23 downto 0);
+		  -- validity bit
+		  validity_bit	: out std_logic := '0';
+		  -- paritiy bit
+		  parity_bit	: out std_logic := '0';
+        -- receiver has valid input data 
+        lock	 : out std_logic := '0'
          );
 end aes3rx;
 
 architecture rtl of aes3rx is
 
-    signal sl_preamble_detected : std_logic := '0'; -- Asserted when preamble has been detected
-    signal sl_x_detected        : std_logic := '0'; -- Asserted when x preamble has been detected
-    signal sl_y_detected        : std_logic := '0'; -- Asserted when y preamble has been detected
-    signal sl_z_detected        : std_logic := '0'; -- Asserted when z preamble has been detected
+	signal sv_aes3	: std_logic_vector(3 downto 0);
+	signal sl_change : std_logic;
+   signal sl_preamble_detected : std_logic := '0'; -- Asserted when preamble has been detected
+   signal sl_x_detected        : std_logic := '0'; -- Asserted when x preamble has been detected
+   signal sl_y_detected        : std_logic := '0'; -- Asserted when y preamble has been detected
+   signal sl_z_detected        : std_logic := '0'; -- Asserted when z preamble has been detected
 
 begin
+
+input_shift_reg_proc: process(clk)
+begin
+	if clk'event and clk = '1' then
+		if reset = '1' then
+			sv_aes3 <= (others => '0');
+		else
+			sv_aes3 <= aes3 & sv_aes3(3 downto 1);
+		end if;
+	end if;
+end process;
+
+change_detect_proc: process(clk)
+begin
+	if rising_edge(clk) then
+		if reset = '1' then
+			sl_change <= '0';
+		else
+			sl_change <= sv_aes3(2) xor sv_aes3(1);
+		end if;
+	end if;
+end process;
 
 end rtl;
