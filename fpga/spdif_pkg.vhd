@@ -1,19 +1,22 @@
----------------------------------------
+------------------------------------------------------------------------------
 -- Company:
 -- Engineer:        Alexander Geißler
 --
--- Create Date:     23:40:00 02/26/2015
+-- Create Date:      23:40:00 02/26/2015
 -- Design Name:
--- Project Name:    red-diamond
--- Target Device:   EP4CE22C8N
--- Tool Versions:   14.0
--- Description:
+-- Project Name:     red-diamond
+-- Target Device:    EP4CE22C8N
+-- Tool Versions:    14.0
+-- Description:		This AES3/EBU and SPDIF receiver is compliant with
+--							IEC61937, IEC60958-3 and IEC60958-4
+--							This package contains constants and type definitions
+--							for the receiver
 --
 -- Dependencies:
 --
 -- Revision:
 -- Revision 0.1 - File created
---------------------------------------
+------------------------------------------------------------------------------
 
 library IEEE;
 use IEEE.std_logic_1164.all;
@@ -21,7 +24,7 @@ use IEEE.std_logic_unsigned.all;
 
 package spdif_pkg is
     -- statemachine type
-    type aes3_statemachine_type is (unlocked, confirming, locked);
+    type aes3_state_type is (unlocked, confirming, locked);
 
     constant X_PREAMBLE : std_logic_vector(7 downto 0) := "01000111";
     constant Y_PREAMBLE : std_logic_vector(7 downto 0) := "00100111";
