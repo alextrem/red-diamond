@@ -19,10 +19,12 @@ library IEEE;
 use IEEE.STD_LOGIC_1164.ALL;
 use IEEE.STD_LOGIC_ARITH.ALL;
 use IEEE.STD_LOGIC_UNSIGNED.ALL;
+use work.spdif_pkg.ALL;
 
 entity red_diamond_top is
 port (
-	clk	: in std_logic;
+	clk		: in std_logic;
+	pll_lock	: out std_logic;
 	
 	-- aes3/ebu or spdif input
 	din	: in std_logic;
@@ -43,16 +45,27 @@ port (
 	mcu_spi_clk		: in std_logic;
 	mcu_spi_miso	: out std_logic := '0';
 	mcu_spi_mosi	: in std_logic;
-	mcu_spi_cs_n	: in std_logic
+	mcu_spi_cs_n	: in std_logic;
+	
+	-- LEDs
+	heartbeat_led	: out std_logic
 );
 end red_diamond_top;
 
 architecture rtl of red_diamond_top is
 
 signal sl_clk	: std_logic;
+
+component heartbeat
+	port (
+		clk : in std_logic;
+		counter_out : out std_logic
+	);
+end component;
+	
 component aes3rx
   port ( 
-	reset   			: in std_logic;
+	reset   			: in std_logic := '0';
    clk     			: in std_logic;
    aes3    			: in std_logic;
 	audio_left		: out std_logic_vector(23 downto 0);
@@ -61,18 +74,30 @@ component aes3rx
 	parity_bit		: out std_logic;
    lock    			: out std_logic
 );
-end component;
+end component aes3rx;
 
-component clock
+component sys_pll
 	PORT
 	(
 		areset	: IN STD_LOGIC  := '0';
 		inclk0	: IN STD_LOGIC  := '0';
-		c0			: OUT STD_LOGIC ;
+		c0			: OUT STD_LOGIC;
+		c1			: OUT STD_LOGIC;
+		c2			: OUT STD_LOGIC;
 		locked	: OUT STD_LOGIC 
 	);
-end component;
+end component sys_pll;
 begin
+
+inst_pll: sys_pll
+port map (
+	areset => '0',
+	inclk0 => clk,
+	c0 => sl_clk,
+	c1 => open,
+	c2 => open,
+	locked => pll_lock
+);
 
 inst_aes3rx: aes3rx
 port map (
@@ -81,11 +106,10 @@ port map (
 	aes3 => din
 );
 
-inst_pll: clock
+inst_heartbeat: heartbeat
 port map (
-	areset => '0',
-	inclk0 => clk,
-	c0 => sl_clk,
-	locked => open
+	clk => clk,
+	counter_out => heartbeat_led
 );
+
 end rtl;
