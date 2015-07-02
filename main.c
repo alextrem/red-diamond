@@ -16,7 +16,6 @@
 
 #include "ch.h"
 #include "hal.h"
-#include "test.h"
 
 #include "chprintf.h"
 #include "shell.h"
@@ -47,6 +46,14 @@ static void cmd_mem(BaseSequentialStream *chp, int argc, char *argv[]) {
   chprintf(chp, "heap free total  : %u bytes\r\n", size);
 }
 
+static void cmd_boot(BaseSequentialStream *chp, int argc, char *argv[]) {
+  (void)argv;
+  if (argc > 0) {
+    chprintf(chp, "Usage: boot\r\n");
+    return;
+  }
+}
+
 static void cmd_dac(BaseSequentialStream *chp, int argc, char *argv[]) {
   (void)argv;
   if (argc > 0) {
@@ -75,28 +82,11 @@ static void cmd_threads(BaseSequentialStream *chp, int argc, char *argv[]) {
   } while (tp != NULL);
 }
 
-static void cmd_test(BaseSequentialStream *chp, int argc, char *argv[]) {
-  Thread *tp;
-
-  (void)argv;
-  if (argc > 0) {
-    chprintf(chp, "Usage: test\r\n");
-    return;
-  }
-  tp = chThdCreateFromHeap(NULL, TEST_WA_SIZE, chThdGetPriority(),
-                           TestThread, chp);
-  if (tp == NULL) {
-    chprintf(chp, "out of memory\r\n");
-    return;
-  }
-  chThdWait(tp);
-}
-
 static const ShellCommand commands[] = {
   {"mem", cmd_mem},
+  {"boot", cmd_boot},
   {"dac", cmd_dac},
   {"threads", cmd_threads},
-  {"test", cmd_test},
   {NULL, NULL}
 };
 
