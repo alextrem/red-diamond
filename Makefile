@@ -64,13 +64,13 @@ endif
 PROJECT = ch
 
 # Imported source files and paths
-CHIBIOS = /Users/alextrem/Dev/ChibiOS-RT
+CHIBIOS = ../ChibiOS-RT
 include $(CHIBIOS)/boards/ST_STM32F4_DISCOVERY/board.mk
 include $(CHIBIOS)/os/hal/platforms/STM32F4xx/platform.mk
 include $(CHIBIOS)/os/hal/hal.mk
 include $(CHIBIOS)/os/ports/GCC/ARMCMx/STM32F4xx/port.mk
 include $(CHIBIOS)/os/kernel/kernel.mk
-include $(CHIBIOS)/test/test.mk
+#include $(CHIBIOS)/test/test.mk
 
 # Define linker script file here
 LDSCRIPT= $(PORTLD)/STM32F407xG.ld
