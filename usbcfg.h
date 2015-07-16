@@ -19,7 +19,7 @@
 
 extern const USBConfig usbcfg;
 extern SerialUSBConfig serusbcfg;
-extern AudioUSBConfig audiousbcfg;
+//extern AudioUSBConfig audiousbcfg;
 
 #endif  /* _USBCFG_H_ */
 
