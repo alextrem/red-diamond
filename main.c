@@ -29,8 +29,8 @@ SerialUSBDriver SDU1;
 /* Command line related.                                                     */
 /*===========================================================================*/
 
-#define SHELL_WA_SIZE   THD_WA_SIZE(2048)
-#define TEST_WA_SIZE    THD_WA_SIZE(256)
+#define SHELL_WA_SIZE   THD_WORKING_AREA_SIZE(2048)
+#define TEST_WA_SIZE    THD_WORKING_AREA_SIZE(256)
 
 static void cmd_mem(BaseSequentialStream *chp, int argc, char *argv[]) {
   size_t n, size;
@@ -41,7 +41,7 @@ static void cmd_mem(BaseSequentialStream *chp, int argc, char *argv[]) {
     return;
   }
   n = chHeapStatus(NULL, &size);
-  chprintf(chp, "core free memory : %u bytes\r\n", chCoreStatus());
+  chprintf(chp, "core free memory : %u bytes\r\n", chCoreGetStatusX());
   chprintf(chp, "heap fragments   : %u\r\n", n);
   chprintf(chp, "heap free total  : %u bytes\r\n", size);
 }
@@ -63,21 +63,21 @@ static void cmd_dac(BaseSequentialStream *chp, int argc, char *argv[]) {
 }
 
 static void cmd_threads(BaseSequentialStream *chp, int argc, char *argv[]) {
-  static const char *states[] = {THD_STATE_NAMES};
-  Thread *tp;
+  static const char *states[] = {CH_STATE_NAMES};
+  thread_t *tp;
 
   (void)argv;
   if (argc > 0) {
     chprintf(chp, "Usage: threads\r\n");
     return;
   }
-  chprintf(chp, "    addr    stack prio refs     state time\r\n");
+  chprintf(chp, "    addr    stack prio refs     state\r\n");
   tp = chRegFirstThread();
   do {
-    chprintf(chp, "%.8lx %.8lx %4lu %4lu %9s %lu\r\n",
-            (uint32_t)tp, (uint32_t)tp->p_ctx.r13,
-            (uint32_t)tp->p_prio, (uint32_t)(tp->p_refs - 1),
-            states[tp->p_state], (uint32_t)tp->p_time);
+    chprintf(chp, "%08lx %08lx %4lu %4lu %9s\r\n",
+             (uint32_t)tp, (uint32_t)tp->p_ctx.r13,
+             (uint32_t)tp->p_prio, (uint32_t)(tp->p_refs - 1),
+             states[tp->p_state]);
     tp = chRegNextThread(tp);
   } while (tp != NULL);
 }
@@ -161,7 +161,7 @@ static const SPIConfig spi2cfg = {
  * Application entry point.
  */
 int main(void) {
-  Thread *shelltp = NULL;
+  thread_t *shelltp = NULL;
 
   /*
    * System initializations.
@@ -241,7 +241,7 @@ int main(void) {
     }
     else {
       /* If the previous shell exited.*/
-      if (chThdTerminated(shelltp)) {
+      if (chThdTerminatedX(shelltp)) {
         /* Recovers memory of the previous shell.*/
         chThdRelease(shelltp);
         shelltp = NULL;
