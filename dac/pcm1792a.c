@@ -81,7 +81,7 @@ void pcm1792aWriteRegister(SPIDriver *spip, uint8_t reg, uint8_t value) {
   default:
     /* Reserved register must not be written, according to the datasheet
        this could permanently damage the device.*/
-    chDbgAssert(FALSE, "pcm1792aWriteRegister(), #1", "reserved register");
+    chDbgAssert(FALSE, "reserved register");
 
     /* Read only registers cannot be written, the command is ignored.*/
     spiSelect(spip);
