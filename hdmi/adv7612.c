@@ -16,7 +16,7 @@
 
 /**
  * @file    adv7612.c
- * @brief   ADV7612 HDMI receiver through i2c interface
+ * @brief   ADV7612 HDMI receiver through I2C interface
  *
  * @addtogroup adv7612
  * @{
