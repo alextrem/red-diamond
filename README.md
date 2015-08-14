@@ -17,6 +17,6 @@ A Cyclone IV EP4CE22C8N is used to implement all digital(AES/EBU, HDMI) and anlo
 ## Microcontroller
 To be able to handle the use of the alternate functions of the I/O pads the following table will help:
 
-LQFP100 | Alternate Function | DAC | FPGA | LEDs | ADC | USB | SDC
--------  -------------------  ----   ----   ----   ---   ---   ---
-PB12    | SPI2_NSS           | CS  |      |      |     |     |
+|LQFP100 | Alternate Function | DAC | FPGA | LEDs | ADC | USB | SDC|
+|--------|--------------------|-----|------|------|-----|-----|----|
+|PB12    | SPI2_NSS           | CS  |      |      |     |     |     |
