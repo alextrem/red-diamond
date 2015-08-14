@@ -62,6 +62,19 @@ static void cmd_dac(BaseSequentialStream *chp, int argc, char *argv[]) {
   }
 }
 
+static void cmd_led(BaseSequentialStream *chp, int argc, char *argv[]) {
+  (void)argv;
+  if(argc > 0) {
+    chprintf(chp, "Usage: led\r\n");
+    return;
+  }
+  chprintf(chp, "toggling leds\r\n");
+  palTogglePad(GPIOD, 12);
+  palTogglePad(GPIOD, 13);
+  palTogglePad(GPIOD, 14);
+  palTogglePad(GPIOD, 15);
+}
+
 static void cmd_threads(BaseSequentialStream *chp, int argc, char *argv[]) {
   static const char *states[] = {CH_STATE_NAMES};
   thread_t *tp;
@@ -85,6 +98,7 @@ static void cmd_threads(BaseSequentialStream *chp, int argc, char *argv[]) {
 static const ShellCommand commands[] = {
   {"mem", cmd_mem},
   {"boot", cmd_boot},
+  {"led", cmd_led},
   {"dac", cmd_dac},
   {"threads", cmd_threads},
   {NULL, NULL}
@@ -153,6 +167,27 @@ static const SPIConfig spi2cfg = {
   0
 };
 
+/*
+ * ADC configuration structure.
+ */
+
+static void adccb(ADCDriver *adcp, adcsample_t *buffer, size_t n) {
+  (void)adcp;
+}
+
+static void adcerrcb(ADCDriver *adcp, adcerror_t err) {
+  (void)adcp;
+  (void)err;
+}
+
+static adcsample_t samples[1] = {0};
+static const ADCConversionGroup adcgrpcfg = {
+  TRUE,
+  1,
+  adccb,
+  adcerrcb
+};
+
 /*===========================================================================*/
 /* Initialization and main thread.                                           */
 /*===========================================================================*/
@@ -193,6 +228,10 @@ int main(void) {
   chThdSleepMilliseconds(1000);
   usbStart(serusbcfg.usbp, &usbcfg);
   usbConnectBus(serusbcfg.usbp);
+
+  /*
+   * Activates an analog interface
+   */
 
   /*
    * Activates the serial driver 2 using the driver default configuration.
