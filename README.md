@@ -23,7 +23,6 @@ This interface will be connected differentially to the FPGA. No external IC will
 ## Microcontroller
 To be able to handle the use of the alternate functions of the I/O pads the following table will help:
 
-|--------|--------------------|-----|------|------|-----|-----|------|------|
 |LQFP100 | Alternate Function | DAC | FPGA | LEDs | ADC | USB | SDIO | HDMI |
 |--------|--------------------|-----|------|------|-----|-----|------|------|
 |PA4     | SPI1_NSS           |  x  |      |      |     |     |      |      |
