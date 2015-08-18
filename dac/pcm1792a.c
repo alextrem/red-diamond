@@ -138,6 +138,7 @@ void DAC_mute(DAC_t* const me) {
  * @param[in] me    pointer to the DAC interface
  */
 void DAC_SetAttenuation(DAC_t* const me) {
+  //TODO: Schnittstellenzuweisung vielleicht in main machen. Flexibilität
   pcm1792aWriteRegister(&SPID1, 16, me->attenuation);
 }
 

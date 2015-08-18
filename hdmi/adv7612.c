@@ -51,15 +51,15 @@ static uint8_t rxbuf[2];
 
 /**
  * @brief   Reads a register value.
- * @pre     The SPI interface must be initialized and the driver started.
+ * @pre     The I2C interface must be initialized and the driver started.
  *
- * @param[in] spip      pointer to the SPI initerface
+ * @param[in] i2cp      pointer to the I2C initerface
+ * @param[in] addr      address of the device
  * @param[in] reg       register number
  * @return              The register value.
  */
-uint8_t adv7612ReadRegister(SPIDriver *spip, uint8_t reg) {
+uint8_t adv7612ReadRegister(I2CDriver *i2cp, uint8_t addr, uint8_t reg) {
 
-  spiSelect(spip);
   txbuf[0] = 0x80 | reg;
   txbuf[1] = 0xff;
   spiExchange(spip, 2, txbuf, rxbuf);
@@ -69,13 +69,14 @@ uint8_t adv7612ReadRegister(SPIDriver *spip, uint8_t reg) {
 
 /**
  * @brief   Writes a value into a register.
- * @pre     The SPI interface must be initialized and the driver started.
+ * @pre     The I2C interface must be initialized and the driver started.
  *
- * @param[in] spip      pointer to the SPI initerface
+ * @param[in] i2cp      pointer to the I2C initerface
+ * @param[in] addr      address of the device
  * @param[in] reg       register number
  * @param[in] value     the value to be written
  */
-void adv7612WriteRegister(SPIDriver *spip, uint8_t reg, uint8_t value) {
+void adv7612WriteRegister(I2CDriver *i2cp, uint8_t addr, uint8_t reg, uint8_t value) {
 
   switch (reg) {
   default:
