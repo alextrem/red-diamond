@@ -22,8 +22,8 @@
  * @{
  */
 
-#ifndef _PCM1792A_H_
-#define _PCM1792A_H_
+#ifndef _ADV7612_H_
+#define _ADV7612_H_
 
 /*===========================================================================*/
 /* Driver constants.                                                         */
@@ -70,7 +70,10 @@ typedef struct hdmi {
 /* Driver macros.                                                            */
 /*===========================================================================*/
 
-#define CORE_PDN(x) (x<<1 & 0x)
+#define CORE_PDN(x)         (x<<1)
+#define XTAL_PDN(x)         (x)
+#define POWER_DOWN(x)       (x<<6)
+#define POWER_SAVE_MODE(x)  (x<<3)
 
 /*===========================================================================*/
 /* External declarations.                                                    */
@@ -79,12 +82,12 @@ typedef struct hdmi {
 #ifdef __cplusplus
 extern "C" {
 #endif
-  uint8_t pcm1792aReadRegister(SPIDriver *spip, uint8_t reg);
-  void pcm1792aWriteRegister(SPIDriver *spip, uint8_t reg, uint8_t value);
+  uint8_t adv7612ReadRegister(SPIDriver *spip, uint8_t reg);
+  void adv7612WriteRegister(SPIDriver *spip, uint8_t reg, uint8_t value);
 #ifdef __cplusplus
 }
 #endif
 
-#endif /* _PCM1792A_H_ */
+#endif /* _ADV7612_H_ */
 
 /** @} */
