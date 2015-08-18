@@ -63,7 +63,7 @@ typedef struct hdmi {
   uint8_t CEC_Map;                      /** address for CEC Map  */
   uint8_t DPLL_Map;                     /** address for DPLL Map  */
   uint32_t reset;                       /** */
-  uint32_t deviceID;                    /** chip device id */
+  uint16_t deviceID;                    /** chip device id */
 } HDMI_t;
 
 /*===========================================================================*/
