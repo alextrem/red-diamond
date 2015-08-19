@@ -53,8 +53,7 @@ static uint8_t rxbuf[2];
  * @brief   Reads a register value.
  * @pre     The I2C interface must be initialized and the driver started.
  *
- * @param[in] i2cp      pointer to the I2C initerface
- * @param[in] addr      address of the device
+ * @param[in] hdmi_cfg  pointer to the I2C initerface
  * @param[in] reg       register number
  * @return              The register value.
  */
@@ -67,14 +66,14 @@ uint8_t adv7612ReadRegister(const HDMI_t *hdmi_cfg, uint8_t reg) {
   i2cReleaseBus(hdmi_cfg->i2cp);
 #endif
 
+  return (0);
 }
 
 /**
  * @brief   Writes a value into a register.
  * @pre     The I2C interface must be initialized and the driver started.
  *
- * @param[in] i2cp      pointer to the I2C initerface
- * @param[in] addr      address of the device
+ * @param[in] hdmi_cfg  pointer to the I2C initerface
  * @param[in] reg       register number
  * @param[in] value     the value to be written
  */
