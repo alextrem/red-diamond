@@ -82,8 +82,8 @@ typedef struct hdmi {
 #ifdef __cplusplus
 extern "C" {
 #endif
-  uint8_t adv7612ReadRegister(SPIDriver *spip, uint8_t reg);
-  void adv7612WriteRegister(SPIDriver *spip, uint8_t reg, uint8_t value);
+  uint8_t adv7612ReadRegister(const HDMI_t *hdmi_cfg, uint8_t reg);
+  void adv7612WriteRegister(const HDMI_t *hdmi_cfg, uint8_t reg, uint8_t value);
 #ifdef __cplusplus
 }
 #endif

@@ -58,13 +58,15 @@ static uint8_t rxbuf[2];
  * @param[in] reg       register number
  * @return              The register value.
  */
-uint8_t adv7612ReadRegister(I2CDriver *i2cp, uint8_t addr, uint8_t reg) {
+uint8_t adv7612ReadRegister(const HDMI_t *hdmi_cfg, uint8_t reg) {
+#if I2C_USE_MUTUAL_EXCLUSION
+  i2cAcquireBus(hdmi_cfg->i2cp);
+#endif
 
-  txbuf[0] = 0x80 | reg;
-  txbuf[1] = 0xff;
-  spiExchange(spip, 2, txbuf, rxbuf);
-  spiUnselect(spip);
-  return rxbuf[1];
+#if I2C_USE_MUTUAL_EXCLUSION
+  i2cReleaseBus(hdmi_cfg->i2cp);
+#endif
+
 }
 
 /**
@@ -76,21 +78,14 @@ uint8_t adv7612ReadRegister(I2CDriver *i2cp, uint8_t addr, uint8_t reg) {
  * @param[in] reg       register number
  * @param[in] value     the value to be written
  */
-void adv7612WriteRegister(I2CDriver *i2cp, uint8_t addr, uint8_t reg, uint8_t value) {
+void adv7612WriteRegister(const HDMI_t *hdmi_cfg, uint8_t reg, uint8_t value) {
+#if I2C_USE_MUTUAL_EXCLUSION
+  i2cAcquireBus(hdmi_cfg->i2cp);
+#endif
 
-  switch (reg) {
-  default:
-    /* Reserved register must not be written, according to the datasheet
-       this could permanently damage the device.*/
-    chDbgAssert(FALSE, "pcm1792aWriteRegister(), #1", "reserved register");
-
-    /* Read only registers cannot be written, the command is ignored.*/
-    spiSelect(spip);
-    txbuf[0] = reg;
-    txbuf[1] = value;
-    spiSend(spip, 2, txbuf);
-    spiUnselect(spip);
-  }
+#if I2C_USE_MUTUAL_EXCLUSION
+  i2cReleaseBus(hdmi_cfg->i2cp);
+#endif
 }
 
 /** @} */
