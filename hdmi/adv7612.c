@@ -41,10 +41,29 @@
 static uint8_t rx_buf[2];
 
 static const uint8_t IO_Map = 0x98;
+static const uint8_t CP_Map = 0x12;
+static const uint8_t HDMI_Map = 0x13;
+static const uint8_t Repeater_Map = 0x14;
+static const uint8_t EDID_Map = 0x15;
+static const uint8_t InfoFrame_Map = 0x16;
+static const uint8_t CEC_Map = 0x17;
+static const uint8_t DPLL_Map = 0x18;
 
 /*===========================================================================*/
 /* Driver local functions.                                                   */
 /*===========================================================================*/
+
+static void set_slave_address(const HDMI_t *hdmi_cfg);
+
+static void set_slave_address(const HDMI_t *hdmi_cfg) {
+  adv7612WriteRegister(hdmi_cfg, IO_Map, 0xFD, &CP_Map);
+  adv7612WriteRegister(hdmi_cfg, IO_Map, 0xFB, &HDMI_Map);
+  adv7612WriteRegister(hdmi_cfg, IO_Map, 0xF9, &Repeater_Map);
+  adv7612WriteRegister(hdmi_cfg, IO_Map, 0xFA, &EDID_Map);
+  adv7612WriteRegister(hdmi_cfg, IO_Map, 0xF5, &InfoFrame_Map);
+  adv7612WriteRegister(hdmi_cfg, IO_Map, 0xF4, &CEC_Map);
+  adv7612WriteRegister(hdmi_cfg, IO_Map, 0xF8, &DPLL_Map);
+}
 
 /*===========================================================================*/
 /* Driver exported functions.                                                */
