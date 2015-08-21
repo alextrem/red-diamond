@@ -38,8 +38,9 @@
 /* Driver local variables and types.                                         */
 /*===========================================================================*/
 
-static uint8_t txbuf[2];
-static uint8_t rxbuf[2];
+static uint8_t rx_buf[2];
+
+static const uint8_t IO_Map = 0x98;
 
 /*===========================================================================*/
 /* Driver local functions.                                                   */
@@ -54,19 +55,30 @@ static uint8_t rxbuf[2];
  * @pre     The I2C interface must be initialized and the driver started.
  *
  * @param[in] hdmi_cfg  pointer to the I2C initerface
+ * @param[in] device_address
  * @param[in] reg       register number
  * @return              The register value.
  */
-uint8_t adv7612ReadRegister(const HDMI_t *hdmi_cfg, uint8_t reg) {
+uint8_t adv7612ReadRegister(const HDMI_t *hdmi_cfg,
+                            uint8_t device_address,
+                            uint8_t reg) {
+  msg_t status = MSG_RESET;
+
 #if I2C_USE_MUTUAL_EXCLUSION
   i2cAcquireBus(hdmi_cfg->i2cp);
 #endif
+
+  status = i2cMasterTransmitTimeout(hdmi_cfg->i2cp,
+                                    device_address,
+                                    &reg, 1,
+                                    rx_buf, 1,
+                                    MS2ST(1000));
 
 #if I2C_USE_MUTUAL_EXCLUSION
   i2cReleaseBus(hdmi_cfg->i2cp);
 #endif
 
-  return (0);
+  return status;
 }
 
 /**
@@ -74,13 +86,29 @@ uint8_t adv7612ReadRegister(const HDMI_t *hdmi_cfg, uint8_t reg) {
  * @pre     The I2C interface must be initialized and the driver started.
  *
  * @param[in] hdmi_cfg  pointer to the I2C initerface
+ * @param[in] device_address
  * @param[in] reg       register number
  * @param[in] value     the value to be written
  */
-void adv7612WriteRegister(const HDMI_t *hdmi_cfg, uint8_t reg, uint8_t value) {
+void adv7612WriteRegister(const HDMI_t *hdmi_cfg,
+                          uint8_t device_address,
+                          uint8_t reg,
+                          const uint8_t *value) {
+  msg_t status = MSG_RESET;
+
+  uint8_t request[2];
+  request[0] = reg;
+  request[1] = *value;
+
 #if I2C_USE_MUTUAL_EXCLUSION
   i2cAcquireBus(hdmi_cfg->i2cp);
 #endif
+
+  status = i2cMasterTransmitTimeout(hdmi_cfg->i2cp,
+                                    device_address,
+                                    request, 2,
+                                    NULL, 0,
+                                    MS2ST(1000));
 
 #if I2C_USE_MUTUAL_EXCLUSION
   i2cReleaseBus(hdmi_cfg->i2cp);
