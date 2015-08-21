@@ -18,9 +18,9 @@
  * @defgroup adv7612 Interface module for ADV7612 HDMI receiver
  *
  * @brief   Interface module for ADV7612 HDMI RX.
- * @details This module implements a generic interface for the PCM1792A
- *          Texas INstruments DAC device. The communication is performed
- *          through a standard SPI driver.
+ * @details This module implements a generic interface for the ADV7612
+ *          Analog Devices HDMI device. The communication is performed
+ *          through a standard I2C driver.
  *
  * @ingroup hdmi
  */
