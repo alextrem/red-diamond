@@ -54,14 +54,6 @@
 
 typedef struct hdmi {
   I2CDriver *i2cp;                      /** interface driver */
-  uint8_t IO_Map;                       /** address for IO Map  */
-  uint8_t CP_MAP;                       /** address for CP Map  */
-  uint8_t HDMI_Map;                     /** address for HDMI Map  */
-  uint8_t Repeater_Map;                 /** address for Repeater Map */
-  uint8_t EDID_Map;                     /** address for EDID Map  */
-  uint8_t InfoFrame_Map;                /** address for InfoFrame Map */
-  uint8_t CEC_Map;                      /** address for CEC Map  */
-  uint8_t DPLL_Map;                     /** address for DPLL Map  */
   uint32_t reset;                       /** */
   uint16_t deviceID;                    /** chip device id */
 } HDMI_t;
