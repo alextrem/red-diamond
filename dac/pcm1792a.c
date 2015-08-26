@@ -116,11 +116,11 @@ void DAC_attenuate(DAC_t* const me, uint8_t attenuation) {
   //TODO: Check if value is in range 0 .. 255
   me->attenuation = attenuation;
 
-  pcm1792aWriteRegister(&SPID1, PCM1792A_ATTENUATION_LEFT, me->attenuation);
-  pcm1792aWriteRegister(&SPID1, PCM1792A_ATTENUATION_RIGHT, me->attenuation);
+  pcm1792aWriteRegister(me->spip, PCM1792A_ATTENUATION_LEFT, me->attenuation);
+  pcm1792aWriteRegister(me->spip, PCM1792A_ATTENUATION_RIGHT, me->attenuation);
 
-  pcm1792aWriteRegister(&SPID1, PCM1792A_ATTENUATION_LOAD_CTRL, PCM1792A_ATLD(1));
-  pcm1792aWriteRegister(&SPID1, PCM1792A_ATTENUATION_LOAD_CTRL, PCM1792A_ATLD(0));
+  pcm1792aWriteRegister(me->spip, PCM1792A_ATTENUATION_LOAD_CTRL, PCM1792A_ATLD(1));
+  pcm1792aWriteRegister(me->spip, PCM1792A_ATTENUATION_LOAD_CTRL, PCM1792A_ATLD(0));
 }
 
 /**
@@ -138,8 +138,7 @@ void DAC_mute(DAC_t* const me) {
  * @param[in] me    pointer to the DAC interface
  */
 void DAC_SetAttenuation(DAC_t* const me) {
-  //TODO: Schnittstellenzuweisung vielleicht in main machen. Flexibilität
-  pcm1792aWriteRegister(&SPID1, 16, me->attenuation);
+  pcm1792aWriteRegister(me->spip, 16, me->attenuation);
 }
 
 /**
@@ -151,7 +150,7 @@ void DAC_SetAttenuation(DAC_t* const me) {
 void DAC_SetAttenuationRate(DAC_t* const me, AttenuationRate_t rate) {
   me->attenuation_rate = rate;
 
-  pcm1792aWriteRegister(&SPID1, 16, me->attenuation_rate);
+  pcm1792aWriteRegister(me->spip, 16, me->attenuation_rate);
 }
 
 /**
@@ -163,7 +162,7 @@ void DAC_SetAttenuationRate(DAC_t* const me, AttenuationRate_t rate) {
 void DAC_SetInterface(DAC_t* const me, AudioFormat_t format) {
   me->audio_format = format;
 
-  pcm1792aWriteRegister(&SPID1, 17, me->audio_format);
+  pcm1792aWriteRegister(me->spip, 17, me->audio_format);
 }
 
 /**
@@ -172,7 +171,7 @@ void DAC_SetInterface(DAC_t* const me, AudioFormat_t format) {
  * @param[in] me    pointer to DAC instance
  */
 void DAC_deviceID(DAC_t* const me) {
-    me->deviceID = pcm1792aReadRegister(&SPID1, PCM1792A_DEVICEID);
+    me->deviceID = pcm1792aReadRegister(me->spip, PCM1792A_DEVICEID);
 }
 
 /** @} */
