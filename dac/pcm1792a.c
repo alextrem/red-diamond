@@ -40,6 +40,14 @@
 
 static uint8_t txbuf[2];
 static uint8_t rxbuf[2];
+static const DAC_t factory_default = {
+  .attenuation = 255,
+  .sampling = I2S_24BIT,
+  .deemphasis = 0,
+  .mute = 1,
+  .rolloff = 0,
+  .oversampling = FS_128
+}; //! If restore to default will be used
 
 /*===========================================================================*/
 /* Driver local functions.                                                   */
@@ -96,6 +104,8 @@ void pcm1792aWriteRegister(SPIDriver *spip, uint8_t reg, uint8_t value) {
  * @brief Initilize DAC with system default values
  *
  * @param[in] me    pointer tp the DAC instance
+ *
+ * @note some values should be stored in flash
  */
 void DAC_initialize(DAC_t* const me) {
   me->attenuation = 0;
@@ -114,6 +124,7 @@ void DAC_initialize(DAC_t* const me) {
  */
 void DAC_attenuate(DAC_t* const me, uint8_t attenuation) {
   //TODO: Check if value is in range 0 .. 255
+  chDbgAssert(FALSE, attenuation);
   me->attenuation = attenuation;
 
   pcm1792aWriteRegister(me->spip, PCM1792A_ATTENUATION_LEFT, me->attenuation);
