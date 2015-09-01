@@ -168,6 +168,16 @@ static const SPIConfig spi2cfg = {
 };
 
 /*
+ * I2S configuration structure
+ */
+static const I2SConfig i2s3cfg = {
+  NULL,
+  NULL,
+  NULL,
+  NULL
+};
+
+/*
  * ADC configuration structure.
  */
 
@@ -270,6 +280,23 @@ int main(void) {
   palSetPadMode(GPIOB, 14, PAL_MODE_ALTERNATE(5));              /* MISO.    */
   palSetPadMode(GPIOB, 15, PAL_MODE_ALTERNATE(5) |
                            PAL_STM32_OSPEED_HIGHEST);           /* MOSI.    */
+
+  /*
+   * Initializes the I2S driver 3. The I2S signals are routed as follow:
+   * PA15 - I2S3_WS.
+   * PC7  - I2S3_MCK.
+   * PC10 - I2S3_SCK.
+   * PC12 - I2S3_SD.
+   */
+  palSetPadMode(GPIOA, 15, PAL_MODE_OUTPUT_PUSHPULL |
+                           PAL_STM32_OSPEED_HIGHEST); /* WS  */
+  palSetPadMode(GPIOC, 7, PAL_MODE_ALTERNATE(6) |
+                          PAL_STM32_OSPEED_HIGHEST); /* MCK */
+  palSetPadMode(GPIOC, 10, PAL_MODE_ALTERNATE(6) |
+                           PAL_STM32_OSPEED_HIGHEST); /* SCK */
+  palSetPadMode(GPIOC, 12, PAL_MODE_ALTERNATE(6) |
+                           PAL_STM32_OSPEED_HIGHEST); /* SD */
+
 
   while (TRUE) {
     if (!shelltp) {
