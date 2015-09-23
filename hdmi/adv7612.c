@@ -70,6 +70,19 @@ static void set_slave_address(const HDMI_t *hdmi_cfg) {
 /*===========================================================================*/
 
 /**
+ * @brief   Configure audio interface.
+ * @pre     The I2C interface must be initialized and the driver started.
+ *
+ * @param[in] hdmi_cfg  pointer to the I2C initerface
+ * @param[in] device_address
+ * @param[in] reg       register number
+ * @return              The register value.
+ */
+uint8_t configureAudioInterface() {
+ // adv7612WriteRegister(const HDMI_t *hdmi_cfg, IO_Map);
+}
+
+/**
  * @brief   Reads a register value.
  * @pre     The I2C interface must be initialized and the driver started.
  *
