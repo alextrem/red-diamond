@@ -74,6 +74,8 @@ typedef struct hdmi {
 #ifdef __cplusplus
 extern "C" {
 #endif
+  void configureAudioInterface(HDMI_t const *hdmi_cfg);
+  void initChip(HDMI_t const *hdmi_cfg);
   uint8_t adv7612ReadRegister(const HDMI_t *hdmi_cfg,
                               uint8_t device_address,
                               uint8_t reg);

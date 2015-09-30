@@ -53,9 +53,9 @@ static const uint8_t DPLL_Map = 0x18;
 /* Driver local functions.                                                   */
 /*===========================================================================*/
 
-static void set_slave_address(const HDMI_t *hdmi_cfg);
+static void set_slave_address(HDMI_t const *hdmi_cfg);
 
-static void set_slave_address(const HDMI_t *hdmi_cfg) {
+static void set_slave_address(HDMI_t const *hdmi_cfg) {
   adv7612WriteRegister(hdmi_cfg, IO_Map, 0xFD, &CP_Map);
   adv7612WriteRegister(hdmi_cfg, IO_Map, 0xFB, &HDMI_Map);
   adv7612WriteRegister(hdmi_cfg, IO_Map, 0xF9, &Repeater_Map);
@@ -72,14 +72,21 @@ static void set_slave_address(const HDMI_t *hdmi_cfg) {
 /**
  * @brief   Configure audio interface.
  * @pre     The I2C interface must be initialized and the driver started.
- *
- * @param[in] hdmi_cfg  pointer to the I2C initerface
- * @param[in] device_address
- * @param[in] reg       register number
- * @return              The register value.
  */
-uint8_t configureAudioInterface() {
- // adv7612WriteRegister(const HDMI_t *hdmi_cfg, IO_Map);
+void configureAudioInterface(HDMI_t const *hdmi_cfg) {
+  //TODO: Registers which need to be wriiten need to be done
+  // adv7612WriteRegister(const HDMI_t *hdmi_cfg, IO_Map);
+}
+
+/**
+ * @brief   Initialize chip.
+ * @pre     The I2C interface must be initialized and the driver started.
+ */
+void init_chip(HDMI_t const *hdmi_cfg) {
+  /* Configure I2C interface addresses */
+  set_slave_address(hdmi_cfg);
+  //TODO: Registers which need to be wriiten need to be done
+  // adv7612WriteRegister(const HDMI_t *hdmi_cfg, IO_Map);
 }
 
 /**
