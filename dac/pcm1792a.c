@@ -123,14 +123,17 @@ void DAC_initialize(DAC_t* const me) {
  * @param[in] attenuation   attenuation value in 0.5 dB steps
  */
 void DAC_attenuate(DAC_t* const me, uint8_t attenuation) {
-  //TODO: Check if value is in range 0 .. 255
   chDbgAssert(FALSE, attenuation);
   me->attenuation = attenuation;
 
+  /* Activate attenuation control */
+  pcm1792aWriteRegister(me->spip, PCM1792A_ATTENUATION_LOAD_CTRL, PCM1792A_ATLD(1));
+
+  /* Set attenuation value */
   pcm1792aWriteRegister(me->spip, PCM1792A_ATTENUATION_LEFT, me->attenuation);
   pcm1792aWriteRegister(me->spip, PCM1792A_ATTENUATION_RIGHT, me->attenuation);
 
-  pcm1792aWriteRegister(me->spip, PCM1792A_ATTENUATION_LOAD_CTRL, PCM1792A_ATLD(1));
+  /* Deactivate attenuation control */
   pcm1792aWriteRegister(me->spip, PCM1792A_ATTENUATION_LOAD_CTRL, PCM1792A_ATLD(0));
 }
 
@@ -140,7 +143,8 @@ void DAC_attenuate(DAC_t* const me, uint8_t attenuation) {
  * @param[in] me    pointer to the DAC instance
  */
 void DAC_mute(DAC_t* const me) {
-
+  me->mute = 1;
+  pcm1792aWriteRegister(me->spip, PCM1792A_ATTENUATION_LOAD_CTRL, me->mute);
 }
 
 /**
@@ -149,7 +153,14 @@ void DAC_mute(DAC_t* const me) {
  * @param[in] me    pointer to the DAC interface
  */
 void DAC_SetAttenuation(DAC_t* const me) {
-  pcm1792aWriteRegister(me->spip, 16, me->attenuation);
+   /* Activate attenuation control */
+  pcm1792aWriteRegister(me->spip, PCM1792A_ATTENUATION_LOAD_CTRL, PCM1792A_ATLD(1));
+
+  pcm1792aWriteRegister(me->spip, PCM1792A_ATTENUATION_LEFT, me->attenuation);
+  pcm1792aWriteRegister(me->spip, PCM1792A_ATTENUATION_RIGHT, me->attenuation);
+
+  /* Deactivate attenuation control */
+  pcm1792aWriteRegister(me->spip, PCM1792A_ATTENUATION_LOAD_CTRL, PCM1792A_ATLD(0));
 }
 
 /**
@@ -161,7 +172,7 @@ void DAC_SetAttenuation(DAC_t* const me) {
 void DAC_SetAttenuationRate(DAC_t* const me, AttenuationRate_t rate) {
   me->attenuation_rate = rate;
 
-  pcm1792aWriteRegister(me->spip, 16, me->attenuation_rate);
+  pcm1792aWriteRegister(me->spip, PCM1792A_AUDIO_INTERFACE, me->attenuation_rate);
 }
 
 /**
@@ -171,9 +182,12 @@ void DAC_SetAttenuationRate(DAC_t* const me, AttenuationRate_t rate) {
  * @param[in] format    chosen interface
  */
 void DAC_SetInterface(DAC_t* const me, AudioFormat_t format) {
-  me->audio_format = format;
+  /* Check if reserved values are used */
+  if (format != (6 || 7)) {
+    me->audio_format = format;
 
-  pcm1792aWriteRegister(me->spip, 17, me->audio_format);
+    pcm1792aWriteRegister(me->spip, 17, PCM1792A_FMT(me->audio_format));
+  }
 }
 
 /**
@@ -184,5 +198,19 @@ void DAC_SetInterface(DAC_t* const me, AudioFormat_t format) {
 void DAC_deviceID(DAC_t* const me) {
     me->deviceID = pcm1792aReadRegister(me->spip, PCM1792A_DEVICEID);
 }
+
+/**
+ * @brief Reset to factory preset
+ *
+ * @param[in] me DAC_FactoryReset(DAC_t* const me)
+ */
+ void DAC_FactoryReset(DAC_t* const me){
+   me->sampling = factory_default.sampling;
+   me->attenuation = factory_default.attenuation;
+   me->deemphasis = factory_default.deemphasis;
+   me->mute = factory_default.mute;
+   me->rolloff = factory_default.rolloff;
+   me->oversampling = factory_default.oversampling;
+ }
 
 /** @} */

@@ -33,14 +33,12 @@
  * @name    PCM1792A register names
  * @{
  */
-#define PCM1792A_ATTENUATION_LEFT       0x10
-#define PCM1792A_ATTENUATION_RIGHT      0x11
-#define PCM1792A_ATTENUATION_LOAD_CTRL  0x12
-#define PCM1792A_AUDIO_INTERFACE        0x13
-#define PCM1792A_DEEMPHASIS             0x14
-#define PCM1792A_DEVICEID               0x17
-
-
+#define PCM1792A_ATTENUATION_LEFT       16
+#define PCM1792A_ATTENUATION_RIGHT      17
+#define PCM1792A_ATTENUATION_LOAD_CTRL  18
+#define PCM1792A_AUDIO_INTERFACE        19
+#define PCM1792A_DEEMPHASIS             20
+#define PCM1792A_DEVICEID               21
 /** @} */
 
 /*===========================================================================*/
@@ -78,7 +76,7 @@ typedef enum OversamplingRate {
 } Oversampling_t;
 
 typedef struct Dac {
-  SPIDriver *spip;
+  SPIDriver *spip;                      /** */
   uint32_t sampling;                    /** chosen samplingrate for the dac */
   uint8_t attenuation;                  /** attenuation steps in 0.5 dB */
   AttenuationRate_t attenuation_rate;   /** */
@@ -99,6 +97,7 @@ typedef struct Dac {
 #define PCM1792A_ATLD(x)                (x & 0x80)
 #define PCM1792A_FMT(x)                 (x<<4 & 0x70)
 #define PCM1792A_DFM(x)                 (x<<2 & 0x0C)
+#define PCM1792A_OS(x)                  (x & 0x03)
 
 /*===========================================================================*/
 /* External declarations.                                                    */
@@ -112,6 +111,8 @@ extern "C" {
   void DAC_initialize(DAC_t* const me);
   void DAC_configure(DAC_t* const me);
   void DAC_attenuate(DAC_t* const me, uint8_t attenuation);
+  void DAC_SetOversampling(DAC_t* const me);
+  void DAC_SetBalance(DAC_t* const me);
   void DAC_SetAttenuationRate(DAC_t* const me, AttenuationRate_t rate);
   void DAC_SetInterface(DAC_t* const me, AudioFormat_t format);
   void DAC_outputEnable(DAC_t* const me);
