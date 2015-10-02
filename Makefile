@@ -40,7 +40,7 @@ endif
 
 # Enable this if you want to see the full log while compiling.
 ifeq ($(USE_VERBOSE_COMPILE),)
-  USE_VERBOSE_COMPILE = no
+  USE_VERBOSE_COMPILE = yes
 endif
 
 # If enabled, this option makes the build process faster by not compiling
@@ -71,7 +71,7 @@ endif
 
 # Enables the use of FPU on Cortex-M4 (no, softfp, hard).
 ifeq ($(USE_FPU),)
-  USE_FPU = hard
+  USE_FPU = no
 endif
 
 #
@@ -206,11 +206,11 @@ UADEFS =
 # List all user directories here
 UINCDIR =
 
-# List the user directory to look for the libraries here
-ULIBDIR =
-
 # List all user libraries here
 ULIBS =
+
+# List all user library directories here
+ULIBDIR =
 
 #
 # End of user defines
