@@ -118,6 +118,7 @@ CSRC = $(STARTUPSRC) \
        $(CHIBIOS)/os/hal/lib/streams/chprintf.c \
        dac/pcm1792a.c \
        hdmi/adv7612.c \
+       audioctrl.c \
        usbcfg.c main.c
 
 # C++ sources that can be compiled in ARM or THUMB mode depending on the global
