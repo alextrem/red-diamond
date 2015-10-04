@@ -76,9 +76,11 @@ typedef enum OversamplingRate {
 } Oversampling_t;
 
 typedef struct Dac {
-  SPIDriver *spip;                      /** */
+  SPIDriver *spip;                      /** This IC supports both SPI or I2C*/
+  I2CDriver *i2cp;                      /** */
   uint32_t sampling;                    /** chosen samplingrate for the dac */
   uint8_t attenuation;                  /** attenuation steps in 0.5 dB */
+  int8_t balance;                       /** left for neg values */
   AttenuationRate_t attenuation_rate;   /** */
   AudioFormat_t audio_format;           /** I2S, right or left justified */
   uint32_t deemphasis;                  /** */

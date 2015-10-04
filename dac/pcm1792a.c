@@ -42,6 +42,7 @@ static uint8_t txbuf[2];
 static uint8_t rxbuf[2];
 static const DAC_t factory_default = {
   .attenuation = 255,
+  .balance = 0,
   .sampling = I2S_24BIT,
   .deemphasis = 0,
   .mute = 1,
@@ -206,6 +207,7 @@ void DAC_deviceID(DAC_t* const me) {
  */
  void DAC_FactoryReset(DAC_t* const me){
    me->sampling = factory_default.sampling;
+   me->balance = factory_default.balance;
    me->attenuation = factory_default.attenuation;
    me->deemphasis = factory_default.deemphasis;
    me->mute = factory_default.mute;
