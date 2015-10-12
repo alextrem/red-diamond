@@ -99,6 +99,7 @@ include $(CHIBIOS)/os/rt/rt.mk
 include $(CHIBIOS)/os/rt/ports/ARMCMx/compilers/GCC/mk/port_v7m.mk
 # Other files (optional).
 include $(CHIBIOS)/os/various/fatfs_bindings/fatfs.mk
+include libmad/mp3.mk
 
 # Define linker script file here
 LDSCRIPT= $(STARTUPLD)/STM32F407xG.ld
@@ -113,6 +114,7 @@ CSRC = $(STARTUPSRC) \
        $(PLATFORMSRC) \
        $(BOARDSRC) \
        $(FATFSSRC) \
+       $(MP3SRC) \
        $(CHIBIOS)/os/various/shell.c \
        $(CHIBIOS)/os/hal/lib/streams/memstreams.c \
        $(CHIBIOS)/os/hal/lib/streams/chprintf.c \
@@ -149,7 +151,7 @@ TCPPSRC =
 ASMSRC = $(STARTUPASM) $(PORTASM) $(OSALASM)
 
 INCDIR = $(STARTUPINC) $(KERNINC) $(PORTINC) $(OSALINC) \
-         $(HALINC) $(PLATFORMINC) $(BOARDINC) $(FATFSINC) \
+         $(HALINC) $(PLATFORMINC) $(BOARDINC) $(FATFSINC) $(MP3INC) \
          $(CHIBIOS)/os/hal/lib/streams $(CHIBIOS)/os/various \
          dac/inc \
          hdmi/inc
@@ -200,7 +202,7 @@ CPPWARN = -Wall -Wextra -Wundef
 #
 
 # List all user C define here, like -D_DEBUG=1
-UDEFS =
+UDEFS = -DFPM_DEFAULT -DSIZEOF_INT=4
 
 # Define ASM defines here
 UADEFS =
