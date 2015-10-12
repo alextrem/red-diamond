@@ -41,9 +41,19 @@
 /* Driver data structures and types.                                         */
 /*===========================================================================*/
 
+typedef enum source {
+  AUX  = 1,
+  CD   = 2,
+  HDMI = 3,
+  FM = 4,
+  AM = 5,
+  DAB = 6
+} Source_t;
+
 typedef struct audioctrl {
   uint8_t volume;
   int8_t balance;
+  Source_t source;
 } AudioCtrl_t;
 
 /*===========================================================================*/
@@ -57,7 +67,9 @@ typedef struct audioctrl {
 #ifdef __cplusplus
 extern "C" {
 #endif
-
+void set_balance(AudioCtrl_t* const me);
+void set_volume(AudioCtrl_t* const me);
+void choose_source(AudioCtrl_t* const me);
 #ifdef __cplusplus
 }
 #endif

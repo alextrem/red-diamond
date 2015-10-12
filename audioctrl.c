@@ -39,6 +39,9 @@
 /*===========================================================================*/
 
 static const AudioCtrl_t factory_default = {
+  .balance = 0,
+  .volume = 20,
+  .source = CD,
 }; //! If restore to default will be used
 
 /*===========================================================================*/
@@ -48,5 +51,17 @@ static const AudioCtrl_t factory_default = {
 /*===========================================================================*/
 /* Driver exported functions.                                                */
 /*===========================================================================*/
+
+void set_balance(AudioCtrl_t* const me ) {
+
+}
+
+void set_volume(AudioCtrl_t* const me) {
+
+}
+
+void choose_source(AudioCtrl_t* const me) {
+
+}
 
 /** @} */
