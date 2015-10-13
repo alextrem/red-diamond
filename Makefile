@@ -71,7 +71,7 @@ endif
 
 # Enables the use of FPU on Cortex-M4 (no, softfp, hard).
 ifeq ($(USE_FPU),)
-  USE_FPU = no
+  USE_FPU = hard
 endif
 
 #
@@ -211,10 +211,10 @@ UADEFS =
 UINCDIR =
 
 # List all user libraries here
-ULIBS =
+ULIBS = -lmath_cm4f -lm
 
 # List all user library directories here
-ULIBDIR =
+ULIBDIR = dsp_lib
 
 #
 # End of user defines
