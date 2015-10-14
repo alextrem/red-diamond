@@ -19,18 +19,49 @@
 
 #include "chprintf.h"
 #include "shell.h"
+#include <ff.h>
 
 #include "usbcfg.h"
 
+#include "pcm1792a.h"
+#include "adv7612.h"
+
 /* Virtual serial port over USB.*/
 SerialUSBDriver SDU1;
+
+static THD_WORKING_AREA(ledThreadWorkingArea, 64);
+static THD_WORKING_AREA(pwmThreadWorkingArea, 32);
+//static THD_WORKING_AREA(controlThreadWorkingArea, 256);
+//static THD_WORKING_AREA(audioThreadWorkingArea, 1024);
+
+static THD_FUNCTION(ledThread, arg) {
+
+  (void)arg;
+  chRegSetThreadName("LED");
+  while (TRUE) {
+    palTogglePad(GPIOD, 15);
+    chThdSleepMilliseconds(500);
+    palTogglePad(GPIOD, 15);
+    chThdSleepMilliseconds(500);
+  }
+}
+
+THD_FUNCTION(pwmThread, arg) {
+  (void)arg;
+
+  chRegSetThreadName("PWM");
+  while (TRUE) {
+    pwmEnableChannel(&PWMD4, 0, (pwmcnt_t)5);
+    pwmEnableChannel(&PWMD4, 1, (pwmcnt_t)10);
+    chThdSleepMilliseconds(250);
+  }
+}
 
 /*===========================================================================*/
 /* Command line related.                                                     */
 /*===========================================================================*/
 
 #define SHELL_WA_SIZE   THD_WORKING_AREA_SIZE(2048)
-#define TEST_WA_SIZE    THD_WORKING_AREA_SIZE(256)
 
 static void cmd_mem(BaseSequentialStream *chp, int argc, char *argv[]) {
   size_t n, size;
@@ -120,25 +151,20 @@ static const ShellConfig shell_cfg1 = {
  */
 static const PWMConfig pwmcfg = {
   100000,                                   /* 100kHz PWM clock frequency.  */
-  128,                                      /* PWM period is 128 cycles.    */
+  512,                                      /* PWM period is 128 cycles.    */
   NULL,
   {
    {PWM_OUTPUT_ACTIVE_HIGH, NULL},
    {PWM_OUTPUT_ACTIVE_HIGH, NULL},
    {PWM_OUTPUT_ACTIVE_HIGH, NULL},
-   {PWM_OUTPUT_ACTIVE_HIGH, NULL}
+   {PWM_OUTPUT_ACTIVE_HIGH, NULL},
   },
   /* HW dependent part.*/
   0,
+  0,
+#if STM32_PWM_USE_ADVANCED
   0
-};
-
-/*
- * SD card configuration structure
- *
- */
-static const SDCConfig sdcfg = {
-  0
+#endif
 };
 
 /*
@@ -169,12 +195,27 @@ static const SPIConfig spi2cfg = {
 
 /*
  * I2S configuration structure
+ * This Interface is attached to an FPGA
+ * TODO: enable DMA channels
  */
+static uint32_t audio_tx_buf[1024];
+static uint32_t audio_rx_buf[1024];
 static const I2SConfig i2s3cfg = {
+  &audio_tx_buf,
+  &audio_rx_buf,
   NULL,
   NULL,
   NULL,
   NULL
+};
+
+/*
+ * I2C configuration structure for HDMI and other chips
+ */
+static const I2CConfig i2cfg = {
+  OPMODE_I2C,
+  400000,
+  FAST_DUTY_CYCLE_2
 };
 
 /*
@@ -252,11 +293,12 @@ int main(void) {
   palSetPadMode(GPIOA, 3, PAL_MODE_ALTERNATE(7));
 
   /*
-   * Activates the SD card interface
-   * The SD-Card will be used for logging voltages and errors.
-   * It is also possible to use it for update or configuration of the amp
+   * Activates the I2C interface
+   * The HDMI, DAC, and maybe the ADC are using this interface
    */
-  sdcStart(&SDCD1, &sdcfg);
+  i2cStart(&I2CD1, &i2cfg);
+  palSetPadMode(GPIOB, 6, PAL_MODE_ALTERNATE(4));
+  palSetPadMode(GPIOB, 7, PAL_MODE_ALTERNATE(4));
 
   /*
    * Initializes the SPI driver 1 in order to access the MEMS. The signals
@@ -271,6 +313,7 @@ int main(void) {
    * PB14 - MISO.
    * PB15 - MOSI.
    */
+
   spiStart(&SPID2, &spi2cfg);
   palSetPad(GPIOB, 12);
   palSetPadMode(GPIOB, 12, PAL_MODE_OUTPUT_PUSHPULL |
@@ -297,6 +340,20 @@ int main(void) {
   palSetPadMode(GPIOC, 12, PAL_MODE_ALTERNATE(6) |
                            PAL_STM32_OSPEED_HIGHEST); /* SD */
 
+  /*
+   * Initializes PWM driver 4
+   */
+  pwmStart(&PWMD4, &pwmcfg);
+  palSetPadMode(GPIOD, 12, PAL_MODE_ALTERNATE(2));
+  palSetPadMode(GPIOD, 13, PAL_MODE_ALTERNATE(2));
+  palSetPadMode(GPIOD, 14, PAL_MODE_ALTERNATE(2));
+  //palSetPadMode(GPIOD, 15, PAL_MODE_ALTERNATE(2));
+
+  chThdCreateStatic(ledThreadWorkingArea, sizeof(ledThreadWorkingArea),
+                    NORMALPRIO+1, ledThread, NULL);
+
+  chThdCreateStatic(pwmThreadWorkingArea, sizeof(pwmThreadWorkingArea),
+                    NORMALPRIO+2, pwmThread, NULL);
 
   while (TRUE) {
     if (!shelltp) {
