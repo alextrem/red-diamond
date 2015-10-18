@@ -8,3 +8,6 @@ AISRC = $(AIDIR)/ai/audioctrl.c \
 
 # Include directory
 AIINC = $(AIDIR)/ai/inc
+
+vpath %.c $(AISRC)
+vpath %.h $(AIINC)
