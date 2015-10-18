@@ -17,6 +17,7 @@
 /**
  * @file    disknav.h
  * @brief   Browse in directorystructure of attached non volatile memory
+ * @detail  The content of a mass storage device can be listed and explored.
  *
  * @addtogroup control
  * @{
