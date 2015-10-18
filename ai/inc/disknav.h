@@ -15,15 +15,15 @@
 */
 
 /**
- * @file    audioctrl.h
- * @brief   Audioctrl of the amplifier
+ * @file    disknav.h
+ * @brief   Browse in directorystructure of attached non volatile memory
  *
- * @addtogroup pcm1792a
+ * @addtogroup control
  * @{
  */
 
-#ifndef _AUDIOCTRL_H_
-#define _AUDIOCTRL_H_
+#ifndef _DISKNAV_H_
+#define _DISKNAV_H_
 
 /*===========================================================================*/
 /* Driver constants.                                                         */
@@ -41,21 +41,6 @@
 /* Driver data structures and types.                                         */
 /*===========================================================================*/
 
-typedef enum source {
-  AUX  = 1,
-  CD   = 2,
-  HDMI = 3,
-  FM = 4,
-  AM = 5,
-  DAB = 6
-} Source_t;
-
-typedef struct audioctrl {
-  uint8_t volume;
-  int8_t balance;
-  Source_t source;
-} AudioCtrl_t;
-
 /*===========================================================================*/
 /* Driver macros.                                                            */
 /*===========================================================================*/
@@ -67,14 +52,10 @@ typedef struct audioctrl {
 #ifdef __cplusplus
 extern "C" {
 #endif
-void set_balance(AudioCtrl_t* const me);
-void set_volume(AudioCtrl_t* const me);
-void set_filter(AudioCtrl_t * const me);
-void choose_source(AudioCtrl_t* const me);
 #ifdef __cplusplus
 }
 #endif
 
-#endif /* _AUDIOCTRL_H_ */
+#endif /* _DISKNAV_H_ */
 
 /** @} */
