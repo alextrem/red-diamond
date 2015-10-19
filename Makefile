@@ -120,8 +120,8 @@ CSRC = $(STARTUPSRC) \
        $(CHIBIOS)/os/various/shell.c \
        $(CHIBIOS)/os/hal/lib/streams/memstreams.c \
        $(CHIBIOS)/os/hal/lib/streams/chprintf.c \
-       dac/pcm1792a.c \
-       hdmi/adv7612.c \
+       drivers/dac/pcm1792a.c \
+       drivers/hdmi/adv7612.c \
        usbcfg.c main.c
 
 # C++ sources that can be compiled in ARM or THUMB mode depending on the global
@@ -155,8 +155,8 @@ INCDIR = $(STARTUPINC) $(KERNINC) $(PORTINC) $(OSALINC) \
          $(HALINC) $(PLATFORMINC) $(BOARDINC) $(FATFSINC) $(MP3INC) \
          $(CHIBIOS)/os/hal/lib/streams $(CHIBIOS)/os/various \
          $(AIINC) \
-         dac/inc \
-         hdmi/inc
+         drivers/dac/inc \
+         drivers/hdmi/inc
 
 #
 # Project, sources and paths
