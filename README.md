@@ -5,20 +5,20 @@ Audio preamplifier based on STM32F4 from STMicroelectronis and [Altera] (http://
 The processor is using [ChibiOS] (http://www.chibios.org/dokuwiki/doku.php?id=start) as operating system and in future it is maybe able to decode and encode [MP3] (http://sourceforge.net/projects/mad/files/libmad/) files. The first steps will be to be able to read and configure the different devices
 
 ### File Tree: ###
-**|-- board**
-**|   |-- schematic**
-**|   |-- pcb**
-**|-- ai** *Audio interface*
-**|-- dsp_lib** *CMSIS DSP library*
-**|-- fpga** *Firmware for FPGA project*
-**|-- drivers**
-**|   |-- adc**
-**|   |-- dac**
-**|   |-- hdmi**
-**|-- libmad** *MP3 decoder source and library*
-**|-- LICENSE** *GPL License file*
-**|-- Makefile** *Makefile for this project*
-**|-- README.md** *This Readme file*
+|-- board
+|   |-- schematic
+|   |-- pcb
+|-- ai
+|-- dsp_lib
+|-- fpga    *Firmware for FPGA project*
+|-- drivers
+|   |-- adc
+|   |-- dac
+|   |-- hdmi
+|-- libmad *MP3 decoder source and library*
+|-- LICENSE *GPL License file*
+|-- Makefile *Makefile for this project*
+|-- README.md *This Readme file*
 
 ## Interfaces
 * AES/EBU and SPDIF
