@@ -5,6 +5,7 @@ Audio preamplifier based on STM32F4 from STMicroelectronis and [Altera] (http://
 The processor is using [ChibiOS] (http://www.chibios.org/dokuwiki/doku.php?id=start) as operating system and in future it is maybe able to decode and encode [MP3] (http://sourceforge.net/projects/mad/files/libmad/) files. The first steps will be to be able to read and configure the different devices
 
 ### File Tree: ###
+
 |-- board
 |   |-- schematic
 |   |-- pcb
