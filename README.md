@@ -9,16 +9,16 @@ The processor is using [ChibiOS] (http://www.chibios.org/dokuwiki/doku.php?id=st
 |   |-- schematic
 |   |-- pcb
 |-- ai
-|-- dsp_lib
-|-- fpga    *Firmware for FPGA project*
+|-- dsp
+|-- fpga
 |-- drivers
 |   |-- adc
 |   |-- dac
 |   |-- hdmi
-|-- libmad *MP3 decoder source and library*
-|-- LICENSE *GPL License file*
-|-- Makefile *Makefile for this project*
-|-- README.md *This Readme file*
+|-- libmad
+|-- LICENSE
+|-- Makefile
+|-- README.md
 
 ## Interfaces
 * AES/EBU and SPDIF
