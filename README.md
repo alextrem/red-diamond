@@ -6,13 +6,14 @@ The processor is using [ChibiOS] (http://www.chibios.org/dokuwiki/doku.php?id=st
 
 ### File Tree: ###
 
-+-- board
-    +-- schematic
-    +-- pcb
-+-- ai
-+-- ChibiOS
-|-- dsp
+|-- board
+    |-- schematic
+    |-- pcb
+|-- ai
+|-- ChibiOS
+|-- dspi_lib
 |-- fpga
+|-- gui
 |-- drivers
 |   |-- adc
 |   |-- dac
