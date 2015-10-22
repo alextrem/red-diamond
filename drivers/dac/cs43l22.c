@@ -1,0 +1,159 @@
+/*
+    ChibiOS/RT - Copyright (C) 2015 Alexander Geissler
+
+    Licensed under the Apache License, Version 2.0 (the "License");
+    you may not use this file except in compliance with the License.
+    You may obtain a copy of the License at
+
+        http://www.apache.org/licenses/LICENSE-2.0
+
+    Unless required by applicable law or agreed to in writing, software
+    distributed under the License is distributed on an "AS IS" BASIS,
+    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    See the License for the specific language governing permissions and
+    limitations under the License.
+*/
+
+/**
+ * @file    cs43l22.c
+ * @brief   CS43L22 Audio DAC with I2S interface and controlled through I2C
+ *
+ * @addtogroup cs43l22
+ * @{
+ */
+
+#include "ch.h"
+#include "hal.h"
+#include "cs43l22.h"
+
+/*===========================================================================*/
+/* Driver local definitions.                                                 */
+/*===========================================================================*/
+
+/*===========================================================================*/
+/* Driver exported variables.                                                */
+/*===========================================================================*/
+
+/*===========================================================================*/
+/* Driver local variables and types.                                         */
+/*===========================================================================*/
+
+/*===========================================================================*/
+/* Driver local functions.                                                   */
+/*===========================================================================*/
+
+/*===========================================================================*/
+/* Driver exported functions.                                                */
+/*===========================================================================*/
+
+/**
+ * @brief   Reads a register value.
+ * @pre     The SPI interface must be initialized and the driver started.
+ *
+ * @param[in] spip      pointer to the SPI initerface
+ * @param[in] reg       register number
+ * @return              The register value.
+ */
+uint8_t pcm1792aReadRegister(SPIDriver *spip, uint8_t reg) {
+
+  spiSelect(spip);
+  txbuf[0] = 0x80 | reg;
+  txbuf[1] = 0xff;
+  spiExchange(spip, 2, txbuf, rxbuf);
+  spiUnselect(spip);
+  return rxbuf[1];
+}
+
+/**
+ * @brief   Writes a value into a register.
+ * @pre     The SPI interface must be initialized and the driver started.
+ *
+ * @param[in] spip      pointer to the SPI initerface
+ * @param[in] reg       register number
+ * @param[in] value     the value to be written
+ */
+void pcm1792aWriteRegister(SPIDriver *spip, uint8_t reg, uint8_t value) {
+
+  switch (reg) {
+  default:
+    /* Reserved register must not be written, according to the datasheet
+       this could permanently damage the device.*/
+    chDbgAssert(FALSE, "reserved register");
+
+    /* Read only registers cannot be written, the command is ignored.*/
+    spiSelect(spip);
+    txbuf[0] = reg;
+    txbuf[1] = value;
+    spiSend(spip, 2, txbuf);
+    spiUnselect(spip);
+  }
+}
+
+/**
+ * @brief Set attenuation by value
+ *
+ * @param[in] me    pointer to the DAC interface
+ */
+void DAC_SetAttenuation(DAC_t* const me) {
+   /* Activate attenuation control */
+  pcm1792aWriteRegister(me->spip, PCM1792A_ATTENUATION_LOAD_CTRL, PCM1792A_ATLD(1));
+
+  pcm1792aWriteRegister(me->spip, PCM1792A_ATTENUATION_LEFT, me->attenuation);
+  pcm1792aWriteRegister(me->spip, PCM1792A_ATTENUATION_RIGHT, me->attenuation);
+
+  /* Deactivate attenuation control */
+  pcm1792aWriteRegister(me->spip, PCM1792A_ATTENUATION_LOAD_CTRL, PCM1792A_ATLD(0));
+}
+
+/**
+ * @brief Sets the attenuation rate of the DAC
+ *
+ * @param[in] me    pointer to the DAC interface
+ * @param[in] rate  Chosen attenuation rate
+ */
+void DAC_SetAttenuationRate(DAC_t* const me, AttenuationRate_t rate) {
+  me->attenuation_rate = rate;
+
+  pcm1792aWriteRegister(me->spip, PCM1792A_AUDIO_INTERFACE, me->attenuation_rate);
+}
+
+/**
+ * @brief Sets the audio format used by the DAC interface
+ *
+ * @param[in] me        pointer to the DAC interface
+ * @param[in] format    chosen interface
+ */
+void DAC_SetInterface(DAC_t* const me, AudioFormat_t format) {
+  /* Check if reserved values are used */
+  if (format != (6 || 7)) {
+    me->audio_format = format;
+
+    pcm1792aWriteRegister(me->spip, 17, PCM1792A_FMT(me->audio_format));
+  }
+}
+
+/**
+ * @brief Get the DACs device ID
+ *
+ * @param[in] me    pointer to DAC instance
+ */
+void DAC_deviceID(DAC_t* const me) {
+    me->deviceID = pcm1792aReadRegister(me->spip, PCM1792A_DEVICEID);
+}
+
+/**
+ * @brief Reset to factory preset
+ *
+ * @param[in] me DAC_FactoryReset(DAC_t* const me)
+ */
+ void DAC_FactoryReset(DAC_t* const me){
+   me->sampling = factory_default.sampling;
+   me->balance = factory_default.balance;
+   me->attenuation = factory_default.attenuation;
+   me->deemphasis = factory_default.deemphasis;
+   me->mute = factory_default.mute;
+   me->rolloff = factory_default.rolloff;
+   me->oversampling = factory_default.oversampling;
+ }
+
+/** @} */
