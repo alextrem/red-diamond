@@ -69,6 +69,7 @@ So far I had this problem only once. I built the software with hardware floating
 
 * I observed this problem only on the cross toolchain for OSX. The error was caused by a symbolic link to libc. The library 'libg' was a symbolic link to libc and somehow the compiler could not handle it.
 Just remove the symbolic link and create a copy named 'libg'. There you go !
+
 This command tells you where the compiler takes a look for librarys:
 
     $command
