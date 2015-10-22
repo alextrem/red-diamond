@@ -71,7 +71,7 @@ So far I had this problem only once. I built the software with hardware floating
 Just remove the symbolic link and create a copy named 'libg'. There you go !
 
 This command tells you where the compiler takes a look for librarys:
- 
+
     $command
 
-* With the compilers -B option you can add a directory to the compilers search path. There you go ! Rock on !
+* With the compilers -B option you can add a directory to the compilers search path. This is a good option if you dont't want to hack your toolchain. Just add the option into the Makefile. There you go ! Rock on !
