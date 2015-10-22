@@ -61,16 +61,17 @@ To be able to handle the use of the alternate functions of the I/O pads the foll
 |PB12    | SPI2_NSS           | CS  |      |      |     |     |      |      |
 
 ## F.A.Q.
-*Everything builds. I get a binary but it does not seem to work. What's wrong ?*
+**Everything builds. I get a binary but it does not seem to work. What's wrong ?**
 
 So far I had this problem only once. I built the software with hardware floating point support but the option was not compiled in the toolchain. Neither the compiler or the linker mentioned any errors. When you debug it you will end up in the initialization phase of the processor jumping right into nirvana.
 
-*All the files are compiled successfully. But I get an error while linking. WTF ... ?*
+**All the files are compiled successfully. But I get an error while linking. WTF ... ?**
 
 * I observed this problem only on the cross toolchain for OSX. The error was caused by a symbolic link to libc. The library 'libg' was a symbolic link to libc.
 Just remove the symbolic link and create a copy named 'libg'. There you go !
 
 This command tells you where the compiler takes a look for librarys:
+ 
     $command
 
 * With the compilers -B option you can add a directory to the compilers search path. There you go ! Rock on !
