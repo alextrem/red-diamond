@@ -4,6 +4,12 @@ Audio preamplifier based on STM32F4 from STMicroelectronis and [Altera] (http://
 
 The processor is using [ChibiOS] (http://www.chibios.org/dokuwiki/doku.php?id=start) as operating system and in future it is maybe able to decode and encode [MP3] (http://sourceforge.net/projects/mad/files/libmad/) files. The first steps will be to be able to read and configure the different devices
 
+To build the software clone the repo, init and update the submodules and type:
+
+    $ make all
+
+If there is a [Toolchain] (https://launchpad.net/gcc-arm-embedded) available you should get a working binary.
+
 ### File Tree: ###
 
 |-- board
@@ -53,3 +59,18 @@ To be able to handle the use of the alternate functions of the I/O pads the foll
 |PB6     | I2C1_SCL           |     |      |      |     |     |      |   x  |
 |PB7     | I2C1_SDA           |     |      |      |     |     |      |   x  |
 |PB12    | SPI2_NSS           | CS  |      |      |     |     |      |      |
+
+## F.A.Q.
+*Everything builds. I get a binary but it does not seem to work. What's wrong ?*
+
+So far I had this problem only once. I built the software with hardware floating point support but the option was not compiled in the toolchain. Neither the compiler or the linker mentioned any errors. When you debug it you will end up in the initialization phase of the processor jumping right into nirvana.
+
+*All the files are compiled successfully. But I get an error while linking. WTF ... ?*
+
+* I observed this problem only on the cross toolchain for OSX. The error was caused by a symbolic link to libc. The library 'libg' was a symbolic link to libc.
+Just remove the symbolic link and create a copy named 'libg'. There you go !
+
+This command tells you where the compiler takes a look for librarys:
+    $command
+
+* With the compilers -B option you can add a directory to the compilers search path. There you go ! Rock on !
