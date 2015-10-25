@@ -62,7 +62,7 @@ To be able to handle the use of the alternate functions of the I/O pads the foll
 |PA9     | OTG_FS_VBUS        |     |      |      |     |  x  |      |      |
 |PA10    | OTG_FS_ID          |     |      |      |     |  x  |      |      |
 |PA11    | OTG_FS_DM          |     |      |      |     |  x  |      |      |
-|PA11    | OTG_FS_DP          |     |      |      |     |  x  |      |      |
+|PA12    | OTG_FS_DM          |     |      |      |     |  x  |      |      |
 |PB0     | ETH_MII_RXD2       |     |      |      |     |     |      |      |
 |PB1     | ETH_MII_RXD3       |     |      |      |     |     |      |      |
 |PB6     | I2C1_SCL           |  x  |      |      |     |     |      |   x  |
