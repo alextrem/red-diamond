@@ -45,20 +45,39 @@ This interface will be realized by a dedicated HDMI receiver device - ADV7612.
 ### AES/EBU and SPDIF
 This interface will be connected differentially to the FPGA. No external IC will be used.
 
+The decoding will be handled with FPGA resources.
+
+### A/D and D/A converter
+This amp handles all incoming data and produces a PWM signal
+
 ## Microcontroller
 To be able to handle the use of the alternate functions of the I/O pads the following table will help:
 
 |LQFP100 | Alternate Function | DAC | FPGA | LEDs | ADC | USB | SDIO | HDMI |
 |--------|--------------------|-----|------|------|-----|-----|------|------|
-|PA4     | SPI1_NSS           |  x  |      |      |     |     |      |      |
+|PA4     | I2S3_WS            |     |   x  |      |     |     |      |      |
+|--------|--------------------|-----|------|------|-----|-----|------|------|
 |PA5     | SPI1_SCK           |  x  |      |      |  x  |     |      |      |
+|--------|--------------------|-----|------|------|-----|-----|------|------|
 |PA6     | SPI1_MISO          |  x  |      |      |  x  |     |      |      |
+|--------|--------------------|-----|------|------|-----|-----|------|------|
 |PA7     | SPI1_MOSI          |  x  |      |      |  x  |     |      |      |
+|--------|--------------------|-----|------|------|-----|-----|------|------|
 |PB0     | ETH_MII_RXD2       |     |      |      |     |     |      |      |
+|--------|--------------------|-----|------|------|-----|-----|------|------|
 |PB1     | ETH_MII_RXD3       |     |      |      |     |     |      |      |
-|PB6     | I2C1_SCL           |     |      |      |     |     |      |   x  |
-|PB7     | I2C1_SDA           |     |      |      |     |     |      |   x  |
+|--------|--------------------|-----|------|------|-----|-----|------|------|
+|PB6     | I2C1_SCL           |  x  |      |      |     |     |      |   x  |
+|--------|--------------------|-----|------|------|-----|-----|------|------|
+|PB9     | I2C1_SDA           |  x  |      |      |     |     |      |   x  |
+|--------|--------------------|-----|------|------|-----|-----|------|------|
 |PB12    | SPI2_NSS           | CS  |      |      |     |     |      |      |
+|--------|--------------------|-----|------|------|-----|-----|------|------|
+|PC7     | I2S3_MCK           |     |   x  |      |     |     |      |      |
+|--------|--------------------|-----|------|------|-----|-----|------|------|
+|PC10    | I2S3_CK            |     |   x  |      |     |     |      |      |
+|--------|--------------------|-----|------|------|-----|-----|------|------|
+|PC12    | I2S3_SD            |     |   x  |      |     |     |      |      |
 
 ## F.A.Q.
 **Everything builds. I get a binary but it does not seem to work. What's wrong ?**
