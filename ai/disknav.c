@@ -1,5 +1,5 @@
 /*
-    ChibiOS/RT - Copyright (C) 2015 Alexander Geißler
+    ChibiOS/RT - Copyright (C) 2015 Alexander Geissler
 
     Licensed under the Apache License, Version 2.0 (the "License");
     you may not use this file except in compliance with the License.
@@ -15,65 +15,35 @@
 */
 
 /**
- * @file    audioctrl.h
- * @brief   Audioctrl of the amplifier
+ * @file    disknav.c
+ * @brief   Browse in the filesystem of attached non volatile memory device 
  *
- * @addtogroup pcm1792a
+ * @addtogroup control
  * @{
  */
 
-#ifndef _AUDIOCTRL_H_
-#define _AUDIOCTRL_H_
+#include "ch.h"
+#include "hal.h"
+#include "disknav.h"
 
 /*===========================================================================*/
-/* Driver constants.                                                         */
-/*===========================================================================*/
-
-/*===========================================================================*/
-/* Driver pre-compile time settings.                                         */
+/* Driver local definitions.                                                 */
 /*===========================================================================*/
 
 /*===========================================================================*/
-/* Derived constants and error checks.                                       */
+/* Driver exported variables.                                                */
 /*===========================================================================*/
 
 /*===========================================================================*/
-/* Driver data structures and types.                                         */
-/*===========================================================================*/
-
-typedef enum source {
-  AUX  = 1,
-  CD   = 2,
-  HDMI = 3,
-  FM = 4,
-  AM = 5,
-  DAB = 6
-} Source_t;
-
-typedef struct audioctrl {
-  uint8_t volume;
-  int8_t balance;
-  Source_t source;
-} AudioCtrl_t;
-
-/*===========================================================================*/
-/* Driver macros.                                                            */
+/* Driver local variables and types.                                         */
 /*===========================================================================*/
 
 /*===========================================================================*/
-/* External declarations.                                                    */
+/* Driver local functions.                                                   */
 /*===========================================================================*/
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-void set_balance(AudioCtrl_t* const me);
-void set_volume(AudioCtrl_t* const me);
-void choose_source(AudioCtrl_t* const me);
-#ifdef __cplusplus
-}
-#endif
-
-#endif /* _AUDIOCTRL_H_ */
+/*===========================================================================*/
+/* Driver exported functions.                                                */
+/*===========================================================================*/
 
 /** @} */

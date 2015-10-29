@@ -100,6 +100,7 @@ include $(CHIBIOS)/os/rt/ports/ARMCMx/compilers/GCC/mk/port_v7m.mk
 # Other files (optional).
 include $(CHIBIOS)/os/various/fatfs_bindings/fatfs.mk
 include libmad/mp3.mk
+include ai/ai.mk
 
 # Define linker script file here
 LDSCRIPT= $(STARTUPLD)/STM32F407xG.ld
@@ -115,12 +116,12 @@ CSRC = $(STARTUPSRC) \
        $(BOARDSRC) \
        $(FATFSSRC) \
        $(MP3SRC) \
+       $(AISRC) \
        $(CHIBIOS)/os/various/shell.c \
        $(CHIBIOS)/os/hal/lib/streams/memstreams.c \
        $(CHIBIOS)/os/hal/lib/streams/chprintf.c \
-       dac/pcm1792a.c \
-       hdmi/adv7612.c \
-       audioctrl.c \
+       drivers/dac/pcm1792a.c \
+       drivers/hdmi/adv7612.c \
        usbcfg.c main.c
 
 # C++ sources that can be compiled in ARM or THUMB mode depending on the global
@@ -153,8 +154,9 @@ ASMSRC = $(STARTUPASM) $(PORTASM) $(OSALASM)
 INCDIR = $(STARTUPINC) $(KERNINC) $(PORTINC) $(OSALINC) \
          $(HALINC) $(PLATFORMINC) $(BOARDINC) $(FATFSINC) $(MP3INC) \
          $(CHIBIOS)/os/hal/lib/streams $(CHIBIOS)/os/various \
-         dac/inc \
-         hdmi/inc
+         $(AIINC) \
+         drivers/dac/inc \
+         drivers/hdmi/inc
 
 #
 # Project, sources and paths

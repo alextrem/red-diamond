@@ -297,8 +297,8 @@ int main(void) {
    * The HDMI, DAC, and maybe the ADC are using this interface
    */
   i2cStart(&I2CD1, &i2cfg);
-  palSetPadMode(GPIOB, 6, PAL_MODE_ALTERNATE(4));
-  palSetPadMode(GPIOB, 7, PAL_MODE_ALTERNATE(4));
+  palSetPadMode(GPIOB, 6, PAL_MODE_ALTERNATE(4)); /* SCL */
+  palSetPadMode(GPIOB, 9, PAL_MODE_ALTERNATE(4)); /* SDA */
 
   /*
    * Initializes the SPI driver 1 in order to access the MEMS. The signals
@@ -331,7 +331,7 @@ int main(void) {
    * PC10 - I2S3_SCK.
    * PC12 - I2S3_SD.
    */
-  palSetPadMode(GPIOA, 15, PAL_MODE_OUTPUT_PUSHPULL |
+  palSetPadMode(GPIOA, 4, PAL_MODE_OUTPUT_PUSHPULL |
                            PAL_STM32_OSPEED_HIGHEST); /* WS  */
   palSetPadMode(GPIOC, 7, PAL_MODE_ALTERNATE(6) |
                           PAL_STM32_OSPEED_HIGHEST); /* MCK */
