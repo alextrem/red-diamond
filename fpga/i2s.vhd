@@ -29,13 +29,12 @@ entity i2s is
         -- Bit clock
         sclk    : in std_logic;
         -- Audio master clock output
-        mclk    : in std_logic;
+        mclk    : in std_logic
          );
-end entity
+end entity;
 
-architecture rtl of hdmi is
+architecture rtl of i2s is
 
-    signal sl_
 
 begin
 

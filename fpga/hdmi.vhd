@@ -40,9 +40,9 @@ entity hdmi is
         ap3     : in std_logic;
         ap4     : in std_logic;
         -- interrupt
-        interrupt     : in std_logic_vector(1 downto 0);
+        interrupt     : in std_logic_vector(1 downto 0)
          );
-end entity
+end entity;
 
 architecture rtl of hdmi is
 
