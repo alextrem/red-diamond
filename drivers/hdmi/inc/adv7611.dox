@@ -1,0 +1,31 @@
+/*
+    red-diamond - Copyright (C) 2015 Alexander Geissler
+
+    Licensed under the GPL License, Version 3.0 (the "License");
+    you may not use this file except in compliance with the License.
+    You may obtain a copy of the License at
+
+        https://www.gnu.org/licenses/gpl-3.0.txt
+
+    Unless required by applicable law or agreed to in writing, software
+    distributed under the License is distributed on an "AS IS" BASIS,
+    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    See the License for the specific language governing permissions and
+    limitations under the License.
+*/
+
+/**
+ * @defgroup adv7611 Interface module for ADV7611 HDMI receiver
+ *
+ * @brief   Interface module for ADV7611 HDMI RX.
+ * @details This module implements a generic interface for the ADV7611
+ *          Analog Devices HDMI device. The communication is performed
+ *          through a standard I2C driver.
+ *          For documentation and programming purposes following documents
+ *          are important.
+ *          1.: UG-180
+ *          2.: ADV7611 Software Manual
+ *          3.: ADV7611 Register Settings Recommendations
+ *
+ * @ingroup hdmi
+ */
