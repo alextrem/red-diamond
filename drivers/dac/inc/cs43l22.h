@@ -1,11 +1,11 @@
 /*
-    ChibiOS/RT - Copyright (C) 2015 Alexander Geißler
+    red-diamond - Copyright (C) 2015 Alexander Geißler
 
-    Licensed under the Apache License, Version 2.0 (the "License");
+    Licensed under the GPL License, Version 3.0 (the "License");
     you may not use this file except in compliance with the License.
     You may obtain a copy of the License at
 
-        http://www.apache.org/licenses/LICENSE-2.0
+        https://www.gnu.org/licenses/gpl-3.0.txt
 
     Unless required by applicable law or agreed to in writing, software
     distributed under the License is distributed on an "AS IS" BASIS,
@@ -18,7 +18,7 @@
  * @file    cs43l22.h
  * @brief   CS43L22 ADC with I2S interface controlled through I2C
  *
- * @addtogroup pcm1792a
+ * @addtogroup cs43l22
  * @{
  */
 
@@ -28,6 +28,8 @@
 /*===========================================================================*/
 /* Driver constants.                                                         */
 /*===========================================================================*/
+
+#define CODEC_ADDRESS 0x4A
 
 /*===========================================================================*/
 /* Driver pre-compile time settings.                                         */
@@ -41,9 +43,19 @@
 /* Driver data structures and types.                                         */
 /*===========================================================================*/
 
+typedef enum volume {
+  all = 0,
+  master = 1,
+  headphone = 2,
+  speaker = 3,
+} VOLUME_t;
+
 typedef struct Dac {
   I2CDriver *i2cp;                      /** */
   uint32_t deviceID;                    /** chip device id */
+  uint8_t master_volume[2];             /** master volume control for l+r*/
+  uint8_t headphone_volume[2];          /** headphone volume control for l+r */
+  uint8_t speaker_volume[2];            /** speaker volume control for l+r*/
 } DAC_t;
 
 /*===========================================================================*/
@@ -57,12 +69,16 @@ typedef struct Dac {
 #ifdef __cplusplus
 extern "C" {
 #endif
-  uint8_t cs43l22ReadRegister(I2CDriver *i2cp, uint8_t reg);
-  void cs43l22WriteRegister(I2CDriver *i2cp, uint8_t reg, uint8_t value);
+
+void Codec_Init(I2CDriver *i2cp);
+void Codec_Configure(void);
+void Codec_GetID(void);
+void Codec_SetVolume(const VOLUME_t set);
+
 #ifdef __cplusplus
 }
 #endif
 
-#endif /* _PCM1792A_H_ */
+#endif /* _CS43L22_H_ */
 
 /** @} */
