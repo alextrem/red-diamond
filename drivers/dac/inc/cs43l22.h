@@ -31,6 +31,11 @@
 
 #define CODEC_ADDRESS 0x4A
 
+#define CODEC_HPA  0x22
+#define CODEC_HPB  0x23
+#define CODEC_SPKA 0x24
+#define CODEC_SPKB 0x25
+
 /*===========================================================================*/
 /* Driver pre-compile time settings.                                         */
 /*===========================================================================*/
@@ -73,7 +78,8 @@ extern "C" {
 void Codec_Init(I2CDriver *i2cp);
 void Codec_Configure(void);
 void Codec_GetID(void);
-void Codec_SetVolume(const VOLUME_t set);
+void Codec_VolumeCtl(const VOLUME_t set, uint8_t volume);
+void Codec_Mute(const VOLUME_t set);
 
 #ifdef __cplusplus
 }

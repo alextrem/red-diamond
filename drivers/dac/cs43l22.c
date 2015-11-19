@@ -190,4 +190,30 @@ void Codec_GetID(void) {
 void Codec_VolumeCtrl(const VOLUME_t set, uint8_t volume) {
 
 }
+
+/**
+ * @brief   Mute outputs
+ *
+ * @param[in]   set
+ */
+void Codec_Mute(const VOLUME_t set) {
+  switch(set) {
+    case all:
+      Codec_WriteRegister(CODEC_SPKA, 0x01);
+      Codec_WriteRegister(CODEC_SPKB, 0x01);
+      Codec_WriteRegister(CODEC_HPA, 0x01);
+      Codec_WriteRegister(CODEC_HPB, 0x01);
+      break;
+    case master:
+      break;
+    case headphone:
+      Codec_WriteRegister(CODEC_HPA, 0x01);
+      Codec_WriteRegister(CODEC_HPB, 0x01);
+      break;
+    case speaker:
+      Codec_WriteRegister(CODEC_SPKA, 0x01);
+      Codec_WriteRegister(CODEC_SPKB, 0x01);
+      break;
+  }
+}
 /** @} */
