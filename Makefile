@@ -121,6 +121,7 @@ CSRC = $(STARTUPSRC) \
        $(CHIBIOS)/os/hal/lib/streams/memstreams.c \
        $(CHIBIOS)/os/hal/lib/streams/chprintf.c \
        drivers/dac/pcm1792a.c \
+	   drivers/dac/cs43l22.c \
        drivers/hdmi/adv7612.c \
        usbcfg.c main.c
 
