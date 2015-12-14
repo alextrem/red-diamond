@@ -1,7 +1,7 @@
 /*
-    ChibiOS/RT - Copyright (C) 2015 Alexander Geissler
+    red-diamond - Copyright (C) 2015 Alexander Geissler
 
-    Licensed under the Apache License, Version 2.0 (the "License");
+    Licensed under the GPL License, Version 3.0 (the "License");
     you may not use this file except in compliance with the License.
     You may obtain a copy of the License at
 
@@ -30,6 +30,9 @@
 /* Driver local definitions.                                                 */
 /*===========================================================================*/
 
+static uint8_t pcm1792aReadRegister(SPIDriver *spip, uint8_t reg);
+static void pcm1792aWriteRegister(SPIDriver *spip, uint8_t reg, uint8_t value);
+
 /*===========================================================================*/
 /* Driver exported variables.                                                */
 /*===========================================================================*/
@@ -54,10 +57,6 @@ static const DAC_t factory_default = {
 /* Driver local functions.                                                   */
 /*===========================================================================*/
 
-/*===========================================================================*/
-/* Driver exported functions.                                                */
-/*===========================================================================*/
-
 /**
  * @brief   Reads a register value.
  * @pre     The SPI interface must be initialized and the driver started.
@@ -66,7 +65,7 @@ static const DAC_t factory_default = {
  * @param[in] reg       register number
  * @return              The register value.
  */
-uint8_t pcm1792aReadRegister(SPIDriver *spip, uint8_t reg) {
+static uint8_t pcm1792aReadRegister(SPIDriver *spip, uint8_t reg) {
 
   spiSelect(spip);
   txbuf[0] = 0x80 | reg;
@@ -84,22 +83,20 @@ uint8_t pcm1792aReadRegister(SPIDriver *spip, uint8_t reg) {
  * @param[in] reg       register number
  * @param[in] value     the value to be written
  */
-void pcm1792aWriteRegister(SPIDriver *spip, uint8_t reg, uint8_t value) {
+static void pcm1792aWriteRegister(SPIDriver *spip, uint8_t reg, uint8_t value) {
 
-  switch (reg) {
-  default:
-    /* Reserved register must not be written, according to the datasheet
-       this could permanently damage the device.*/
-    chDbgAssert(FALSE, "reserved register");
+  chDbgAssert(FALSE, "reserved register");
 
-    /* Read only registers cannot be written, the command is ignored.*/
-    spiSelect(spip);
-    txbuf[0] = reg;
-    txbuf[1] = value;
-    spiSend(spip, 2, txbuf);
-    spiUnselect(spip);
-  }
+  spiSelect(spip);
+  txbuf[0] = reg;
+  txbuf[1] = value;
+  spiSend(spip, 2, txbuf);
+  spiUnselect(spip);
 }
+
+/*===========================================================================*/
+/* Driver exported functions.                                                */
+/*===========================================================================*/
 
 /**
  * @brief Initilize DAC with system default values
@@ -203,7 +200,7 @@ void DAC_deviceID(DAC_t* const me) {
 /**
  * @brief Reset to factory preset
  *
- * @param[in] me DAC_FactoryReset(DAC_t* const me)
+ * @param[in] me 
  */
  void DAC_FactoryReset(DAC_t* const me){
    me->sampling = factory_default.sampling;
