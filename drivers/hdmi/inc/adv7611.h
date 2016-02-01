@@ -15,26 +15,30 @@
 */
 
 /**
- * @file    cs43l22.h
- * @brief   CS43L22 ADC with I2S interface controlled through I2C
+ * @file    adv7611.h
+ * @brief   ADV7611 HDMI audio interface via I2C
  *
- * @addtogroup cs43l22
+ * @addtogroup adv7611
  * @{
  */
 
-#ifndef _CS43L22_H_
-#define _CS43L22_H_
+#ifndef _ADV7611_H_
+#define _ADV7611_H_
 
 /*===========================================================================*/
 /* Driver constants.                                                         */
 /*===========================================================================*/
 
-#define CODEC_ADDRESS 0x4A
+/**
+ * @name    adv7611 register names
+ * @{
+ */
+#define ADV7611_IO_REG_04               0x04
+#define ADV7611_IO_REG_0B               0x0B
+#define ADV7611_IO_REG_0C               0x0C
 
-#define CODEC_HPA  0x22
-#define CODEC_HPB  0x23
-#define CODEC_SPKA 0x24
-#define CODEC_SPKB 0x25
+
+/** @} */
 
 /*===========================================================================*/
 /* Driver pre-compile time settings.                                         */
@@ -48,24 +52,20 @@
 /* Driver data structures and types.                                         */
 /*===========================================================================*/
 
-typedef enum volume {
-  all = 0,
-  master = 1,
-  headphone = 2,
-  speaker = 3,
-} VOLUME_t;
-
-typedef struct Dac {
-  I2CDriver *i2cp;                      /** */
-  uint32_t deviceID;                    /** chip device id */
-  uint8_t master_volume[2];             /** master volume control for l+r*/
-  uint8_t headphone_volume[2];          /** headphone volume control for l+r */
-  uint8_t speaker_volume[2];            /** speaker volume control for l+r*/
-} DAC_t;
+typedef struct hdmi {
+  I2CDriver *i2cp;                      /** interface driver */
+  uint32_t reset;                       /** */
+  uint16_t deviceID;                    /** chip device id */
+} HDMI_t;
 
 /*===========================================================================*/
 /* Driver macros.                                                            */
 /*===========================================================================*/
+
+#define CORE_PDN(x)         (x<<1)
+#define XTAL_PDN(x)         (x)
+#define POWER_DOWN(x)       (x<<6)
+#define POWER_SAVE_MODE(x)  (x<<3)
 
 /*===========================================================================*/
 /* External declarations.                                                    */
@@ -74,17 +74,12 @@ typedef struct Dac {
 #ifdef __cplusplus
 extern "C" {
 #endif
-
-void Codec_Init(I2CDriver *i2cp);
-void Codec_Configure(void);
-void Codec_GetID(void);
-void Codec_VolumeCtl(const VOLUME_t set, uint8_t volume);
-void Codec_Mute(const VOLUME_t set);
-
+  void configureAudioInterface(HDMI_t const *hdmi_cfg);
+  void initChip(HDMI_t const *hdmi_cfg);
 #ifdef __cplusplus
 }
 #endif
 
-#endif /* _CS43L22_H_ */
+#endif /* _ADV7611_H_ */
 
 /** @} */

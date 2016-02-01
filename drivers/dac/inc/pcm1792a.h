@@ -1,7 +1,7 @@
 /*
-    ChibiOS/RT - Copyright (C) 2015 Alexander Geißler
+    red-diamond - Copyright (C) 2015 Alexander Geißler
 
-    Licensed under the Apache License, Version 2.0 (the "License");
+    Licensed under the GPL License, Version 3.0 (the "License");
     you may not use this file except in compliance with the License.
     You may obtain a copy of the License at
 
@@ -108,8 +108,6 @@ typedef struct Dac {
 #ifdef __cplusplus
 extern "C" {
 #endif
-  uint8_t pcm1792aReadRegister(SPIDriver *spip, uint8_t reg);
-  void pcm1792aWriteRegister(SPIDriver *spip, uint8_t reg, uint8_t value);
   void DAC_initialize(DAC_t* const me);
   void DAC_configure(DAC_t* const me);
   void DAC_attenuate(DAC_t* const me, uint8_t attenuation);
