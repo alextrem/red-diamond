@@ -9,6 +9,9 @@
 -- Tool Versions:   	14.0
 -- Description:		This AES3/EBU and SPDIF receiver is compliant with
 --							IEC61937, IEC60958-3 and IEC60958-4
+--                   The input is sampled in by either 
+--                   49.152 MHz for 48kHz, 96kHz and 192kHz samplerates
+--                   45.1584 MHz for 44.1kHz, 88.2kHz or 176.4 kHz
 --
 -- Dependencies:
 --
