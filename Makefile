@@ -96,6 +96,7 @@ include $(CHIBIOS)/os/hal/boards/ST_STM32F4_DISCOVERY/board.mk
 include $(CHIBIOS)/os/hal/osal/rt/osal.mk
 # RTOS files (optional).
 include $(CHIBIOS)/os/rt/rt.mk
+include $(CHIBIOS)/test/rt/test.mk
 include $(CHIBIOS)/os/common/ports/ARMCMx/compilers/GCC/mk/port_v7m.mk
 # Other files (optional).
 include $(CHIBIOS)/os/various/shell/shell.mk
@@ -113,11 +114,13 @@ CSRC = $(STARTUPSRC) \
        $(PORTSRC) \
        $(OSALSRC) \
        $(HALSRC) \
+	   $(TESTSRC) \
        $(PLATFORMSRC) \
        $(BOARDSRC) \
        $(FATFSSRC) \
        $(MP3SRC) \
        $(AISRC) \
+	   $(SHELLSRC) \
        $(CHIBIOS)/os/hal/lib/streams/memstreams.c \
        $(CHIBIOS)/os/hal/lib/streams/chprintf.c \
        drivers/dac/pcm1792a.c \
@@ -155,8 +158,7 @@ ASMSRC = $(STARTUPASM) $(PORTASM) $(OSALASM)
 INCDIR = $(STARTUPINC) $(KERNINC) $(PORTINC) $(OSALINC) \
          $(HALINC) $(PLATFORMINC) $(BOARDINC) $(FATFSINC) $(MP3INC) \
          $(CHIBIOS)/os/hal/lib/streams $(CHIBIOS)/os/various \
-		 $(CHIBIOS)/os/various/shell \
-         $(AIINC) \
+         $(AIINC) $(SHELLINC) $(TESTINC) \
          drivers/dac/inc \
          drivers/hdmi/inc
 
