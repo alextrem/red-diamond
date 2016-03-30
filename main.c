@@ -173,7 +173,7 @@ static uint32_t audio_rx_buf[1024];
 static const I2SConfig i2s3cfg = {
   &audio_tx_buf,
   &audio_rx_buf,
-  NULL,
+  sizeof(audio_rx_buf),
   NULL,
   NULL,
   NULL
