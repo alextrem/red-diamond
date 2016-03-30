@@ -1,5 +1,5 @@
 /*
-    ChibiOS/RT - Copyright (C) 2006-2013 Giovanni Di Sirio
+    ChibiOS/RT - Copyright (C) 2015 ALexander Geissler
 
     Licensed under the Apache License, Version 2.0 (the "License");
     you may not use this file except in compliance with the License.
@@ -23,8 +23,14 @@
 
 #include "usbcfg.h"
 
-#include "pcm1792a.h"
+#include "cs43l22.h"
+//#include "pcm1792a.h"
 #include "adv7612.h"
+
+#define ADC_GRP1_NUM_CHANNELS   1
+#define ADC_GRP1_BUF_DEPTH      8
+#define ADC_GRP2_NUM_CHANNELS   4
+#define ADC_GRP2_BUF_DEPTH      16
 
 /* Virtual serial port over USB.*/
 SerialUSBDriver SDU1;
@@ -63,20 +69,6 @@ THD_FUNCTION(pwmThread, arg) {
 
 #define SHELL_WA_SIZE   THD_WORKING_AREA_SIZE(2048)
 
-static void cmd_mem(BaseSequentialStream *chp, int argc, char *argv[]) {
-  size_t n, size;
-
-  (void)argv;
-  if (argc > 0) {
-    chprintf(chp, "Usage: mem\r\n");
-    return;
-  }
-  n = chHeapStatus(NULL, &size);
-  chprintf(chp, "core free memory : %u bytes\r\n", chCoreGetStatusX());
-  chprintf(chp, "heap fragments   : %u\r\n", n);
-  chprintf(chp, "heap free total  : %u bytes\r\n", size);
-}
-
 static void cmd_boot(BaseSequentialStream *chp, int argc, char *argv[]) {
   (void)argv;
   if (argc > 0) {
@@ -106,32 +98,10 @@ static void cmd_led(BaseSequentialStream *chp, int argc, char *argv[]) {
   palTogglePad(GPIOD, 15);
 }
 
-static void cmd_threads(BaseSequentialStream *chp, int argc, char *argv[]) {
-  static const char *states[] = {CH_STATE_NAMES};
-  thread_t *tp;
-
-  (void)argv;
-  if (argc > 0) {
-    chprintf(chp, "Usage: threads\r\n");
-    return;
-  }
-  chprintf(chp, "    addr    stack prio refs     state\r\n");
-  tp = chRegFirstThread();
-  do {
-    chprintf(chp, "%08lx %08lx %4lu %4lu %9s\r\n",
-             (uint32_t)tp, (uint32_t)tp->p_ctx.r13,
-             (uint32_t)tp->p_prio, (uint32_t)(tp->p_refs - 1),
-             states[tp->p_state]);
-    tp = chRegNextThread(tp);
-  } while (tp != NULL);
-}
-
 static const ShellCommand commands[] = {
-  {"mem", cmd_mem},
   {"boot", cmd_boot},
   {"led", cmd_led},
   {"dac", cmd_dac},
-  {"threads", cmd_threads},
   {NULL, NULL}
 };
 
@@ -224,6 +194,7 @@ static const I2CConfig i2cfg = {
 
 static void adccb(ADCDriver *adcp, adcsample_t *buffer, size_t n) {
   (void)adcp;
+
 }
 
 static void adcerrcb(ADCDriver *adcp, adcerror_t err) {
@@ -231,12 +202,47 @@ static void adcerrcb(ADCDriver *adcp, adcerror_t err) {
   (void)err;
 }
 
-static adcsample_t samples[1] = {0};
-static const ADCConversionGroup adcgrpcfg = {
+static adcsample_t samples1[ADC_GRP1_NUM_CHANNELS * ADC_GRP1_BUF_DEPTH];
+static adcsample_t samples2[ADC_GRP2_NUM_CHANNELS * ADC_GRP2_BUF_DEPTH];
+
+/*
+ * ADC conversion group
+ * Mode:        Linear buffer, 8 samples of one channel, SW triggered
+ * Channels:    IN10
+ */
+static const ADCConversionGroup adcgrpcfg1 = {
+  FALSE,
+  ADC_GRP1_NUM_CHANNELS,
+  NULL,
+  adcerrcb,
+  0,                                      /* CR1 */
+  ADC_CR2_SWSTART,                        /* CR2 */
+  ADC_SMPR1_SMP_AN10(ADC_SAMPLE_3),       /* SMPR1 */
+  0,                                      /* SMPR2 */
+  ADC_SQR1_NUM_CH(ADC_GRP1_NUM_CHANNELS), /* SQR1 */
+  0,                                      /* SQR2 */
+  ADC_SQR3_SQ1_N(ADC_CHANNEL_IN10)
+};
+
+/*
+ * ADC Conversion group
+ * Mode:        Continous, 16 samples of 4 channels, SW triggered
+ * Channels:    IN12, IN13, Sensor, Vref
+ */
+static const ADCConversionGroup adcgrpcfg2 = {
   TRUE,
-  1,
+  ADC_GRP2_NUM_CHANNELS,
   adccb,
-  adcerrcb
+  adcerrcb,
+  0,               /* CR1 */
+  ADC_CR2_SWSTART, /* CR2 */
+  ADC_SMPR1_SMP_AN12(ADC_SAMPLE_56) | ADC_SMPR1_SMP_AN11(ADC_SAMPLE_56) |
+  ADC_SMPR1_SMP_SENSOR(ADC_SAMPLE_144) | ADC_SMPR1_SMP_VREF(ADC_SAMPLE_144),
+  0,               /* SMPR2 */
+  ADC_SQR1_NUM_CH(ADC_GRP2_NUM_CHANNELS), /* SQR1 */
+  0,
+  ADC_SQR2_SQ8_N(ADC_CHANNEL_SENSOR) | ADC_SQR2_SQ7_N(ADC_CHANNEL_VREFINT) |
+  ADC_SQR3_SQ6_N(ADC_CHANNEL_IN12) | ADC_SQR3_SQ5_N(ADC_CHANNEL_IN13)
 };
 
 /*===========================================================================*/
@@ -247,8 +253,6 @@ static const ADCConversionGroup adcgrpcfg = {
  * Application entry point.
  */
 int main(void) {
-  thread_t *shelltp = NULL;
-
   /*
    * System initializations.
    * - HAL initialization, this also initializes the configured device drivers
@@ -285,6 +289,12 @@ int main(void) {
    */
 
   /*
+   * Activates the ADCD1 driver and temperature sensor
+   */
+  adcStart(&ADCD1, NULL);
+  adcSTM32EnableTSVREFE();
+
+  /*
    * Activates the serial driver 2 using the driver default configuration.
    * PA2(TX) and PA3(RX) are routed to USART2.
    */
@@ -297,8 +307,13 @@ int main(void) {
    * The HDMI, DAC, and maybe the ADC are using this interface
    */
   i2cStart(&I2CD1, &i2cfg);
-  palSetPadMode(GPIOB, 6, PAL_MODE_ALTERNATE(4)); /* SCL */
-  palSetPadMode(GPIOB, 9, PAL_MODE_ALTERNATE(4)); /* SDA */
+  palSetPadMode(GPIOB, 6, PAL_STM32_OTYPE_OPENDRAIN | PAL_MODE_ALTERNATE(4)); /* SCL */
+  palSetPadMode(GPIOB, 9, PAL_STM32_OTYPE_OPENDRAIN | PAL_MODE_ALTERNATE(4)); /* SDA */
+
+  /* Assign driver to Codec interface */
+  Codec_Init(&I2CD1);
+  /* Configure codecs with defined settings */
+  // TODO
 
   /*
    * Initializes the SPI driver 1 in order to access the MEMS. The signals
@@ -326,19 +341,19 @@ int main(void) {
 
   /*
    * Initializes the I2S driver 3. The I2S signals are routed as follow:
-   * PA15 - I2S3_WS.
+   * PA4  - I2S3_WS.
    * PC7  - I2S3_MCK.
    * PC10 - I2S3_SCK.
    * PC12 - I2S3_SD.
    */
-  palSetPadMode(GPIOA, 4, PAL_MODE_OUTPUT_PUSHPULL |
-                           PAL_STM32_OSPEED_HIGHEST); /* WS  */
-  palSetPadMode(GPIOC, 7, PAL_MODE_ALTERNATE(6) |
-                          PAL_STM32_OSPEED_HIGHEST); /* MCK */
-  palSetPadMode(GPIOC, 10, PAL_MODE_ALTERNATE(6) |
-                           PAL_STM32_OSPEED_HIGHEST); /* SCK */
-  palSetPadMode(GPIOC, 12, PAL_MODE_ALTERNATE(6) |
-                           PAL_STM32_OSPEED_HIGHEST); /* SD */
+  palSetPadMode(GPIOA, 4, PAL_MODE_OUTPUT_PUSHPULL | PAL_MODE_ALTERNATE(6) |
+                PAL_STM32_OSPEED_MID2); /* WS  */
+  palSetPadMode(GPIOC, 7, PAL_MODE_OUTPUT_PUSHPULL | PAL_MODE_ALTERNATE(6) |
+                PAL_STM32_OSPEED_MID2); /* MCK */
+  palSetPadMode(GPIOC, 10, PAL_MODE_OUTPUT_PUSHPULL | PAL_MODE_ALTERNATE(6) |
+                PAL_STM32_OSPEED_MID2); /* SCK */
+  palSetPadMode(GPIOC, 12, PAL_MODE_OUTPUT_PUSHPULL | PAL_MODE_ALTERNATE(6) |
+                PAL_STM32_OSPEED_MID2); /* SD */
 
   /*
    * Initializes PWM driver 4
@@ -356,19 +371,11 @@ int main(void) {
                     NORMALPRIO+2, pwmThread, NULL);
 
   while (TRUE) {
-    if (!shelltp) {
-      if (SDU1.config->usbp->state == USB_ACTIVE) {
-        /* Spawns a new shell.*/
-        shelltp = shellCreate(&shell_cfg1, SHELL_WA_SIZE, NORMALPRIO);
-      }
-    }
-    else {
-      /* If the previous shell exited.*/
-      if (chThdTerminatedX(shelltp)) {
-        /* Recovers memory of the previous shell.*/
-        chThdRelease(shelltp);
-        shelltp = NULL;
-      }
+    if (SDU1.config->usbp->state == USB_ACTIVE) {
+       thread_t *shelltp = chThdCreateFromHeap(NULL, SHELL_WA_SIZE,
+                                               "shell", NORMALPRIO + 1,
+                                               shellThread, (void *)&shell_cfg1);
+       chThdWait(shelltp);
     }
     chThdSleepMilliseconds(500);
   }
