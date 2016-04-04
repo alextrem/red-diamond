@@ -71,7 +71,7 @@ endif
 
 # Enables the use of FPU on Cortex-M4 (no, softfp, hard).
 ifeq ($(USE_FPU),)
-  USE_FPU = no
+  USE_FPU = hard
 endif
 
 #
@@ -114,17 +114,17 @@ CSRC = $(STARTUPSRC) \
        $(PORTSRC) \
        $(OSALSRC) \
        $(HALSRC) \
-	   $(TESTSRC) \
+       $(TESTSRC) \
        $(PLATFORMSRC) \
        $(BOARDSRC) \
        $(FATFSSRC) \
        $(MP3SRC) \
        $(AISRC) \
-	   $(SHELLSRC) \
+       $(SHELLSRC) \
        $(CHIBIOS)/os/hal/lib/streams/memstreams.c \
        $(CHIBIOS)/os/hal/lib/streams/chprintf.c \
        drivers/dac/pcm1792a.c \
-	   drivers/dac/cs43l22.c \
+       drivers/dac/cs43l22.c \
        drivers/hdmi/adv7612.c \
        usbcfg.c main.c
 
