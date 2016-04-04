@@ -2,7 +2,9 @@
 # This is a Makefile to automatically extract zip sources
 #
 
-TARFILES = $(wildcard *.7z *.tar.gz *.tgz)
+EXTERNAL = ChibiOS/ext
+
+TARFILES = $(wildcard $EXTERNAL/*.7z EXTERNAL/*.tar.gz EXTERNAL/*.tgz)
 
 EXTRACT_TARGETS := $(addprefix .extract_, $(TARFILES))
 CLEAN_TARGETS := $(addprefix .clean_, $(TARFILES))
