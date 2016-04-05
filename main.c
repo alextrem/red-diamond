@@ -34,6 +34,7 @@
 
 /* Virtual serial port over USB.*/
 SerialUSBDriver SDU1;
+MMCDriver MMCD1;
 
 static THD_WORKING_AREA(ledThreadWorkingArea, 64);
 static THD_WORKING_AREA(pwmThreadWorkingArea, 32);
@@ -63,6 +64,17 @@ THD_FUNCTION(pwmThread, arg) {
   }
 }
 
+/*===========================================================================*/
+/* FatFs related.                                                            */
+/*===========================================================================*/
+
+/*
+ * @brief FS object
+ */
+static FATFS SDC_FS;
+
+/* FS ready and mounted */
+static bool fs_ready = FALSE;
 /*===========================================================================*/
 /* Command line related.                                                     */
 /*===========================================================================*/
@@ -145,7 +157,7 @@ static const PWMConfig pwmcfg = {
 static const SPIConfig spi1cfg = {
   NULL,
   /* HW dependent part.*/
-  GPIOE,
+  GPIOC,
   GPIOE_CS_SPI,
   SPI_CR1_BR_0 | SPI_CR1_BR_1 | SPI_CR1_CPOL | SPI_CR1_CPHA
 };
@@ -273,6 +285,11 @@ int main(void) {
    */
   sduObjectInit(&SDU1);
   sduStart(&SDU1, &serusbcfg);
+
+  /*
+   * Initializes a sd-card driver
+   */
+  mmcObjectInit(&MMCD1);
 
   /*
    * Activates the USB driver and then the USB bus pull-up on D+.
