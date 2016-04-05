@@ -23,6 +23,8 @@ TRGT = arm-none-eabi-
 CC = $(TRGT)gcc
 AR = $(TRGT)ar
 
+RM = rm -Rf
+
 # ARM options
 AOPT =
 
@@ -76,5 +78,3 @@ UDEFS = -DARM_MATH_CM4 -D__FPU_PRESENT
 PROJECT = math_cm4f
 
 INCDIR = inc
-
-include rules.mk
