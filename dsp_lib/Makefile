@@ -36,6 +36,33 @@ CWARN = -Wall -Wextra -Wundef -Wstrict-prototypes
 # Compiler Settings
 ##############################################################################
 
+C_OBJ := $(DSPSRC:%=%.o)
+ASM_OBJ := $(DSPASM:%=%.o)
+
+default: all
+all: libmath_cm4f.a
+
+libmath_cm4f.a: $(C_OBJ) $(ASM_OBJ)
+	$(AR) rcs $@ $(C_OBJ) $(ASM_OBJ)
+
+%.S.o: %.S
+	$(CC) -c $(CFLAGS) -o $@ $^
+
+%.c.o: %.c
+	$(CC) -c $(CFLAGS) -o $@ $^
+
+.PHONY: clean
+
+clean:
+	@$(RM) $(C_OBJS) $(ASM_OBJS)
+	@echo "Clean complete!"
+
+mrproper: distclean
+dist-clean: distclean
+distclean: clean
+	@$(RM) libmath_cm4f.a
+	@echo "Distclean complete!"
+
 ##############################################################################
 # User specific defines
 #
