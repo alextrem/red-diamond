@@ -50,19 +50,19 @@ $(LISTDIR):
 	@mkdir -p $(LISTDIR)
 
 $(ACOBJS):$(OBJDIR)/%.o : %.c Makefile
-	@echo Comiling $(<F)
+	@echo Compiling $(<F)
 	$(CC) -c $(CFLAGS) -I. $(IINCDIR) $< -o $@
 
 $(ACPPOBJS):$(OBJDIR)/%.o : %.c Makefile
-	@echo Comiling $(<F)
+	@echo Compiling $(<F)
 	$(CCP) -c $(CFLAGS) -I. $(IINCDIR) $< -o $@
 
 $(TCOBJS):$(OBJDIR)/%.o : %.c Makefile
-	@echo Comiling $(<F)
+	@echo Compiling $(<F)
 	$(CC) -c $(CFLAGS) -I. $(IINCDIR) $< -o $@
 
 $(TCPPOBJS):$(OBJDIR)/%.o : %.c Makefile
-	@echo Comiling $(<F)
+	@echo Compiling $(<F)
 	$(CCP) -c $(CFLAGS) -I. $(IINCDIR) $< -o $@
 
 lib: $(OBJS) $(BUILDDIR)/lib$(PROJECT).a
