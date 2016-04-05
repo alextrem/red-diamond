@@ -103,6 +103,7 @@ include $(CHIBIOS)/os/various/shell/shell.mk
 include $(CHIBIOS)/os/various/fatfs_bindings/fatfs.mk
 include libmad/mp3.mk
 include ai/ai.mk
+include extract.mk
 
 # Define linker script file here
 LDSCRIPT= $(STARTUPLD)/STM32F407xG.ld
