@@ -105,6 +105,11 @@ include libmad/mp3.mk
 include ai/ai.mk
 include extract.mk
 
+libdsp:
+	@echo "Looking into subdirectory dsp_lib"
+	cd dsp_lib; $(MAKE) lib
+
+
 # Define linker script file here
 LDSCRIPT= $(STARTUPLD)/STM32F407xG.ld
 
@@ -159,7 +164,8 @@ ASMSRC = $(STARTUPASM) $(PORTASM) $(OSALASM)
 INCDIR = $(STARTUPINC) $(KERNINC) $(PORTINC) $(OSALINC) \
          $(HALINC) $(PLATFORMINC) $(BOARDINC) $(FATFSINC) $(MP3INC) \
          $(CHIBIOS)/os/hal/lib/streams $(CHIBIOS)/os/various \
-         $(AIINC) $(SHELLINC) $(TESTINC) \
+         $(AIINC) $(SHELLINC) $(TESTINC) $(FATFSINC)/option \
+	 $(CHIBIOS)/test/rt \
          drivers/dac/inc \
          drivers/hdmi/inc
 
