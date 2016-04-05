@@ -83,7 +83,7 @@ endif
 #
 
 # Define project name here
-PROJECT = ch
+PROJECT = red-diamond
 
 # Imported source files and paths
 CHIBIOS = ChibiOS
@@ -165,7 +165,7 @@ INCDIR = $(STARTUPINC) $(KERNINC) $(PORTINC) $(OSALINC) \
          $(HALINC) $(PLATFORMINC) $(BOARDINC) $(FATFSINC) $(MP3INC) \
          $(CHIBIOS)/os/hal/lib/streams $(CHIBIOS)/os/various \
          $(AIINC) $(SHELLINC) $(TESTINC) $(FATFSINC)/option \
-	 $(CHIBIOS)/test/rt \
+         $(CHIBIOS)/test/rt \
          drivers/dac/inc \
          drivers/hdmi/inc
 
