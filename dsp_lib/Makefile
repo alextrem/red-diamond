@@ -1,17 +1,26 @@
 # CMSIS DSP Library
 
-DSPLIB = .
+ARCH = M4lf
+LIB = lib/libmath$(ARCH).a
 
-include BasicMathFunctions/files.mk
-include CommonTables/files.mk
-include ComplexMathFunctions/files.mk
-include ControllerFunctions/files.mk
-include FastMathFunctions/files.mk
-include FilteringFunctions/files.mk
-include MatrixFunctions/files.mk
-include StatisticsFunctions/files.mk
-include SupportFunctions/files.mk
-include TransformFunctions/files.mk
+# Architectures to build for
+ARCHS = M3l M4l M4lf
+M3l_FLAGS = -mthumb -mcpu=cortex-m3 -DARM_MATH_CM3
+M4l_FLAGS = -mthumb -mcpu=cortex-m4 -DARM_MATH_CM4
+M4lf_FLAGS = -mthumb -mcpu=cortex-m4 -mfloat-abi=hard -mfpu=fpv4-sp-d16 -DARM_MATH_CM4 -D__FPU_PRESENT
+
+# Directories
+DSPLIB = .
+DSPDIRS = BasicMathFunctions \
+	  CommonTables \
+	  ComplexMathFunctions \
+	  ControllerFunctions \
+	  FastMathFunctions \
+	  FilteringFunctions \
+	  MatrixFunctions \
+	  StatisticsFunctions \
+	  SupportFunctions \
+	  TransformFunctions
 
 ##############################################################################
 # Compiler Settings
@@ -21,9 +30,12 @@ MCU = cortex-m4
 
 TRGT = arm-none-eabi-
 CC = $(TRGT)gcc
+CXX = $(TRGT)g++
+LD = $(TRGT)ld
 AR = $(TRGT)ar
-
-RM = rm -Rf
+AS = $(TRGT)as
+CP = $(TRGT)objcopy
+OD = $(TRGT)objdump
 
 # ARM options
 AOPT =
@@ -34,47 +46,48 @@ TOPT = -mthumb -DTHUMB
 # Define C warning options here
 CWARN = -Wall -Wextra -Wundef -Wstrict-prototypes
 
+# CFLAGSoptions
+INCLUDES = inc
+DEBUG = gdb
+CFLAGS := -g$(DEBUG) -I$(INCLUDES) $(CWARN) -fomit-frame-pointer -falign-functions=16 \
+          -fsingle-precision-constant -ffunction-sections -fdata-sections \
+          -fno-common -Os
+
 #
 # Compiler Settings
 ##############################################################################
 
-C_OBJ := $(DSPSRC:%=%.o)
-ASM_OBJ := $(DSPASM:%=%.o)
+# Build Paths
+BUILD_PATH := build
+BUILDDIRS  := $(BUILD_PATH)
+BUILDDIRS  += $(foreach dir,$(DSPDIRS),$(BUILD_PATH)/$(dir))
+
+# Targets to build
+LIBS := $(foreach tgt, $(ARCHS), libmath_$(tgt).a)
+SRCS := $(wildcard $(DSPLIB)/*/*.c)
+OBJS := $(patsubst %.c,%.o, $(SRCS))
+OBJS := $(foreach obj, $(OBJS), $(BUILD_PATH)/$(obj))
 
 default: all
-all: libmath_cm4f.a
-
-libmath_cm4f.a: $(C_OBJ) $(ASM_OBJ)
-	$(AR) rcs $@ $(C_OBJ) $(ASM_OBJ)
-
-%.S.o: %.S
-	$(CC) -c $(CFLAGS) -o $@ $^
-
-%.c.o: %.c
-	$(CC) -c $(CFLAGS) -o $@ $^
+all: $(BUILDDIRS) $(OBJS) $(LIB)
 
 .PHONY: clean
 
 clean:
-	@$(RM) $(C_OBJS) $(ASM_OBJS)
+	rm -Rf  $(BUILD_PATH)
 	@echo "Clean complete!"
+
+$(BUILD_PATH)/%.o: %.c
+	$(CC) -c $(CFLAGS) $($(ARCH)_FLAGS) -o $@ $<
+
+$(LIB): $(OBJS)
+	$(AR) rcs $@ $?
+
+$(BUILDDIRS):
+	@mkdir -p $@
 
 mrproper: distclean
 dist-clean: distclean
 distclean: clean
-	@$(RM) libmath_cm4f.a
+	rm -Rf libmath_cm4f.a
 	@echo "Distclean complete!"
-
-##############################################################################
-# User specific defines
-#
-
-UDEFS = -DARM_MATH_CM4 -D__FPU_PRESENT
-
-#
-# User specific defines
-##############################################################################
-
-PROJECT = math_cm4f
-
-INCDIR = inc
