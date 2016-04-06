@@ -105,11 +105,6 @@ include libmad/mp3.mk
 include ai/ai.mk
 include extract.mk
 
-libdsp:
-	@echo "Looking into subdirectory dsp_lib"
-	cd dsp_lib; $(MAKE) lib
-
-
 # Define linker script file here
 LDSCRIPT= $(STARTUPLD)/STM32F407xG.ld
 
