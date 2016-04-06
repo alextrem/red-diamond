@@ -3,9 +3,18 @@
 # NOTE: Can be overridden externally.
 #
 
+# gcov options here. (Needs stubs to be compiled if yes)
+ifeq ($(USE_GCOV),)
+  USE_GCOV = no
+endif
+
 # Compiler options here.
 ifeq ($(USE_OPT),)
-  USE_OPT = -O2 -ggdb -fomit-frame-pointer -falign-functions=16
+  ifeq ($(USE_GCOV), no)
+    USE_OPT = -O2 -ggdb -fomit-frame-pointer -falign-functions=16
+  else
+    USE_OPT = -O2 -ggdb -fomit-frame-pointer -falign-functions=16 -coverage
+  endif
 endif
 
 # C specific options here (added to USE_OPT).
@@ -25,7 +34,11 @@ endif
 
 # Linker extra options here.
 ifeq ($(USE_LDOPT),)
-  USE_LDOPT =
+  ifeq ($(USE_GCOV), no)
+    USE_LDOPT =
+  else
+    USE_LDOPT = -fprofile-arcs -lgcov
+  endif
 endif
 
 # Enable this if you want link time optimizations (LTO)
@@ -160,7 +173,6 @@ INCDIR = $(STARTUPINC) $(KERNINC) $(PORTINC) $(OSALINC) \
          $(HALINC) $(PLATFORMINC) $(BOARDINC) $(FATFSINC) $(MP3INC) \
          $(CHIBIOS)/os/hal/lib/streams $(CHIBIOS)/os/various \
          $(AIINC) $(SHELLINC) $(TESTINC) $(FATFSINC)/option \
-         $(CHIBIOS)/test/rt \
          drivers/dac/inc \
          drivers/hdmi/inc
 
