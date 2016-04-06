@@ -1,7 +1,7 @@
 # CMSIS DSP Library
 
 ARCH = M4lf
-LIB = lib/libmath$(ARCH).a
+LIB = lib/libmathC$(ARCH).a
 
 # Architectures to build for
 ARCHS = M3l M4l M4lf
@@ -12,15 +12,15 @@ M4lf_FLAGS = -mthumb -mcpu=cortex-m4 -mfloat-abi=hard -mfpu=fpv4-sp-d16 -DARM_MA
 # Directories
 DSPLIB = .
 DSPDIRS = BasicMathFunctions \
-	  CommonTables \
-	  ComplexMathFunctions \
-	  ControllerFunctions \
-	  FastMathFunctions \
-	  FilteringFunctions \
-	  MatrixFunctions \
-	  StatisticsFunctions \
-	  SupportFunctions \
-	  TransformFunctions
+          CommonTables \
+          ComplexMathFunctions \
+          ControllerFunctions \
+          FastMathFunctions \
+          FilteringFunctions \
+          MatrixFunctions \
+          StatisticsFunctions \
+          SupportFunctions \
+          TransformFunctions
 
 ##############################################################################
 # Compiler Settings
@@ -58,12 +58,12 @@ CFLAGS := -g$(DEBUG) -I$(INCLUDES) $(CWARN) -fomit-frame-pointer -falign-functio
 ##############################################################################
 
 # Build Paths
-BUILD_PATH := build
+BUILD_PATH := lib/build
 BUILDDIRS  := $(BUILD_PATH)
 BUILDDIRS  += $(foreach dir,$(DSPDIRS),$(BUILD_PATH)/$(dir))
 
 # Targets to build
-LIBS := $(foreach tgt, $(ARCHS), libmath_$(tgt).a)
+LIBS := $(foreach tgt, $(ARCHS), libmath_C$(tgt).a)
 SRCS := $(wildcard $(DSPLIB)/*/*.c)
 OBJS := $(patsubst %.c,%.o, $(SRCS))
 OBJS := $(foreach obj, $(OBJS), $(BUILD_PATH)/$(obj))
