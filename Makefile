@@ -5,7 +5,7 @@
 
 # gcov options here. (Needs stubs to be compiled if yes)
 ifeq ($(USE_GCOV),)
-  USE_GCOV = no
+  USE_GCOV = yes
 endif
 
 # Compiler options here.
@@ -13,7 +13,7 @@ ifeq ($(USE_OPT),)
   ifeq ($(USE_GCOV), no)
     USE_OPT = -O2 -ggdb -fomit-frame-pointer -falign-functions=16
   else
-    USE_OPT = -O2 -ggdb -fomit-frame-pointer -falign-functions=16 -coverage
+    USE_OPT = -O2 -ggdb -fomit-frame-pointer -falign-functions=16 -coverage --specs=rdimon.specs
   endif
 endif
 
@@ -37,7 +37,7 @@ ifeq ($(USE_LDOPT),)
   ifeq ($(USE_GCOV), no)
     USE_LDOPT =
   else
-    USE_LDOPT = -fprofile-arcs -lgcov
+    USE_LDOPT = -lgcov
   endif
 endif
 
