@@ -219,10 +219,10 @@ UADEFS =
 UINCDIR =
 
 # List all user libraries here
-ULIBS = -lmath_cm4f -lm
+ULIBS = -lmath_CM4lf -lm
 
 # List all user library directories here
-ULIBDIR = dsp_lib
+ULIBDIR = dsp_lib/lib
 
 #
 # End of user defines

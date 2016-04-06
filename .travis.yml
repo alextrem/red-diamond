@@ -7,4 +7,5 @@ before_install:
 
 script:
     - make extract
+    - cd dsp_lib; make all; cd ..
     - make all BUILD_NUMBER=$TRAVIS_BUILD_NUMBER
