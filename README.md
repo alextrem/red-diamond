@@ -29,6 +29,14 @@ Code coverage option has been included in Makefile with the USE_GCOV switch. Set
 This [webside] (http://mcuoneclipse.com/2014/12/26/code-coverage-for-embedded-target-with-eclipse-gcc-and-gcov) gets you started if you are not familiar
 with gcc and gcov.
 
+### CMSIS DSP_LIB ###
+
+So far I don't use this library. If so
+
+    $ cd dsp_lib
+    $ make all
+    $ cd ..
+
 ### File Tree: ###
 
 |-- board
