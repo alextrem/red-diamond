@@ -1,7 +1,7 @@
 # RED-DIAMOND
 
-MCU Code:
 [![Build Status](https://travis-ci.org/alextrem/red-diamond.svg?branch=master)](https://travis-ci.org/alextrem/red-diamond)
+[![Coverity Scan](https://scan.coverity.com/projects/8494/badge.svg)](https://scan.coverity.com/projects/alextrem-red-diamond)
 
 This project is all about an audio preamplifier based on STM32F4 from STMicroelectronis and [Altera] (http://www.altera.com) FPGA as interface and digital signal processing engine.
 I know, implementing it with a Raspberry PI or Beagle Bone Black would make things much easier but its just for the pure joy of playing around with electronics and microcontrollers.
