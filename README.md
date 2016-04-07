@@ -3,15 +3,31 @@
 MCU Code:
 [![Build Status](https://travis-ci.org/alextrem/red-diamond.svg?branch=master)](https://travis-ci.org/alextrem/red-diamond)
 
-Audio preamplifier based on STM32F4 from STMicroelectronis and [Altera] (http://www.altera.com) FPGA as interface and digital signal processing engine. I know, implementing it with a Raspberry PI or Beagle Bone Black would make things much easier but its just for the pure joy of playing around with electronics and microcontrollers.
+This project is all about an audio preamplifier based on STM32F4 from STMicroelectronis and [Altera] (http://www.altera.com) FPGA as interface and digital signal processing engine.
+I know, implementing it with a Raspberry PI or Beagle Bone Black would make things much easier but its just for the pure joy of playing around with electronics and microcontrollers.
 
-The processor is using [ChibiOS] (http://www.chibios.org/dokuwiki/doku.php?id=start) as operating system and in future it is maybe able to decode and encode [MP3] (http://sourceforge.net/projects/mad/files/libmad/) files. The first steps will be to be able to read and configure the different devices.
+The processor is using [ChibiOS] (http://www.chibios.org/dokuwiki/doku.php?id=start) as operating system and in future it is maybe able to decode and encode [MP3] (http://sourceforge.net/projects/mad/files/libmad/) files. The first steps will be to be able to read and configure the different external devices.
+
+## Development environment setup
+
+I'm using the GCC ARM launchpad [cross compiler] (https://launchpad.net/gcc-arm-embedded)
+
+    $ cd ~/dev
+    $ wget https://launchpad.net/gcc-arm-embedded/4.9/4.9-2015-q3-update/+download/gcc-arm-none-eabi-4_9-2015q3-20150921-linux.tar.bz2
+    $ tar xvfj gcc-arm-none-eabi-4_9-2015q3-20150921-linux.tar.bz2
+    $ rm gcc-arm-none-eabi-4_9-2015q3-20150921-linux.tar.bz2
+    $ echo 'export PATH=$(PATH):~/dev/gcc-arm-none-eabi-4_9-2015q3/bin:$(PATH)' >> ~/.bashrc
 
 To build the software clone the repo, init and update the submodules and type:
 
+    $ make extract
     $ make all
 
-If there is a [Toolchain] (https://launchpad.net/gcc-arm-embedded) available you should get a working binary.
+### Code Coverage ###
+
+Code coverage option has been included in Makefile with the USE_GCOV switch. Set it according to your needs. It is deactivated per default.
+This [webside] (http://mcuoneclipse.com/2014/12/26/code-coverage-for-embedded-target-with-eclipse-gcc-and-gcov) gets you started if you are not familiar
+with gcc and gcov.
 
 ### File Tree: ###
 
