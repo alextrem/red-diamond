@@ -21,6 +21,7 @@ I'm using the GCC ARM launchpad [cross compiler] (https://launchpad.net/gcc-arm-
 To build the software clone the repo, init and update the submodules and type:
 
     $ make extract
+    $ cd dsp_lib; make all; cd ..
     $ make all
 
 ### Code Coverage ###
