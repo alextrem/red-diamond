@@ -31,6 +31,9 @@
 
 #define CODEC_ADDRESS 0x4A
 
+#define CODEC_ID   0x01
+#define CODEC_HPC  0x04
+
 #define CODEC_HPA  0x22
 #define CODEC_HPB  0x23
 #define CODEC_SPKA 0x24
@@ -57,7 +60,7 @@ typedef enum volume {
 
 typedef struct Dac {
   I2CDriver *i2cp;                      /** */
-  uint32_t deviceID;                    /** chip device id */
+  uint8_t deviceID;                    /** chip device id */
   uint8_t master_volume[2];             /** master volume control for l+r*/
   uint8_t headphone_volume[2];          /** headphone volume control for l+r */
   uint8_t speaker_volume[2];            /** speaker volume control for l+r*/

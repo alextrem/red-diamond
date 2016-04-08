@@ -32,7 +32,7 @@
 
 static void Codec_Reset(void);
 static uint8_t Codec_ReadRegister(uint8_t address);
-static uint32_t Codec_WriteRegister(uint8_t address, uint8_t value);
+static void Codec_WriteRegister(uint8_t address, uint8_t value);
 
 /*===========================================================================*/
 /* Driver exported variables.                                                */
@@ -68,10 +68,21 @@ static void Codec_Reset(void) {
  *
  * @param[in] address
  *
- * @return  The value read
  */
 static uint8_t Codec_ReadRegister(uint8_t address) {
+  msg_t msg;
+  uint8_t data;
   rxbuf[0] = address;
+
+  msg = i2cMasterReceiveTimeout(me.i2cp, CODEC_ADDRESS, rxbuf, sizeof(rxbuf), 1000);
+
+  if (msg != MSG_OK) {
+
+  }
+
+  data = rxbuf[1];
+
+  return data;
 }
 
 /**
@@ -81,14 +92,17 @@ static uint8_t Codec_ReadRegister(uint8_t address) {
  * @param[in] address   register number
  * @param[in] value     the value to be written
  */
-static uint32_t Codec_WriteRegister(uint8_t address, uint8_t value) {
-
+static void Codec_WriteRegister(uint8_t address, uint8_t value) {
+  msg_t msg;
   txbuf[0] = address;
   txbuf[1] = value;
 
   /* Check if driver is assigned to a structure */
+  msg = i2cMasterTransmitTimeout(me.i2cp, CODEC_ADDRESS, txbuf, sizeof(txbuf), NULL, 0, 1000);
 
-  i2cMasterTransmitTimeout(me.i2cp, CODEC_ADDRESS, txbuf, 2, NULL, 0, 1000);
+  if (msg != MSG_OK) {
+
+  }
 }
 
 /*===========================================================================*/
@@ -174,11 +188,10 @@ void Codec_Configure(void) {
 }
 
 /**
- * @brief   Get the ID of device
+ * @brief   Get the ID and Revision of device
  */
-
 void Codec_GetID(void) {
-  me.deviceID = Codec_ReadRegister(0x00);
+  me.deviceID = Codec_ReadRegister(CODEC_ID);
 }
 
 /**
