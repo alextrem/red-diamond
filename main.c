@@ -32,8 +32,6 @@
 #define ADC_GRP2_NUM_CHANNELS   4
 #define ADC_GRP2_BUF_DEPTH      16
 
-/* Virtual serial port over USB.*/
-SerialUSBDriver SDU1;
 MMCDriver MMCD1;
 
 static THD_WORKING_AREA(ledThreadWorkingArea, 64);
@@ -95,6 +93,7 @@ static void cmd_dac(BaseSequentialStream *chp, int argc, char *argv[]) {
     chprintf(chp, "Usage: dac\r\n");
     return;
   }
+  chprintf(chp, "Chip ID: 0x%x", Codec_GetID);
 }
 
 static void cmd_led(BaseSequentialStream *chp, int argc, char *argv[]) {
@@ -390,7 +389,7 @@ int main(void) {
   while (TRUE) {
     if (SDU1.config->usbp->state == USB_ACTIVE) {
        thread_t *shelltp = chThdCreateFromHeap(NULL, SHELL_WA_SIZE,
-                                               "shell", NORMALPRIO + 1,
+                                               "shell", NORMALPRIO + 4,
                                                shellThread, (void *)&shell_cfg1);
        chThdWait(shelltp);
     }
