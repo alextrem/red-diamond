@@ -389,7 +389,7 @@ int main(void) {
   while (TRUE) {
     if (SDU1.config->usbp->state == USB_ACTIVE) {
        thread_t *shelltp = chThdCreateFromHeap(NULL, SHELL_WA_SIZE,
-                                               "shell", NORMALPRIO + 4,
+                                               "shell", NORMALPRIO+3,
                                                shellThread, (void *)&shell_cfg1);
        chThdWait(shelltp);
     }
