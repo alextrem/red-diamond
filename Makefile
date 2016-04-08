@@ -5,7 +5,7 @@
 
 # gcov options here. (Needs stubs to be compiled if yes)
 ifeq ($(USE_GCOV),)
-  USE_GCOV = yes
+  USE_GCOV = no
 endif
 
 # Compiler options here.
@@ -84,7 +84,7 @@ endif
 
 # Enables the use of FPU on Cortex-M4 (no, softfp, hard).
 ifeq ($(USE_FPU),)
-  USE_FPU = hard
+  USE_FPU = no
 endif
 
 #
@@ -128,7 +128,6 @@ CSRC = $(STARTUPSRC) \
        $(PORTSRC) \
        $(OSALSRC) \
        $(HALSRC) \
-       $(TESTSRC) \
        $(PLATFORMSRC) \
        $(BOARDSRC) \
        $(FATFSSRC) \
