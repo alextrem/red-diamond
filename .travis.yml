@@ -16,4 +16,4 @@ script:
     - make all BUILD_NUMBER=$TRAVIS_BUILD_NUMBER
 
 after_success:
-    - codecov
+    - bash <(curl -s https://codecov.io/bash)
