@@ -171,7 +171,7 @@ ASMSRC = $(STARTUPASM) $(PORTASM) $(OSALASM)
 INCDIR = $(STARTUPINC) $(KERNINC) $(PORTINC) $(OSALINC) \
          $(HALINC) $(PLATFORMINC) $(BOARDINC) $(FATFSINC) $(MP3INC) \
          $(CHIBIOS)/os/hal/lib/streams $(CHIBIOS)/os/various \
-         $(AIINC) $(SHELLINC) $(TESTINC) $(FATFSINC)/option \
+         $(AIINC) $(SHELLINC) $(FATFSINC)/option \
          drivers/dac/inc \
          drivers/hdmi/inc
 
