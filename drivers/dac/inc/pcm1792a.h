@@ -90,7 +90,7 @@ typedef struct Dac {
   uint32_t reset;                       /** */
   Oversampling_t oversampling;          /** choose from three oversampling rates */
   uint32_t deviceID;                    /** chip device id */
-} DAC_t;
+} DAC_PCM1792A_t;
 
 /*===========================================================================*/
 /* Driver macros.                                                            */
@@ -108,15 +108,15 @@ typedef struct Dac {
 #ifdef __cplusplus
 extern "C" {
 #endif
-  void DAC_initialize(DAC_t* const me);
-  void DAC_configure(DAC_t* const me);
-  void DAC_attenuate(DAC_t* const me, uint8_t attenuation);
-  void DAC_SetOversampling(DAC_t* const me);
-  void DAC_SetBalance(DAC_t* const me);
-  void DAC_SetAttenuationRate(DAC_t* const me, AttenuationRate_t rate);
-  void DAC_SetInterface(DAC_t* const me, AudioFormat_t format);
-  void DAC_outputEnable(DAC_t* const me);
-  void DAC_deviceID(DAC_t* const me);
+  void DAC_initialize(DAC_PCM1792A_t* const me);
+  void DAC_configure(DAC_PCM1792A_t* const me);
+  void DAC_attenuate(DAC_PCM1792A_t* const me, uint8_t attenuation);
+  void DAC_SetOversampling(DAC_PCM1792A_t* const me);
+  void DAC_SetBalance(DAC_PCM1792A_t* const me);
+  void DAC_SetAttenuationRate(DAC_PCM1792A_t* const me, AttenuationRate_t rate);
+  void DAC_SetInterface(DAC_PCM1792A_t* const me, AudioFormat_t format);
+  void DAC_outputEnable(DAC_PCM1792A_t* const me);
+  void DAC_deviceID(DAC_PCM1792A_t* const me);
 #ifdef __cplusplus
 }
 #endif
