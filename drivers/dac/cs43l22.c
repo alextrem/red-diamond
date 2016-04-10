@@ -203,7 +203,7 @@ void Codec_GetID(void) {
 }
 
 /**
- * @brief  Sets volume
+ * @brief  Sets volume of the codec for all, headphone or speaker
  *
  * @param[in]   set
  * @param[in]   value
@@ -229,6 +229,12 @@ void Codec_VolumeCtrl(const OUTPUT_t set, uint8_t volume) {
   }
 }
 
+/**
+ * @brief   Sets balance of the outputs
+ *
+ * @param[in]   set
+ * @param[in]   balance
+ */
 void Codec_Balance(const OUTPUT_t set, int8_t balance) {
 
 }
@@ -268,6 +274,11 @@ void Codec_BeepGenerator(DAC_CS43L22_t *dac) {
   dac->beep.frequency = BEEP_F1000;
 }
 
+/**
+ * @brief   Set Codec to default system settings
+ *
+ * @param[in]   dac
+ */
 void Codec_FactoryDefault(DAC_CS43L22_t *dac) {
   dac->master_volume[0] = factory_default.master_volume[0];
   dac->master_volume[1] = factory_default.master_volume[1];

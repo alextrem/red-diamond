@@ -59,49 +59,49 @@ typedef enum output {
 } OUTPUT_t;
 
 typedef enum beep_config {
-  off = 0,                          /** */
-  single = 1,                       /** */
-  multiple = 2,                     /** */
-  continous = 3,                    /** */
+  off = 0,                          /** Deactivate beep */
+  single = 1,                       /** Just on shot beep */
+  multiple = 2,                     /** A bunch of beeps */
+  continous = 3,                    /** Beep all the time */
 } BEEP_CONFIG_t;
 
 typedef enum beep_ontime {
-  beep_on_83ms = 0x00,
-  beep_on_430ms = 0x01,
-  beep_on_780ms = 0x02,
-  beep_on_1200ms = 0x03,
-  beep_on_1500ms = 0x04,
-  beep_on_1800ms = 0x05,
-  beep_on_2200ms = 0x06,
-  beep_on_2500ms = 0x07,
-  beep_on_2800ms = 0x08,
-  bepp_on_3200ms = 0x09,
-  beep_on_3500ms = 0x0A,
-  beep_on_3800ms = 0x0B,
-  beep_on_4200ms = 0x0C,
-  beep_on_4500ms = 0x0D,
-  beep_on_4800ms = 0x0E,
-  beep_on_5200ms = 0x0F
+  beep_on_83ms = 0x00,              /** 83ms beep */
+  beep_on_430ms = 0x01,             /** 430ms beep */
+  beep_on_780ms = 0x02,             /** 780ms beep */
+  beep_on_1200ms = 0x03,            /** 1,2s beep */
+  beep_on_1500ms = 0x04,            /** 1,5s beep */
+  beep_on_1800ms = 0x05,            /** 1,8s beep */
+  beep_on_2200ms = 0x06,            /** 2,2s beep */
+  beep_on_2500ms = 0x07,            /** 2,5s beep */
+  beep_on_2800ms = 0x08,            /** 2,8s beep */
+  bepp_on_3200ms = 0x09,            /** 3,2s beep */
+  beep_on_3500ms = 0x0A,            /** 3,5s beep */
+  beep_on_3800ms = 0x0B,            /** 3,8s beep */
+  beep_on_4200ms = 0x0C,            /** 4,2s beep */
+  beep_on_4500ms = 0x0D,            /** 4,5s beep */
+  beep_on_4800ms = 0x0E,            /** 4,8s beep */
+  beep_on_5200ms = 0x0F             /** 5,2s beep */
 } ONTIME_t;
 
 typedef enum beep_offtime {
-  beep_off_1230ms = 0,
-  beep_off_2580ms = 1,
-  beep_off_3900ms = 2,
-  beep_off_5200ms = 3,
-  beep_off_6600ms = 4,
-  beep_off_8050ms = 5,
-  beep_off_9350ms = 6,
-  beep_off_10800ms = 7
+  beep_off_1230ms = 0,              /** 1,23s beep off */
+  beep_off_2580ms = 1,              /** 2,58s beep off */
+  beep_off_3900ms = 2,              /** 3,9s beep off */
+  beep_off_5200ms = 3,              /** 5,2s beep off */
+  beep_off_6600ms = 4,              /** 6,6s beep off */
+  beep_off_8050ms = 5,              /** 8,05s beep off */
+  beep_off_9350ms = 6,              /** 9,35s beep off */
+  beep_off_10800ms = 7              /** 10,80s beep off */
 } OFFTIME_t;
 
 typedef struct beep {
   uint8_t frequency;                /** Choose e a frequency from the macros*/
-  ONTIME_t ontime;                  /**  */
-  OFFTIME_t offtime;                /**  */
-  uint8_t volume;                   /**  */
-  BEEP_CONFIG_t configuration;      /**  */
-  uint8_t mix;                      /**  */
+  ONTIME_t ontime;                  /** Beep ontime setting */
+  OFFTIME_t offtime;                /** Beep offtime setting */
+  uint8_t volume;                   /** Beep volume */
+  BEEP_CONFIG_t configuration;      /** Beep configuration structure */
+  uint8_t mix;                      /** Activate or deactivate beep mix */
 } BEEP_t;
 
 typedef struct Dac {
