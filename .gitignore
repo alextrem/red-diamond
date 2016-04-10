@@ -1,5 +1,7 @@
 .dep
 build
+ChibiOS/ext/fatfs
+ChibiOS/ext/lwip
 
 # quartus specific files
 board
