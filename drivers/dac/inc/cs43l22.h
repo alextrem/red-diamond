@@ -51,24 +51,91 @@
 /* Driver data structures and types.                                         */
 /*===========================================================================*/
 
-typedef enum volume {
-  all = 0,
-  master = 1,
-  headphone = 2,
-  speaker = 3,
-} VOLUME_t;
+typedef enum output {
+  all = 0,                          /** All outputs */
+  master = 1,                       /** Master Output */
+  headphone = 2,                    /** Headphone output */
+  speaker = 3,                      /** Speaker output */
+} OUTPUT_t;
+
+typedef enum beep_config {
+  off = 0,                          /** */
+  single = 1,                       /** */
+  multiple = 2,                     /** */
+  continous = 3,                    /** */
+} BEEP_CONFIG_t;
+
+typedef enum beep_ontime {
+  beep_on_83ms = 0x00,
+  beep_on_430ms = 0x01,
+  beep_on_780ms = 0x02,
+  beep_on_1200ms = 0x03,
+  beep_on_1500ms = 0x04,
+  beep_on_1800ms = 0x05,
+  beep_on_2200ms = 0x06,
+  beep_on_2500ms = 0x07,
+  beep_on_2800ms = 0x08,
+  bepp_on_3200ms = 0x09,
+  beep_on_3500ms = 0x0A,
+  beep_on_3800ms = 0x0B,
+  beep_on_4200ms = 0x0C,
+  beep_on_4500ms = 0x0D,
+  beep_on_4800ms = 0x0E,
+  beep_on_5200ms = 0x0F
+} ONTIME_t;
+
+typedef enum beep_offtime {
+  beep_off_1230ms = 0,
+  beep_off_2580ms = 1,
+  beep_off_3900ms = 2,
+  beep_off_5200ms = 3,
+  beep_off_6600ms = 4,
+  beep_off_8050ms = 5,
+  beep_off_9350ms = 6,
+  beep_off_10800ms = 7
+} OFFTIME_t;
+
+typedef struct beep {
+  uint8_t frequency;                /** Choose e a frequency from the macros*/
+  ONTIME_t ontime;                  /**  */
+  OFFTIME_t offtime;                /**  */
+  uint8_t volume;                   /**  */
+  BEEP_CONFIG_t configuration;      /**  */
+  uint8_t mix;                      /**  */
+} BEEP_t;
 
 typedef struct Dac {
-  I2CDriver *i2cp;                      /** */
-  uint8_t deviceID;                    /** chip device id */
-  uint8_t master_volume[2];             /** master volume control for l+r*/
-  uint8_t headphone_volume[2];          /** headphone volume control for l+r */
-  uint8_t speaker_volume[2];            /** speaker volume control for l+r*/
-} DAC_t;
+  I2CDriver *i2cp;                  /** Driver attachement*/
+  uint8_t deviceID;                 /** chip device id */
+  uint8_t master_volume[2];         /** Master volume control for l+r */
+  uint8_t headphone_volume[2];      /** Headphone volume control for l+r */
+  uint8_t speaker_volume[2];        /** Speaker volume control for l+r */
+  BEEP_t beep;                      /** Beep structure */
+} DAC_CS43L22_t;
 
 /*===========================================================================*/
 /* Driver macros.                                                            */
 /*===========================================================================*/
+
+#define BEEP_F260 0x00      /** Beep frequency 260 Hz*/
+#define BEEP_F521 0x10      /** Beep frequency 521 Hz*/
+#define BEEP_F585 0x20      /** Beep frequency 585 Hz*/
+#define BEEP_F666 0x30      /** Beep frequency from hell */
+#define BEEP_F705 0x40      /** Beep frequency 705 Hz*/
+#define BEEP_F774 0x50      /** Beep frequency 774 Hz*/
+#define BEEP_F888 0x60      /** Beep frequency 888 Hz*/
+#define BEEP_F1000 0x70     /** Beep frequency 1 kHz*/
+#define BEEP_F1043 0x80     /** Beep frequency 1043 Hz */
+#define BEEP_F1200 0x90     /** Beep frequency 1200 Hz*/
+#define BEEP_F1333 0xA0     /** Beep frequency 1333 Hz*/
+#define BEEP_F1411 0xB0     /** Beep frequency 1411 Hz*/
+#define BEEP_F1600 0xC0     /** Beep frequency 1600 Hz*/
+#define BEEP_F1714 0xD0     /** Beep frequency 1714 Hz */
+#define BEEP_F2000 0xE0     /** Beep frequency 2 kHz Hz*/
+#define BEEP_F2181 0xF0     /** Beep frequency 2181 Hz*/
+
+#define ID()
+#define REVISION()
 
 /*===========================================================================*/
 /* External declarations.                                                    */
@@ -81,8 +148,12 @@ extern "C" {
 void Codec_Init(I2CDriver *i2cp);
 void Codec_Configure(void);
 void Codec_GetID(void);
-void Codec_VolumeCtl(const VOLUME_t set, uint8_t volume);
-void Codec_Mute(const VOLUME_t set);
+void Codec_VolumeCtl(const OUTPUT_t set, uint8_t volume);
+void Codec_Balance(const OUTPUT_t set, int8_t balance);
+void Codec_Mute(const OUTPUT_t set);
+void Codec_BeepGenerator(DAC_CS43L22_t *dac);
+void Codec_BeepSetFrequency(DAC_CS43L22_t *dac);
+void Codec_FactoryDefault(DAC_CS43L22_t *dac);
 
 #ifdef __cplusplus
 }

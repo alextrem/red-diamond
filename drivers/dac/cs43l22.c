@@ -44,7 +44,15 @@ static void Codec_WriteRegister(uint8_t address, uint8_t value);
 
 static uint8_t rxbuf[2];
 static uint8_t txbuf[2];
-static DAC_t me;
+static const DAC_CS43L22_t factory_default = {
+  .master_volume = {0,0},
+  .headphone_volume = {0,0},
+  .speaker_volume = {0,0},
+  .beep.frequency = BEEP_F1000,
+  .beep.ontime = beep_on_5200ms,
+  .beep.offtime = beep_off_1230ms
+};
+static DAC_CS43L22_t me;
 
 /*===========================================================================*/
 /* Driver local functions.                                                   */
@@ -182,7 +190,7 @@ void Codec_Configure(void) {
   /* Set slave mode and the audio interface standard */
   //Codec_WriteRegister();
 
-  Codec_SetVolume(all);
+  //Codec_SetVolume(all);
 
   /* Disable the analog soft ramp */
 }
@@ -200,7 +208,28 @@ void Codec_GetID(void) {
  * @param[in]   set
  * @param[in]   value
  */
-void Codec_VolumeCtrl(const VOLUME_t set, uint8_t volume) {
+void Codec_VolumeCtrl(const OUTPUT_t set, uint8_t volume) {
+  switch(set) {
+    case all:
+      Codec_WriteRegister(CODEC_SPKA, volume);
+      Codec_WriteRegister(CODEC_SPKB, volume);
+      Codec_WriteRegister(CODEC_HPA, volume);
+      Codec_WriteRegister(CODEC_HPB, volume);
+      break;
+    case master:
+      break;
+    case headphone:
+      Codec_WriteRegister(CODEC_HPA, volume);
+      Codec_WriteRegister(CODEC_HPB, volume);
+      break;
+    case speaker:
+      Codec_WriteRegister(CODEC_SPKA, volume);
+      Codec_WriteRegister(CODEC_SPKB, volume);
+      break;
+  }
+}
+
+void Codec_Balance(const OUTPUT_t set, int8_t balance) {
 
 }
 
@@ -209,7 +238,7 @@ void Codec_VolumeCtrl(const VOLUME_t set, uint8_t volume) {
  *
  * @param[in]   set
  */
-void Codec_Mute(const VOLUME_t set) {
+void Codec_Mute(const OUTPUT_t set) {
   switch(set) {
     case all:
       Codec_WriteRegister(CODEC_SPKA, 0x01);
@@ -228,5 +257,26 @@ void Codec_Mute(const VOLUME_t set) {
       Codec_WriteRegister(CODEC_SPKB, 0x01);
       break;
   }
+}
+
+/**
+ * @brief   Configure beep generator
+ *
+ * @param[in]   dac
+ */
+void Codec_BeepGenerator(DAC_CS43L22_t *dac) {
+  dac->beep.frequency = BEEP_F1000;
+}
+
+void Codec_FactoryDefault(DAC_CS43L22_t *dac) {
+  dac->master_volume[0] = factory_default.master_volume[0];
+  dac->master_volume[1] = factory_default.master_volume[1];
+  dac->headphone_volume[0] = factory_default.headphone_volume[0];
+  dac->headphone_volume[1] = factory_default.headphone_volume[1];
+  dac->speaker_volume[0] = factory_default.speaker_volume[0];
+  dac->speaker_volume[1] = factory_default.speaker_volume[1];
+  dac->beep.frequency  = factory_default.beep.frequency;
+  dac->beep.ontime = factory_default.beep.ontime;
+  dac->beep.offtime = factory_default.beep.offtime;
 }
 /** @} */
