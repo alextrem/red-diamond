@@ -78,11 +78,12 @@ static void Codec_Reset(void) {
  *
  */
 static uint8_t Codec_ReadRegister(uint8_t address) {
-  msg_t msg;
   uint8_t data;
   rxbuf[0] = address;
 
-  msg = i2cMasterReceiveTimeout(me.i2cp, CODEC_ADDRESS, rxbuf, sizeof(rxbuf), 1000);
+  i2cAcquireBus(me.i2cp);
+  msg_t msg = i2cMasterReceiveTimeout(me.i2cp, CODEC_ADDRESS, rxbuf, sizeof(rxbuf), 1000);
+  i2cReleaseBus(me.i2cp);
 
   if (msg != MSG_OK) {
 
@@ -101,12 +102,13 @@ static uint8_t Codec_ReadRegister(uint8_t address) {
  * @param[in] value     the value to be written
  */
 static void Codec_WriteRegister(uint8_t address, uint8_t value) {
-  msg_t msg;
   txbuf[0] = address;
   txbuf[1] = value;
 
   /* Check if driver is assigned to a structure */
-  msg = i2cMasterTransmitTimeout(me.i2cp, CODEC_ADDRESS, txbuf, sizeof(txbuf), NULL, 0, 1000);
+  i2cAcquireBus(me.i2cp);
+  msg_t msg = i2cMasterTransmitTimeout(me.i2cp, CODEC_ADDRESS, txbuf, sizeof(txbuf), NULL, 0, 1000);
+  i2cReleaseBus(me.i2cp);
 
   if (msg != MSG_OK) {
 
