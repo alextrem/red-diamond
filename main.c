@@ -311,14 +311,6 @@ int main(void) {
   adcSTM32EnableTSVREFE();
 
   /*
-   * Activates the serial driver 2 using the driver default configuration.
-   * PA2(TX) and PA3(RX) are routed to USART2.
-   */
-  sdStart(&SD2, NULL);
-  palSetPadMode(GPIOA, 2, PAL_MODE_ALTERNATE(7));
-  palSetPadMode(GPIOA, 3, PAL_MODE_ALTERNATE(7));
-
-  /*
    * Activates the I2C interface
    * The HDMI, DAC, and maybe the ADC are using this interface
    */
@@ -370,7 +362,7 @@ int main(void) {
                 PAL_STM32_OSPEED_MID2); /* SCK */
   palSetPadMode(GPIOC, 12, PAL_MODE_OUTPUT_PUSHPULL | PAL_MODE_ALTERNATE(6) |
                 PAL_STM32_OSPEED_MID2); /* SD */
-
+  
   /*
    * Initializes PWM driver 4
    */
