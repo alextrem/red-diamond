@@ -52,7 +52,7 @@ static const DAC_CS43L22_t factory_default = {
   .beep.ontime = beep_on_5200ms,
   .beep.offtime = beep_off_1230ms
 };
-static DAC_CS43L22_t me;
+static DAC_CS43L22_t dac;
 
 /*===========================================================================*/
 /* Driver local functions.                                                   */
@@ -81,9 +81,9 @@ static uint8_t Codec_ReadRegister(uint8_t address) {
   uint8_t data;
   rxbuf[0] = address;
 
-  i2cAcquireBus(me.i2cp);
-  msg_t msg = i2cMasterReceiveTimeout(me.i2cp, CODEC_ADDRESS, rxbuf, sizeof(rxbuf), 1000);
-  i2cReleaseBus(me.i2cp);
+  i2cAcquireBus(dac.i2cp);
+  msg_t msg = i2cMasterReceiveTimeout(dac.i2cp, CODEC_ADDRESS, rxbuf, sizeof(rxbuf), MS2ST(4));
+  i2cReleaseBus(dac.i2cp);
 
   if (msg != MSG_OK) {
 
@@ -106,9 +106,9 @@ static void Codec_WriteRegister(uint8_t address, uint8_t value) {
   txbuf[1] = value;
 
   /* Check if driver is assigned to a structure */
-  i2cAcquireBus(me.i2cp);
-  msg_t msg = i2cMasterTransmitTimeout(me.i2cp, CODEC_ADDRESS, txbuf, sizeof(txbuf), NULL, 0, 1000);
-  i2cReleaseBus(me.i2cp);
+  i2cAcquireBus(dac.i2cp);
+  msg_t msg = i2cMasterTransmitTimeout(dac.i2cp, CODEC_ADDRESS, txbuf, sizeof(txbuf), NULL, 0, MS2ST(4));
+  i2cReleaseBus(dac.i2cp);
 
   if (msg != MSG_OK) {
 
@@ -130,7 +130,7 @@ static void Codec_WriteRegister(uint8_t address, uint8_t value) {
 void Codec_Init(I2CDriver *i2cp) {
   //TODO: Check for previous settings
   /* Assign used driver to structure*/
-  me.i2cp = i2cp;
+  dac.i2cp = i2cp;
 
   Codec_GetID();
 
@@ -142,16 +142,16 @@ void Codec_Init(I2CDriver *i2cp) {
   Codec_WriteRegister(0x00, 0x00);
 
   /* Set master volume */
-  me.master_volume[0] = 0x00;
-  me.master_volume[1] = 0x00;
+  dac.master_volume[0] = 0x00;
+  dac.master_volume[1] = 0x00;
 
   /* Set headphone volume */
-  me.headphone_volume[0] = 0x00;
-  me.headphone_volume[1] = 0x00;
+  dac.headphone_volume[0] = 0x00;
+  dac.headphone_volume[1] = 0x00;
 
   /* Set speaker volume */
-  me.speaker_volume[0] = 0x01;
-  me.speaker_volume[1] = 0x01;
+  dac.speaker_volume[0] = 0x01;
+  dac.speaker_volume[1] = 0x01;
 }
 
 /**
@@ -201,7 +201,7 @@ void Codec_Configure(void) {
  * @brief   Get the ID and Revision of device
  */
 void Codec_GetID(void) {
-  me.deviceID = Codec_ReadRegister(CODEC_ID);
+  dac.deviceID = Codec_ReadRegister(CODEC_ID);
 }
 
 /**
