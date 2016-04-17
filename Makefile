@@ -116,6 +116,7 @@ include $(CHIBIOS)/os/various/shell/shell.mk
 include $(CHIBIOS)/os/various/fatfs_bindings/fatfs.mk
 include libmad/mp3.mk
 include ai/ai.mk
+include common/common.mk
 include extract.mk
 
 # Define linker script file here
@@ -133,6 +134,7 @@ CSRC = $(STARTUPSRC) \
        $(FATFSSRC) \
        $(MP3SRC) \
        $(AISRC) \
+	   $(COMMONSRC) \
        $(SHELLSRC) \
        $(CHIBIOS)/os/hal/lib/streams/memstreams.c \
        $(CHIBIOS)/os/hal/lib/streams/chprintf.c \
@@ -168,7 +170,7 @@ TCPPSRC =
 # List ASM source files here
 ASMSRC = $(STARTUPASM) $(PORTASM) $(OSALASM)
 
-INCDIR = $(STARTUPINC) $(KERNINC) $(PORTINC) $(OSALINC) \
+INCDIR = $(STARTUPINC) $(KERNINC) $(PORTINC) $(OSALINC) $(COMMONINC)\
          $(HALINC) $(PLATFORMINC) $(BOARDINC) $(FATFSINC) $(MP3INC) \
          $(CHIBIOS)/os/hal/lib/streams $(CHIBIOS)/os/various \
          $(AIINC) $(SHELLINC) $(FATFSINC)/option \
