@@ -1,13 +1,13 @@
 #
-AIDIR = .
+AIDIR = ai
 
 # Source files
-AISRC = $(AIDIR)/ai/audioctrl.c \
-        $(AIDIR)/ai/audionav.c \
-        $(AIDIR)/ai/disknav.c
+AISRC = $(AIDIR)/audioctrl.c \
+        $(AIDIR)/audionav.c \
+        $(AIDIR)/disknav.c
 
 # Include directory
-AIINC = $(AIDIR)/ai/inc
+AIINC = $(AIDIR)/inc
 
 vpath %.c $(AISRC)
 vpath %.h $(AIINC)
