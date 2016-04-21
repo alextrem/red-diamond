@@ -87,15 +87,6 @@ static void cmd_boot(BaseSequentialStream *chp, int argc, char *argv[]) {
   }
 }
 
-static void cmd_dac(BaseSequentialStream *chp, int argc, char *argv[]) {
-  (void)argv;
-  if (argc > 0) {
-    chprintf(chp, "Usage: dac\r\n");
-    return;
-  }
-  chprintf(chp, "Chip ID: 0x%x", Codec_GetID);
-}
-
 static void cmd_led(BaseSequentialStream *chp, int argc, char *argv[]) {
   (void)argv;
   if(argc > 0) {
@@ -112,7 +103,6 @@ static void cmd_led(BaseSequentialStream *chp, int argc, char *argv[]) {
 static const ShellCommand commands[] = {
   {"boot", cmd_boot},
   {"led", cmd_led},
-  {"dac", cmd_dac},
   {NULL, NULL}
 };
 
