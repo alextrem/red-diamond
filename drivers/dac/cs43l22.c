@@ -50,7 +50,8 @@ static const DAC_CS43L22_t factory_default = {
   .speaker_volume = {0,0},
   .beep.frequency = BEEP_F1000,
   .beep.ontime = beep_on_5200ms,
-  .beep.offtime = beep_off_1230ms
+  .beep.offtime = beep_off_1230ms,
+  .beep.volume = 0x00,
 };
 static DAC_CS43L22_t dac;
 
@@ -82,7 +83,11 @@ static uint8_t Codec_ReadRegister(uint8_t address) {
   rxbuf[0] = address;
 
   i2cAcquireBus(dac.i2cp);
-  msg_t msg = i2cMasterReceiveTimeout(dac.i2cp, CODEC_ADDRESS, rxbuf, sizeof(rxbuf), MS2ST(4));
+  msg_t msg = i2cMasterReceiveTimeout(dac.i2cp,
+                                      CODEC_ADDRESS,
+                                      rxbuf,
+                                      sizeof(rxbuf),
+                                      MS2ST(4));
   i2cReleaseBus(dac.i2cp);
 
   if (msg != MSG_OK) {
@@ -107,7 +112,13 @@ static void Codec_WriteRegister(uint8_t address, uint8_t value) {
 
   /* Check if driver is assigned to a structure */
   i2cAcquireBus(dac.i2cp);
-  msg_t msg = i2cMasterTransmitTimeout(dac.i2cp, CODEC_ADDRESS, txbuf, sizeof(txbuf), NULL, 0, MS2ST(4));
+  msg_t msg = i2cMasterTransmitTimeout(dac.i2cp,
+                                       CODEC_ADDRESS,
+                                       txbuf,
+                                       sizeof(txbuf),
+                                       NULL,
+                                       0,
+                                       MS2ST(4));
   i2cReleaseBus(dac.i2cp);
 
   if (msg != MSG_OK) {
@@ -232,13 +243,28 @@ void Codec_VolumeCtrl(const OUTPUT_t set, uint8_t volume) {
 }
 
 /**
- * @brief   Sets balance of the outputs
+ * @brief   Sets balance of the outputs. For a negative balance value right
+ *          channel will be attenuated. For a positive otherwise
  *
  * @param[in]   set
  * @param[in]   balance
  */
 void Codec_Balance(const OUTPUT_t set, int8_t balance) {
 
+  switch(set) {
+    case all:
+      break;
+    case master:
+      break;
+    case headphone:
+      if ( balance < 0 )
+        Codec_WriteRegister(CODEC_HPA, balance);
+      else
+        Codec_WriteRegister(CODEC_HPB, balance);
+      break;
+    case speaker:
+      break;
+  }
 }
 
 /**
