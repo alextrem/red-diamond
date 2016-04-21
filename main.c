@@ -19,7 +19,7 @@
 
 #include "chprintf.h"
 #include "shell.h"
-#include <ff.h>
+#include "ff.h"
 
 #include "usbcfg.h"
 
@@ -176,8 +176,8 @@ static const I2SConfig i2s3cfg = {
   &audio_rx_buf,
   sizeof(audio_rx_buf),
   NULL,
-  NULL,
-  NULL
+  0,
+  16
 };
 
 /*
