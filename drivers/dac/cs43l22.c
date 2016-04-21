@@ -48,10 +48,11 @@ static const DAC_CS43L22_t factory_default = {
   .master_volume = {0,0},
   .headphone_volume = {0,0},
   .speaker_volume = {0,0},
-  .beep.frequency = BEEP_F1000,
-  .beep.ontime = beep_on_5200ms,
-  .beep.offtime = beep_off_1230ms,
-  .beep.volume = 0x00,
+  .beep = {.frequency = BEEP_F1000,
+           .ontime = beep_on_5200ms,
+           .offtime = beep_off_1230ms,
+           .configuration = off,
+           .volume = 0x00}
 };
 static DAC_CS43L22_t dac;
 
