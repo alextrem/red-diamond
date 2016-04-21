@@ -84,7 +84,7 @@ endif
 
 # Enables the use of FPU on Cortex-M4 (no, softfp, hard).
 ifeq ($(USE_FPU),)
-  USE_FPU = no
+  USE_FPU = hard
 endif
 
 #
@@ -114,6 +114,7 @@ include $(CHIBIOS)/os/common/ports/ARMCMx/compilers/GCC/mk/port_v7m.mk
 # Other files (optional).
 include $(CHIBIOS)/os/various/shell/shell.mk
 include $(CHIBIOS)/os/various/fatfs_bindings/fatfs.mk
+include drivers/drivers.mk
 include libmad/mp3.mk
 include ai/ai.mk
 include common/common.mk
@@ -134,13 +135,11 @@ CSRC = $(STARTUPSRC) \
        $(FATFSSRC) \
        $(MP3SRC) \
        $(AISRC) \
-	   $(COMMONSRC) \
+       $(COMMONSRC) \
        $(SHELLSRC) \
+       $(DRIVERSRC) \
        $(CHIBIOS)/os/hal/lib/streams/memstreams.c \
        $(CHIBIOS)/os/hal/lib/streams/chprintf.c \
-       drivers/dac/pcm1792a.c \
-       drivers/dac/cs43l22.c \
-       drivers/hdmi/adv7612.c \
        usbcfg.c main.c
 
 # C++ sources that can be compiled in ARM or THUMB mode depending on the global
@@ -173,9 +172,7 @@ ASMSRC = $(STARTUPASM) $(PORTASM) $(OSALASM)
 INCDIR = $(STARTUPINC) $(KERNINC) $(PORTINC) $(OSALINC) $(COMMONINC)\
          $(HALINC) $(PLATFORMINC) $(BOARDINC) $(FATFSINC) $(MP3INC) \
          $(CHIBIOS)/os/hal/lib/streams $(CHIBIOS)/os/various \
-         $(AIINC) $(SHELLINC) $(FATFSINC)/option \
-         drivers/dac/inc \
-         drivers/hdmi/inc
+         $(AIINC) $(SHELLINC) $(FATFSINC)/option $(DRIVERINC)
 
 #
 # Project, sources and paths
