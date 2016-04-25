@@ -84,7 +84,7 @@ endif
 
 # Enables the use of FPU on Cortex-M4 (no, softfp, hard).
 ifeq ($(USE_FPU),)
-  USE_FPU = hard
+  USE_FPU = no
 endif
 
 #
@@ -113,6 +113,7 @@ include $(CHIBIOS)/test/rt/test.mk
 include $(CHIBIOS)/os/common/ports/ARMCMx/compilers/GCC/mk/port_v7m.mk
 # Other files (optional).
 include $(CHIBIOS)/os/various/shell/shell.mk
+include $(CHIBIOS)/os/hal/lib/streams/streams.mk
 include $(CHIBIOS)/os/various/fatfs_bindings/fatfs.mk
 include drivers/drivers.mk
 include libmad/mp3.mk
@@ -132,14 +133,14 @@ CSRC = $(STARTUPSRC) \
        $(HALSRC) \
        $(PLATFORMSRC) \
        $(BOARDSRC) \
+       $(TESTSRC) \
        $(FATFSSRC) \
        $(MP3SRC) \
        $(AISRC) \
        $(COMMONSRC) \
+       $(STREAMSSRC) \
        $(SHELLSRC) \
        $(DRIVERSRC) \
-       $(CHIBIOS)/os/hal/lib/streams/memstreams.c \
-       $(CHIBIOS)/os/hal/lib/streams/chprintf.c \
        usbcfg.c main.c
 
 # C++ sources that can be compiled in ARM or THUMB mode depending on the global
@@ -167,11 +168,13 @@ TCSRC =
 TCPPSRC =
 
 # List ASM source files here
-ASMSRC = $(STARTUPASM) $(PORTASM) $(OSALASM)
+ASMSRC =
+ASMXSRC = $(STARTUPASM) $(PORTASM) $(OSALASM)
 
-INCDIR = $(STARTUPINC) $(KERNINC) $(PORTINC) $(OSALINC) $(COMMONINC)\
+INCDIR = $(CHIBIOS)/os/license \
+         $(STARTUPINC) $(KERNINC) $(PORTINC) $(OSALINC) $(COMMONINC)\
          $(HALINC) $(PLATFORMINC) $(BOARDINC) $(FATFSINC) $(MP3INC) \
-         $(CHIBIOS)/os/hal/lib/streams $(CHIBIOS)/os/various \
+         $(STREAMSINC) $(TESTINC) $(CHIBIOS)/os/various \
          $(AIINC) $(SHELLINC) $(FATFSINC)/option $(DRIVERINC)
 
 #
