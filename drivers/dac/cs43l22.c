@@ -32,7 +32,7 @@
 
 static void Codec_Reset(void);
 static uint8_t Codec_ReadRegister(uint8_t address);
-static void Codec_WriteRegister(uint8_t address, uint8_t value);
+static msg_t Codec_WriteRegister(uint8_t address, uint8_t value);
 
 /*===========================================================================*/
 /* Driver exported variables.                                                */
@@ -80,22 +80,19 @@ static void Codec_Reset(void) {
  *
  */
 static uint8_t Codec_ReadRegister(uint8_t address) {
-  uint8_t data;
   rxbuf[0] = address;
 
-  i2cAcquireBus(dac.i2cp);
   msg_t msg = i2cMasterReceiveTimeout(dac.i2cp,
                                       CODEC_ADDRESS,
                                       rxbuf,
                                       sizeof(rxbuf),
                                       MS2ST(4));
-  i2cReleaseBus(dac.i2cp);
 
   if (msg != MSG_OK) {
 
   }
 
-  data = rxbuf[1];
+  uint8_t data = rxbuf[1];
 
   return data;
 }
@@ -107,12 +104,11 @@ static uint8_t Codec_ReadRegister(uint8_t address) {
  * @param[in] address   register number
  * @param[in] value     the value to be written
  */
-static void Codec_WriteRegister(uint8_t address, uint8_t value) {
+static msg_t Codec_WriteRegister(uint8_t address, uint8_t value) {
   txbuf[0] = address;
   txbuf[1] = value;
 
   /* Check if driver is assigned to a structure */
-  i2cAcquireBus(dac.i2cp);
   msg_t msg = i2cMasterTransmitTimeout(dac.i2cp,
                                        CODEC_ADDRESS,
                                        txbuf,
@@ -120,11 +116,13 @@ static void Codec_WriteRegister(uint8_t address, uint8_t value) {
                                        NULL,
                                        0,
                                        MS2ST(4));
-  i2cReleaseBus(dac.i2cp);
 
   if (msg != MSG_OK) {
-
+    chprintf("I2C 0x%0.2x ERROR %d\r\n", address, msg);
+    chprintf("    status = 0x%x\r\n", i2cGetErrors(dac.i2cp) );
   }
+
+  return msg;
 }
 
 /*===========================================================================*/
