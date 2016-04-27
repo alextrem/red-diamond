@@ -352,7 +352,7 @@ int main(void) {
                 PAL_STM32_OSPEED_MID2); /* SCK */
   palSetPadMode(GPIOC, 12, PAL_MODE_OUTPUT_PUSHPULL | PAL_MODE_ALTERNATE(6) |
                 PAL_STM32_OSPEED_MID2); /* SD */
-  
+
   /*
    * Initializes PWM driver 4
    */
