@@ -29,6 +29,46 @@
 /* Driver constants.                                                         */
 /*===========================================================================*/
 
+typedef enum samplerate {
+  SR_8kHz = 0,
+  SR_16kHz = 1,
+  SR_32kHz = 2,
+  SR_48kHz = 3,
+  SR_96kHz = 4,
+  SR_22k05Hz = 5,
+  SR_44k1Hz = 6,
+  SR_192kHz = 7
+} SAMPLERATE_t;
+
+typedef struct plli2s {
+  uint32_t plli2sn;
+  uint32_t plli2sr;
+  uint8_t i2sdiv;
+  uint8_t i2sodd;
+} PLLI2S_t;
+
+static PLLI2S_t pll_settings_16bit[8] = {
+  {192, 2, 187, 1},
+  {192, 3, 62, 1},
+  {256, 3, 62, 1},
+  {192, 5, 12, 1},
+  {384, 5, 12, 1},
+  {290, 3, 68, 1},
+  {302, 2, 53, 1},
+  {424, 3, 11, 1}
+};
+
+static PLLI2S_t pll_settings_32bit[8] = {
+  {192, 3, 62, 1},
+  {256, 2, 62, 1},
+  {256, 5, 12, 1},
+  {384, 5, 12, 1},
+  {424, 3, 11, 1},
+  {302, 2, 53, 1},
+  {429, 4, 19, 0},
+  {258, 3, 3, 1}
+};
+
 /*===========================================================================*/
 /* Driver pre-compile time settings.                                         */
 /*===========================================================================*/
@@ -45,6 +85,9 @@
 /* Driver macros.                                                            */
 /*===========================================================================*/
 
+#define I2SCFGR_CLEAR_MASK  ((uint16_t)0xF040)
+#define I2SPR_CLEAR_MASK    ((uint16_t)0xFC02)
+
 /*===========================================================================*/
 /* External declarations.                                                    */
 /*===========================================================================*/
@@ -53,7 +96,7 @@
 extern "C" {
 #endif
 
-void Config_I2S(const uint16_t samplerate, const uint8_t nbits);
+void Config_I2S(SPIDriver *spip, const SAMPLERATE_t samplerate, const uint8_t nbits);
 
 #ifdef __cplusplus
 }
