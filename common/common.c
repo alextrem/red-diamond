@@ -38,8 +38,6 @@
 /* Driver local variables and types.                                         */
 /*===========================================================================*/
 
-const stm32_dma_stream_t* i2sdma;
-
 /*===========================================================================*/
 /* Driver local functions.                                                   */
 /*===========================================================================*/
@@ -52,6 +50,7 @@ const stm32_dma_stream_t* i2sdma;
  * @brief   Sets up I2S interface according to samplerate and databits
  * @pre     I2S must be enabled
  *
+ * @param[in]   i2sp
  * @param[in]   samplerate
  * @param[in]   nbits
  *
