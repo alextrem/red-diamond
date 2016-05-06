@@ -20,6 +20,7 @@
 #include "chprintf.h"
 #include "shell.h"
 #include "ff.h"
+#include "common.h"
 
 #include "usbcfg.h"
 
@@ -276,6 +277,11 @@ int main(void) {
   sduStart(&SDU1, &serusbcfg);
 
   /*
+   * St I2S PLL
+   */
+  Config_I2S(&I2SD3, SR_48kHz, 1);
+
+  /*
    * Initializes a sd-card driver
    */
   mmcObjectInit(&MMCD1);
@@ -344,6 +350,7 @@ int main(void) {
    * PC10 - I2S3_SCK.
    * PC12 - I2S3_SD.
    */
+  i2sStart(&I2SD3, &i2s3cfg);
   palSetPadMode(GPIOA, 4, PAL_MODE_OUTPUT_PUSHPULL | PAL_MODE_ALTERNATE(6) |
                 PAL_STM32_OSPEED_MID2); /* WS  */
   palSetPadMode(GPIOC, 7, PAL_MODE_OUTPUT_PUSHPULL | PAL_MODE_ALTERNATE(6) |
@@ -369,6 +376,7 @@ int main(void) {
                     NORMALPRIO+2, pwmThread, NULL);
 
   while (TRUE) {
+
     if (SDU1.config->usbp->state == USB_ACTIVE) {
        thread_t *shelltp = chThdCreateFromHeap(NULL, SHELL_WA_SIZE,
                                                "shell", NORMALPRIO+3,
