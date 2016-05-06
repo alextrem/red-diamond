@@ -30,8 +30,6 @@
 /* Driver local definitions.                                                 */
 /*===========================================================================*/
 
-static void i2s_dma_init(SPIDriver* spip);
-
 /*===========================================================================*/
 /* Driver exported variables.                                                */
 /*===========================================================================*/
@@ -45,15 +43,6 @@ const stm32_dma_stream_t* i2sdma;
 /*===========================================================================*/
 /* Driver local functions.                                                   */
 /*===========================================================================*/
-
-/**
- * @brief   Sets up the DMA according to the used interface
- *
- * @param[in]   spip
- */
-static void i2s_dma_init(SPIDriver* spip) {
-  i2sdma = STM32_DMA_STREAM(STM32_SPI_SPI3_TX_DMA_STREAM);
-}
 
 /*===========================================================================*/
 /* Driver exported functions.                                                */
@@ -70,10 +59,10 @@ static void i2s_dma_init(SPIDriver* spip) {
  *          The default samplerate with this setup is 48kHz. Take a closer look
  *          at page 826 of DM00031020.pdf
  */
-void Config_I2S(SPIDriver* spip, const SAMPLERATE_t samplerate, const uint8_t nbits) {
+void Config_I2S(I2SDriver* i2sp, const SAMPLERATE_t samplerate, const uint8_t nbits) {
   /* Clear I2SCFGR & I2SPR register */
-  spip->spi->I2SCFGR &= I2SCFGR_CLEAR_MASK;
-  spip->spi->I2SPR = I2SPR_CLEAR_MASK;
+  i2sp->spi->I2SCFGR &= I2SCFGR_CLEAR_MASK;
+  i2sp->spi->I2SPR = I2SPR_CLEAR_MASK;
 
   /* Disable interface while clock for I2S is set up */
   rccEnableSPI3(false);
@@ -114,15 +103,15 @@ void Config_I2S(SPIDriver* spip, const SAMPLERATE_t samplerate, const uint8_t nb
                     ((pllr << 27) & RCC_PLLI2SCFGR_PLLI2SR);
 
   /* Set prescaler register according samplerate and clock*/
-  spip->spi->I2SPR = ((i2sodd << 8) | i2sdiv);
+  i2sp->spi->I2SPR = ((i2sodd << 8) | i2sdiv);
 
   /* Set the I2S configuration register 24bit, slave transmit, I2S phillips */
-  spip->spi->I2SCFGR = (SPI_I2SCFGR_I2SMOD | SPI_I2SCFGR_DATLEN_0) \
+  i2sp->spi->I2SCFGR = (SPI_I2SCFGR_I2SMOD | SPI_I2SCFGR_DATLEN_0) \
                        & (~SPI_I2SCFGR_I2SCFG & ~SPI_I2SCFGR_I2SSTD) \
                        & (~SPI_I2SCFGR_CKPOL);
 
   /* Last but not least -> Activate I2S */
-  spip->spi->I2SCFGR |= SPI_I2SCFGR_I2SE;
+  i2sp->spi->I2SCFGR |= SPI_I2SCFGR_I2SE;
 }
 
 /** @}  */

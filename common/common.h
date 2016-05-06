@@ -96,7 +96,7 @@ static PLLI2S_t pll_settings_32bit[8] = {
 extern "C" {
 #endif
 
-void Config_I2S(SPIDriver *spip, const SAMPLERATE_t samplerate, const uint8_t nbits);
+void Config_I2S(I2SDriver *i2sp, const SAMPLERATE_t samplerate, const uint8_t nbits);
 
 #ifdef __cplusplus
 }
