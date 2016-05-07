@@ -29,22 +29,28 @@
 /* Driver constants.                                                         */
 /*===========================================================================*/
 
+/**
+ * @brief   samplerate enum
+ */
 typedef enum samplerate {
   SR_8kHz = 0,
-  SR_16kHz = 1,
-  SR_32kHz = 2,
-  SR_48kHz = 3,
-  SR_96kHz = 4,
-  SR_22k05Hz = 5,
-  SR_44k1Hz = 6,
-  SR_192kHz = 7
+  SR_16kHz = 1,     /**< @brief 16 kHz samplerate */
+  SR_32kHz = 2,     /**< @brief 32 kHz samplerate  */
+  SR_48kHz = 3,     /**< @brief 48 kHz samplerate */
+  SR_96kHz = 4,     /**< @brief 96 kHz samplerate */
+  SR_22k05Hz = 5,   /**< @brief 22,05 kHz samplerate */
+  SR_44k1Hz = 6,    /**< @brief 44,1 kHz samplerate */
+  SR_192kHz = 7     /**< @brief 192 kHz samplerate */
 } SAMPLERATE_t;
 
+/**
+ * @brief   I2S pll structure
+ */
 typedef struct plli2s {
-  uint32_t plli2sn;
-  uint32_t plli2sr;
-  uint8_t i2sdiv;
-  uint8_t i2sodd;
+  uint32_t plli2sn;     /**< @brief I2S PLL N multiplier value */
+  uint32_t plli2sr;     /**< @brief I2S PLL R divider value */
+  uint8_t i2sdiv;       /**< @brief linear prescaler */
+  uint8_t i2sodd;       /**< @brief  */
 } PLLI2S_t;
 
 static PLLI2S_t pll_settings_16bit[8] = {
