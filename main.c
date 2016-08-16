@@ -101,9 +101,18 @@ static void cmd_led(BaseSequentialStream *chp, int argc, char *argv[]) {
   palTogglePad(GPIOD, 15);
 }
 
+static void cmd_adc(BaseSequentialStream *chp, int argc, char *argv[]) {
+  (void) argv;
+  if (argc > 0) {
+    chprintf(chp, "Usage: adc\r\n");
+    return;
+  }
+}
+
 static const ShellCommand commands[] = {
   {"boot", cmd_boot},
   {"led", cmd_led},
+  {"adc", cmd_adc},
   {NULL, NULL}
 };
 
@@ -207,6 +216,10 @@ static void adcerrcb(ADCDriver *adcp, adcerror_t err) {
 static adcsample_t samples1[ADC_GRP1_NUM_CHANNELS * ADC_GRP1_BUF_DEPTH];
 static adcsample_t samples2[ADC_GRP2_NUM_CHANNELS * ADC_GRP2_BUF_DEPTH];
 
+/*===========================================================================*/
+/* ADC related.                                                              */
+/*===========================================================================*/
+
 /*
  * ADC conversion group
  * Mode:        Linear buffer, 8 samples of one channel, SW triggered
@@ -277,7 +290,7 @@ int main(void) {
   sduStart(&SDU1, &serusbcfg);
 
   /*
-   * St I2S PLL
+   * Set I2S PLL
    */
   Config_I2S(&I2SD3, SR_48kHz, 1);
 
@@ -374,6 +387,10 @@ int main(void) {
 
   chThdCreateStatic(pwmThreadWorkingArea, sizeof(pwmThreadWorkingArea),
                     NORMALPRIO+2, pwmThread, NULL);
+
+  adcConvert(&ADCD1, &adcgrpcfg1, samples1, ADC_GRP1_BUF_DEPTH);
+
+  adcConvert(&ADCD1, &adcgrpcfg2, samples2, ADC_GRP2_BUF_DEPTH);
 
   while (TRUE) {
 
