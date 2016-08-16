@@ -33,7 +33,7 @@
  * @brief   samplerate enum
  */
 typedef enum samplerate {
-  SR_8kHz = 0,
+  SR_8kHz = 0,      /**< @brief 8 kHz samplerate */
   SR_16kHz = 1,     /**< @brief 16 kHz samplerate */
   SR_32kHz = 2,     /**< @brief 32 kHz samplerate  */
   SR_48kHz = 3,     /**< @brief 48 kHz samplerate */
