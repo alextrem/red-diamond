@@ -33,8 +33,6 @@
 #define ADC_GRP2_NUM_CHANNELS   4
 #define ADC_GRP2_BUF_DEPTH      16
 
-MMCDriver MMCD1;
-
 static THD_WORKING_AREA(ledThreadWorkingArea, 64);
 static THD_WORKING_AREA(pwmThreadWorkingArea, 32);
 //static THD_WORKING_AREA(controlThreadWorkingArea, 256);
@@ -109,10 +107,19 @@ static void cmd_adc(BaseSequentialStream *chp, int argc, char *argv[]) {
   }
 }
 
+static void cmd_dac(BaseSequentialStream *chp, int argc, char *argv[]) {
+  (void) argv;
+  if (argc > 0) {
+    chprintf(chp, "Usage: dac [command]\r\n");
+    return;
+  }
+}
+
 static const ShellCommand commands[] = {
   {"boot", cmd_boot},
   {"led", cmd_led},
   {"adc", cmd_adc},
+  {"dac", cmd_dac},
   {NULL, NULL}
 };
 
@@ -158,7 +165,8 @@ static const SPIConfig spi1cfg = {
   /* HW dependent part.*/
   GPIOC,
   GPIOE_CS_SPI,
-  SPI_CR1_BR_0 | SPI_CR1_BR_1 | SPI_CR1_CPOL | SPI_CR1_CPHA
+  SPI_CR1_BR_0 | SPI_CR1_BR_1 | SPI_CR1_CPOL | SPI_CR1_CPHA,
+  SPI_CR2_RXDMAEN
 };
 
 /*
@@ -171,6 +179,7 @@ static const SPIConfig spi2cfg = {
   /* HW dependent part.*/
   GPIOB,
   12,
+  0,
   0
 };
 
@@ -199,6 +208,10 @@ static const I2CConfig i2cfg = {
   FAST_DUTY_CYCLE_2
 };
 
+/*===========================================================================*/
+/* ADC related.                                                              */
+/*===========================================================================*/
+
 /*
  * ADC configuration structure.
  */
@@ -215,10 +228,6 @@ static void adcerrcb(ADCDriver *adcp, adcerror_t err) {
 
 static adcsample_t samples1[ADC_GRP1_NUM_CHANNELS * ADC_GRP1_BUF_DEPTH];
 static adcsample_t samples2[ADC_GRP2_NUM_CHANNELS * ADC_GRP2_BUF_DEPTH];
-
-/*===========================================================================*/
-/* ADC related.                                                              */
-/*===========================================================================*/
 
 /*
  * ADC conversion group
@@ -260,6 +269,19 @@ static const ADCConversionGroup adcgrpcfg2 = {
   ADC_SQR3_SQ6_N(ADC_CHANNEL_IN12) | ADC_SQR3_SQ5_N(ADC_CHANNEL_IN13)
 };
 
+static thread_t *shelltp = NULL;
+
+/*
+ * Shell exit event.
+ */
+static void ShellHandler(eventid_t id) {
+  (void)id;
+  if (chThdTerminatedX(shelltp)) {
+    chThdWait(shelltp);                 /* Returning memory to heap.        */
+    shelltp = NULL;
+  }
+}
+
 /*===========================================================================*/
 /* Initialization and main thread.                                           */
 /*===========================================================================*/
@@ -268,6 +290,11 @@ static const ADCConversionGroup adcgrpcfg2 = {
  * Application entry point.
  */
 int main(void) {
+  static const evhandler_t evhndl[] = {
+    ShellHandler
+  };
+  event_listener_t e10;
+
   /*
    * System initializations.
    * - HAL initialization, this also initializes the configured device drivers
@@ -297,7 +324,6 @@ int main(void) {
   /*
    * Initializes a sd-card driver
    */
-  mmcObjectInit(&MMCD1);
 
   /*
    * Activates the USB driver and then the USB bus pull-up on D+.
@@ -305,7 +331,7 @@ int main(void) {
    * after a reset.
    */
   usbDisconnectBus(serusbcfg.usbp);
-  chThdSleepMilliseconds(1000);
+  chThdSleepMilliseconds(1500);
   usbStart(serusbcfg.usbp, &usbcfg);
   usbConnectBus(serusbcfg.usbp);
 
@@ -392,14 +418,13 @@ int main(void) {
 
   adcConvert(&ADCD1, &adcgrpcfg2, samples2, ADC_GRP2_BUF_DEPTH);
 
+  chEvtRegister(&shell_terminated, &e10, 0);
   while (TRUE) {
-
-    if (SDU1.config->usbp->state == USB_ACTIVE) {
-       thread_t *shelltp = chThdCreateFromHeap(NULL, SHELL_WA_SIZE,
-                                               "shell", NORMALPRIO+3,
-                                               shellThread, (void *)&shell_cfg1);
-       chThdWait(shelltp);
+    if (!shelltp && (SDU1.config->usbp->state == USB_ACTIVE)) {
+       shelltp = chThdCreateFromHeap(NULL, SHELL_WA_SIZE,
+                                     "shell", NORMALPRIO + 1,
+                                     shellThread, (void *)&shell_cfg1);
     }
-    chThdSleepMilliseconds(500);
+    chEvtDispatch(evhndl, chEvtWaitOneTimeout(ALL_EVENTS, MS2ST(500)));
   }
 }
