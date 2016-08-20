@@ -118,8 +118,6 @@ static msg_t Codec_WriteRegister(uint8_t address, uint8_t value) {
                                        MS2ST(4));
 
   if (msg != MSG_OK) {
-    chprintf("I2C 0x%0.2x ERROR %d\r\n", address, msg);
-    chprintf("    status = 0x%x\r\n", i2cGetErrors(dac.i2cp) );
   }
 
   return msg;
@@ -307,14 +305,6 @@ void Codec_BeepGenerator(DAC_CS43L22_t *dac) {
  * @param[in]   dac
  */
 void Codec_FactoryDefault(DAC_CS43L22_t *dac) {
-  dac->master_volume[0] = factory_default.master_volume[0];
-  dac->master_volume[1] = factory_default.master_volume[1];
-  dac->headphone_volume[0] = factory_default.headphone_volume[0];
-  dac->headphone_volume[1] = factory_default.headphone_volume[1];
-  dac->speaker_volume[0] = factory_default.speaker_volume[0];
-  dac->speaker_volume[1] = factory_default.speaker_volume[1];
-  dac->beep.frequency  = factory_default.beep.frequency;
-  dac->beep.ontime = factory_default.beep.ontime;
-  dac->beep.offtime = factory_default.beep.offtime;
+  dac = (DAC_CS43L22_t*) &factory_default;
 }
 /** @} */
