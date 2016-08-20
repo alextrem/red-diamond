@@ -14,6 +14,8 @@
     limitations under the License.
 */
 
+#include <string.h>
+
 #include "ch.h"
 #include "hal.h"
 
@@ -72,11 +74,79 @@ static FATFS SDC_FS;
 
 /* FS ready and mounted */
 static bool fs_ready = FALSE;
+
+/* Generic large buffer.*/
+static uint8_t fbuff[1024];
+
+static FRESULT scan_files(BaseSequentialStream *chp, char *path) {
+  FRESULT res;
+  FILINFO fno;
+  DIR dir;
+  int i;
+  char *fn;
+
+#if _USE_LFN
+  fno.lfname = 0;
+  fno.lfsize = 0;
+#endif
+  res = f_opendir(&dir, path);
+  if (res == FR_OK) {
+    i = strlen(path);
+    for (;;) {
+      res = f_readdir(&dir, &fno);
+      if (res != FR_OK || fno.fname[0] == 0)
+        break;
+      if (fno.fname[0] == '.')
+        continue;
+      fn = fno.fname;
+      if (fno.fattrib & AM_DIR) {
+        path[i++] = '/';
+        strcpy(&path[i], fn);
+        res = scan_files(chp, path);
+        if (res != FR_OK)
+          break;
+        path[--i] = 0;
+      }
+      else {
+        chprintf(chp, "%s/%s\r\n", path, fn);
+      }
+    }
+  }
+  return res;
+}
+
 /*===========================================================================*/
 /* Command line related.                                                     */
 /*===========================================================================*/
 
 #define SHELL_WA_SIZE   THD_WORKING_AREA_SIZE(2048)
+
+static void cmd_dir(BaseSequentialStream *chp, int argc, char *argv[]) {
+  FRESULT err;
+  uint32_t clusters;
+  FATFS *fsp;
+
+  (void)argv;
+  if (argc > 0) {
+    chprintf(chp, "Usage: tree\r\n");
+    return;
+  }
+  if (!fs_ready) {
+    chprintf(chp, "File System not mounted\r\n");
+    return;
+  }
+  err = f_getfree("/", &clusters, &fsp);
+  if (err != FR_OK) {
+    chprintf(chp, "FS: f_getfree() failed\r\n");
+    return;
+  }
+  chprintf(chp,
+           "FS: %lu free clusters, %lu sectors per cluster, %lu bytes free\r\n",
+           clusters, (uint32_t)SDC_FS.csize,
+           clusters * (uint32_t)SDC_FS.csize * (uint32_t)MMCSD_BLOCK_SIZE);
+  fbuff[0] = 0;
+  scan_files(chp, (char *)fbuff);
+}
 
 static void cmd_boot(BaseSequentialStream *chp, int argc, char *argv[]) {
   (void)argv;
@@ -120,6 +190,7 @@ static const ShellCommand commands[] = {
   {"led", cmd_led},
   {"adc", cmd_adc},
   {"dac", cmd_dac},
+  {"dir", cmd_dir},
   {NULL, NULL}
 };
 
