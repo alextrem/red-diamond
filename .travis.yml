@@ -13,7 +13,7 @@ install:
     - tar -xf gcc-arm-none-eabi-5_4-2016q2-20160622-linux.tar.bz2
 
 before_script:
-    - export PATH=$PATH:$PWD/gcc-arm-none-eabi-5_4-2016q2/bin
+    - export PATH=${PATH}:$PWD/gcc-arm-none-eabi-5_4-2016q2/bin
 
 script:
     - make extract
