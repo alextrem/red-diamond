@@ -43,6 +43,11 @@ typedef enum samplerate {
   SR_192kHz = 7     /**< @brief 192 kHz samplerate */
 } SAMPLERATE_t;
 
+typedef enum nbits {
+  BIT_16 = 0,
+  BIT_32 = 1
+} BITS_t;
+
 /**
  * @brief   I2S pll structure
  */
@@ -102,7 +107,7 @@ static PLLI2S_t pll_settings_32bit[8] = {
 extern "C" {
 #endif
 
-void Config_I2S(I2SDriver *i2sp, const SAMPLERATE_t samplerate, const uint8_t nbits);
+void Config_I2S(I2SDriver *i2sp, const SAMPLERATE_t samplerate, const BITS_t nbits);
 
 #ifdef __cplusplus
 }

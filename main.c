@@ -390,7 +390,7 @@ int main(void) {
   /*
    * Set I2S PLL
    */
-  Config_I2S(&I2SD3, SR_48kHz, 1);
+  Config_I2S(&I2SD3, SR_48kHz, BIT_32);
 
   /*
    * Initializes a sd-card driver
