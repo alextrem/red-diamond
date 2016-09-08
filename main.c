@@ -178,6 +178,15 @@ static void cmd_adc(BaseSequentialStream *chp, int argc, char *argv[]) {
   }
 }
 
+static void cmd_codec(BaseSequentialStream *chp, int argc, char *argv[]) {
+  (void) argv;
+  if (argc > 0) {
+    chprintf(chp, "Usage: codec\r\n");
+    return;
+  }
+  
+}
+
 static void cmd_dac(BaseSequentialStream *chp, int argc, char *argv[]) {
   (void) argv;
   if (argc > 0) {
@@ -190,6 +199,7 @@ static const ShellCommand commands[] = {
   {"boot", cmd_boot},
   {"led", cmd_led},
   {"adc", cmd_adc},
+  {"codec", cmd_codec},
   {"dac", cmd_dac},
   {"dir", cmd_dir},
   {NULL, NULL}
@@ -238,7 +248,7 @@ static const SPIConfig spi1cfg = {
   GPIOC,
   GPIOE_CS_SPI,
   SPI_CR1_BR_0 | SPI_CR1_BR_1 | SPI_CR1_CPOL | SPI_CR1_CPHA,
-  SPI_CR2_RXDMAEN
+  NULL
 };
 
 /*
@@ -252,7 +262,7 @@ static const SPIConfig spi2cfg = {
   GPIOB,
   12,
   0,
-  0
+  NULL
 };
 
 /*
@@ -375,7 +385,7 @@ int main(void) {
   /*
    * Set I2S PLL
    */
-  //Config_I2S(&I2SD3, SR_48kHz, BIT_32);
+  Config_I2S(&I2SD3, SR_48kHz, BIT_32);
 
   /*
    * Initializes a sd-card driver
@@ -444,7 +454,7 @@ int main(void) {
   palSetPadMode(GPIOB, 14, PAL_MODE_ALTERNATE(5));              /* MISO.    */
   palSetPadMode(GPIOB, 15, PAL_MODE_ALTERNATE(5) |
                            PAL_STM32_OSPEED_HIGHEST);           /* MOSI.    */
-#if 0
+  
   /*
    * Initializes the I2S driver 3. The I2S signals are routed as follow:
    * PA4  - I2S3_WS.
@@ -461,7 +471,7 @@ int main(void) {
                 PAL_STM32_OSPEED_MID2); /* SCK */
   palSetPadMode(GPIOC, 12, PAL_MODE_OUTPUT_PUSHPULL | PAL_MODE_ALTERNATE(6) |
                 PAL_STM32_OSPEED_MID2); /* SD */
-#endif
+  
   /*
    * Initializes PWM driver 4
    */
