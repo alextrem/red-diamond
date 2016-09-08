@@ -169,6 +169,7 @@ static void cmd_led(BaseSequentialStream *chp, int argc, char *argv[]) {
   palTogglePad(GPIOD, 15);
 }
 
+
 static void cmd_adc(BaseSequentialStream *chp, int argc, char *argv[]) {
   (void) argv;
   if (argc > 0) {
@@ -340,19 +341,6 @@ static const ADCConversionGroup adcgrpcfg2 = {
   ADC_SQR3_SQ6_N(ADC_CHANNEL_IN12) | ADC_SQR3_SQ5_N(ADC_CHANNEL_IN13)
 };
 
-static thread_t *shelltp = NULL;
-
-/*
- * Shell exit event.
- */
-static void ShellHandler(eventid_t id) {
-  (void)id;
-  if (chThdTerminatedX(shelltp)) {
-    chThdWait(shelltp);                 /* Returning memory to heap.        */
-    shelltp = NULL;
-  }
-}
-
 /*===========================================================================*/
 /* Initialization and main thread.                                           */
 /*===========================================================================*/
@@ -361,10 +349,7 @@ static void ShellHandler(eventid_t id) {
  * Application entry point.
  */
 int main(void) {
-  static const evhandler_t evhndl[] = {
-    ShellHandler
-  };
-  event_listener_t e10;
+  thread_t *shelltp = NULL;
 
   /*
    * System initializations.
@@ -390,7 +375,7 @@ int main(void) {
   /*
    * Set I2S PLL
    */
-  Config_I2S(&I2SD3, SR_48kHz, BIT_32);
+  //Config_I2S(&I2SD3, SR_48kHz, BIT_32);
 
   /*
    * Initializes a sd-card driver
@@ -407,14 +392,21 @@ int main(void) {
   usbConnectBus(serusbcfg.usbp);
 
   /*
+   * Activates the serial driver
+   */
+  sdStart(&SD2, NULL);
+  palSetPadMode(GPIOA, 2, PAL_MODE_ALTERNATE(7));
+  palSetPadMode(GPIOA, 3, PAL_MODE_ALTERNATE(7));
+
+  /*
    * Activates an analog interface
    */
 
   /*
    * Activates the ADCD1 driver and temperature sensor
    */
-  adcStart(&ADCD1, NULL);
-  adcSTM32EnableTSVREFE();
+  //adcStart(&ADCD1, NULL);
+  //adcSTM32EnableTSVREFE();
 
   /*
    * Activates the I2C interface
@@ -452,7 +444,7 @@ int main(void) {
   palSetPadMode(GPIOB, 14, PAL_MODE_ALTERNATE(5));              /* MISO.    */
   palSetPadMode(GPIOB, 15, PAL_MODE_ALTERNATE(5) |
                            PAL_STM32_OSPEED_HIGHEST);           /* MOSI.    */
-
+#if 0
   /*
    * Initializes the I2S driver 3. The I2S signals are routed as follow:
    * PA4  - I2S3_WS.
@@ -469,7 +461,7 @@ int main(void) {
                 PAL_STM32_OSPEED_MID2); /* SCK */
   palSetPadMode(GPIOC, 12, PAL_MODE_OUTPUT_PUSHPULL | PAL_MODE_ALTERNATE(6) |
                 PAL_STM32_OSPEED_MID2); /* SD */
-
+#endif
   /*
    * Initializes PWM driver 4
    */
@@ -485,17 +477,25 @@ int main(void) {
   chThdCreateStatic(pwmThreadWorkingArea, sizeof(pwmThreadWorkingArea),
                     NORMALPRIO+2, pwmThread, NULL);
 
-  adcConvert(&ADCD1, &adcgrpcfg1, samples1, ADC_GRP1_BUF_DEPTH);
+  //adcConvert(&ADCD1, &adcgrpcfg1, samples1, ADC_GRP1_BUF_DEPTH);
 
-  adcConvert(&ADCD1, &adcgrpcfg2, samples2, ADC_GRP2_BUF_DEPTH);
+  //adcConvert(&ADCD1, &adcgrpcfg2, samples2, ADC_GRP2_BUF_DEPTH);
 
-  chEvtRegister(&shell_terminated, &e10, 0);
-  while (TRUE) {
-    if (!shelltp && (SDU1.config->usbp->state == USB_ACTIVE)) {
-       shelltp = chThdCreateFromHeap(NULL, SHELL_WA_SIZE,
-                                     "shell", NORMALPRIO + 1,
-                                     shellThread, (void *)&shell_cfg1);
+   while (true) {
+    if (!shelltp) {
+      if (SDU1.config->usbp->state == USB_ACTIVE) {
+        /* Spawns a new shell.*/
+        shelltp = shellCreate(&shell_cfg1, SHELL_WA_SIZE, NORMALPRIO);
+      }
     }
-    chEvtDispatch(evhndl, chEvtWaitOneTimeout(ALL_EVENTS, MS2ST(500)));
+    else {
+      /* If the previous shell exited.*/
+      if (chThdTerminatedX(shelltp)) {
+        /* Recovers memory of the previous shell.*/
+        chThdRelease(shelltp);
+        shelltp = NULL;
+      }
+    }
+    chThdSleepMilliseconds(500);
   }
 }
