@@ -58,7 +58,7 @@ typedef struct plli2s {
   uint8_t i2sodd;       /**< @brief  */
 } PLLI2S_t;
 
-static PLLI2S_t pll_settings_16bit[8] = {
+static const PLLI2S_t pll_settings_16bit[8] = {
   {192, 2, 187, 1},
   {192, 3, 62, 1},
   {256, 3, 62, 1},
@@ -69,7 +69,7 @@ static PLLI2S_t pll_settings_16bit[8] = {
   {424, 3, 11, 1}
 };
 
-static PLLI2S_t pll_settings_32bit[8] = {
+static const PLLI2S_t pll_settings_32bit[8] = {
   {192, 3, 62, 1},
   {256, 2, 62, 1},
   {256, 5, 12, 1},
