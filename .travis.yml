@@ -9,9 +9,9 @@ cache:
 language: c
 
 addons:
-    apt:
-      packages:
-      libc6-386
+  apt:
+    packages:
+    libc6-386
 
 before_install:
     - date
