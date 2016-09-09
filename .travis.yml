@@ -11,7 +11,7 @@ language: c
 addons:
   apt:
     packages:
-      libc6-386
+      libc6-i386
 
 before_install:
     - date
