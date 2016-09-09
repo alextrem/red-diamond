@@ -2,6 +2,10 @@ env:
     global:
     - secure: "HBDFysj90FNmAdrziR1whg"
 
+cache:
+    directories:
+    - $HOME/gcc-arm-none-eabi-5_4-2016q2
+
 language: c
 
 before_install:
@@ -10,11 +14,11 @@ before_install:
     - sudo apt-get install libcurl4-openssl-dev libelf-dev libdw-dev p7zip-full
 
 install:
-    - wget https://launchpad.net/gcc-arm-embedded/5.0/5-2016-q2-update/+download/gcc-arm-none-eabi-5_4-2016q2-20160622-linux.tar.bz2
-    - tar -xf gcc-arm-none-eabi-5_4-2016q2-20160622-linux.tar.bz2
-
-before_script:
-    - export PATH=$PATH:$PWD/gcc-arm-none-eabi-5_4-2016q2/bin
+    - export GCC_DIR=$HOME/gcc-arm-none-eabi-5_4-2016q2
+    - export GCC_ARCHIVE=$HOME/gcc-arm-none-eabi-5_4-2016q2-20160622-linux.tar.bz2
+    - export GCC_URL=https://launchpad.net/gcc-arm-embedded/5.0/5-2016-q2-update/+download/gcc-arm-none-eabi-5_4-2016q2-20160622-linux.tar.bz2
+    - if [ ! -e $GCC_DIR/bin/arm-none-eabi-g++]; then wget $GCC_URL -O $GCC_ARCHIVE; tar xfj $GCC_ARCHIVE -C $HOME; fi
+    - export PATH=$PATH:$GCC_DIR/bin
 
 script:
     - make extract
