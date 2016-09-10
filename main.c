@@ -29,6 +29,7 @@
 #include "cs43l22.h"
 //#include "pcm1792a.h"
 #include "adv7612.h"
+
 #include "mad.h"
 
 #define ADC_GRP1_NUM_CHANNELS   1
@@ -149,14 +150,6 @@ static void cmd_dir(BaseSequentialStream *chp, int argc, char *argv[]) {
   scan_files(chp, (char *)fbuff);
 }
 
-static void cmd_boot(BaseSequentialStream *chp, int argc, char *argv[]) {
-  (void)argv;
-  if (argc > 0) {
-    chprintf(chp, "Usage: boot\r\n");
-    return;
-  }
-}
-
 static void cmd_led(BaseSequentialStream *chp, int argc, char *argv[]) {
   (void)argv;
   if(argc > 0) {
@@ -170,6 +163,18 @@ static void cmd_led(BaseSequentialStream *chp, int argc, char *argv[]) {
   palTogglePad(GPIOD, 15);
 }
 
+static void cmd_mad(BaseSequentialStream *chp, int argc, char argv[]) {
+  (void) argv;
+  if (argc > 0) {
+    chprintf(chp, "Usage: mad\r\n");
+    return;
+  }
+  chprintf(chp, "Libmad: %s, %s, %s\r\n", __FILE__, __DATE__, __TIME__);
+  chprintf(chp, "%s\r\n", mad_version);
+  chprintf(chp, "%s\r\n", mad_copyright);
+  chprintf(chp, "%s\r\n", mad_author);
+  chprintf(chp, "%s\r\n", mad_build);
+}
 
 static void cmd_adc(BaseSequentialStream *chp, int argc, char *argv[]) {
   (void) argv;
@@ -185,7 +190,6 @@ static void cmd_codec(BaseSequentialStream *chp, int argc, char *argv[]) {
     chprintf(chp, "Usage: codec\r\n");
     return;
   }
-  
 }
 
 static void cmd_dac(BaseSequentialStream *chp, int argc, char *argv[]) {
@@ -197,8 +201,8 @@ static void cmd_dac(BaseSequentialStream *chp, int argc, char *argv[]) {
 }
 
 static const ShellCommand commands[] = {
-  {"boot", cmd_boot},
   {"led", cmd_led},
+  {"mad", cmd_mad},
   {"adc", cmd_adc},
   {"codec", cmd_codec},
   {"dac", cmd_dac},
@@ -430,7 +434,7 @@ int main(void) {
   /* Assign driver to Codec interface */
   Codec_Init(&I2CD1);
   /* Configure codecs with defined settings */
-  // TODO
+  Codec_Configure();
 
   /*
    * Initializes the SPI driver 1 in order to access the MEMS. The signals
@@ -455,7 +459,7 @@ int main(void) {
   palSetPadMode(GPIOB, 14, PAL_MODE_ALTERNATE(5));              /* MISO.    */
   palSetPadMode(GPIOB, 15, PAL_MODE_ALTERNATE(5) |
                            PAL_STM32_OSPEED_HIGHEST);           /* MOSI.    */
-  
+
   /*
    * Initializes the I2S driver 3. The I2S signals are routed as follow:
    * PA4  - I2S3_WS.
@@ -472,7 +476,7 @@ int main(void) {
                 PAL_STM32_OSPEED_MID2); /* SCK */
   palSetPadMode(GPIOC, 12, PAL_MODE_OUTPUT_PUSHPULL | PAL_MODE_ALTERNATE(6) |
                 PAL_STM32_OSPEED_MID2); /* SD */
-  
+
   /*
    * Initializes PWM driver 4
    */
