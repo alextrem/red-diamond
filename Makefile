@@ -221,7 +221,7 @@ CPPWARN = -Wall -Wextra -Wundef
 #
 
 # List all user C define here, like -D_DEBUG=1
-UDEFS = -DFPM_DEFAULT -DSIZEOF_INT=4 -DSHELL_CMD_TEST_ENABLED=FALSE
+UDEFS = -DFPM_ARM -DSIZEOF_INT=4 -DSHELL_CMD_TEST_ENABLED=FALSE
 
 # Define ASM defines here
 UADEFS =
