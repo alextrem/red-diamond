@@ -29,7 +29,8 @@
 /* Driver constants.                                                         */
 /*===========================================================================*/
 
-#define CODEC_ADDRESS 0x4A
+#define CODEC_STANDARD 0x04
+#define CODEC_ADDRESS 0x94
 
 #define CODEC_ID   0x01
 #define CODEC_HPC  0x04
@@ -148,7 +149,7 @@ extern "C" {
 void Codec_Init(I2CDriver *i2cp);
 void Codec_Configure(void);
 void Codec_GetID(void);
-void Codec_VolumeCtl(const OUTPUT_t set, const uint8_t volume);
+void Codec_VolumeCtl(OUTPUT_t set, uint8_t volume);
 void Codec_Balance(const OUTPUT_t set, int8_t balance);
 void Codec_Mute(const OUTPUT_t set);
 void Codec_BeepGenerator(DAC_CS43L22_t *dac);

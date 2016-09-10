@@ -198,9 +198,13 @@ void Codec_Configure(void) {
   Codec_WriteRegister(0x05, 0x81);
 
   /* Set slave mode and the audio interface standard */
-  //Codec_WriteRegister();
+  Codec_WriteRegister(0x06, CODEC_STANDARD);
 
+  /* Set the volume on all outputs */
   //Codec_SetVolume(all);
+
+  /* Power on codec */
+  Codec_WriteRegister(0x02, 0x9E);
 
   /* Disable the analog soft ramp */
 }
@@ -218,7 +222,7 @@ void Codec_GetID(void) {
  * @param[in]   set
  * @param[in]   value
  */
-void Codec_VolumeCtrl(const OUTPUT_t set, uint8_t volume) {
+void Codec_VolumeCtrl(OUTPUT_t set, uint8_t volume) {
   switch(set) {
     case all:
       Codec_WriteRegister(CODEC_SPKA, volume);
