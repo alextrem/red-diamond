@@ -59,8 +59,8 @@ THD_FUNCTION(pwmThread, arg) {
 
   chRegSetThreadName("PWM");
   while (TRUE) {
-    pwmEnableChannel(&PWMD4, 0, (pwmcnt_t)5);
-    pwmEnableChannel(&PWMD4, 1, (pwmcnt_t)10);
+    pwmEnableChannel(&PWMD4, 0, (pwmcnt_t)100);
+    pwmEnableChannel(&PWMD4, 1, (pwmcnt_t)100);
     chThdSleepMilliseconds(250);
   }
 }
@@ -225,7 +225,7 @@ static const ShellConfig shell_cfg1 = {
  * the active state is a logic one.
  */
 static const PWMConfig pwmcfg = {
-  100000,                                   /* 100kHz PWM clock frequency.  */
+  10000,                                    /* 10kHz PWM clock frequency.  */
   512,                                      /* PWM period is 128 cycles.    */
   NULL,
   {
