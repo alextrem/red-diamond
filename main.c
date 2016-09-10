@@ -163,7 +163,7 @@ static void cmd_led(BaseSequentialStream *chp, int argc, char *argv[]) {
   palTogglePad(GPIOD, 15);
 }
 
-static void cmd_mad(BaseSequentialStream *chp, int argc, char argv[]) {
+static void cmd_mad(BaseSequentialStream *chp, int argc, char *argv[]) {
   (void) argv;
   if (argc > 0) {
     chprintf(chp, "Usage: mad\r\n");
