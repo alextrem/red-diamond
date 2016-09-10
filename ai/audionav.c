@@ -46,4 +46,11 @@
 /* Driver exported functions.                                                */
 /*===========================================================================*/
 
+/**
+ * @brief Returns the title of the selected audio track
+ *
+ * @return
+ */
+
+
 /** @} */

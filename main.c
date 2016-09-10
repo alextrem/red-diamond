@@ -29,6 +29,7 @@
 #include "cs43l22.h"
 //#include "pcm1792a.h"
 #include "adv7612.h"
+#include "mad.h"
 
 #define ADC_GRP1_NUM_CHANNELS   1
 #define ADC_GRP1_BUF_DEPTH      8
