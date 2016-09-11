@@ -182,7 +182,7 @@ void Codec_Configure(void) {
   Codec_Reset();
 
   /* Keep Codec powered OFF */
-  Codec_WriteRegister(0x02, 0x01);
+  Codec_WriteRegister(CODEC_POWER_CTL1, 0x01);
 
   /* Recommended initialization sequence from datasheet 4.11 */
   Codec_WriteRegister(0x00, 0x99);
@@ -192,21 +192,28 @@ void Codec_Configure(void) {
   Codec_WriteRegister(0x00, 0x00);
 
   /* Speaker always OFF, Headphone always ON */
-  Codec_WriteRegister(0x04, 0xAF);
+  Codec_WriteRegister(CODEC_POWER_CTL2, 0xAF);
 
   /* Clock configuration */
-  Codec_WriteRegister(0x05, 0x81);
+  Codec_WriteRegister(CODEC_CLOCK_CTL, 0x81);
 
   /* Set slave mode and the audio interface standard */
-  Codec_WriteRegister(0x06, CODEC_STANDARD);
+  Codec_WriteRegister(CODEC_INTERFACE_CTL1, CODEC_STANDARD);
 
   /* Set the volume on all outputs */
   //Codec_SetVolume(all);
 
   /* Power on codec */
-  Codec_WriteRegister(0x02, 0x9E);
+  Codec_WriteRegister(CODEC_POWER_CTL1, 0x9E);
 
   /* Disable the analog soft ramp */
+  Codec_WriteRegister(CODEC_SOFT_RAMP, 0x00);
+
+  /* Disable the limiter attack level */
+  Codec_WriteRegister(CODEC_LIMITER_CTRL1, 0x00);
+
+  /* Adjust base and treble levels */
+  Codec_WriteRegister(CODEC_TONE_CTRL, 0x0F);
 }
 
 /**
