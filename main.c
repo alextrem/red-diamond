@@ -42,6 +42,11 @@ static THD_WORKING_AREA(pwmThreadWorkingArea, 32);
 //static THD_WORKING_AREA(controlThreadWorkingArea, 256);
 //static THD_WORKING_AREA(audioThreadWorkingArea, 1024);
 
+/*
+ * SD-Card event sources
+ */
+static event_source_t inserted_event, removed_event;
+
 static THD_FUNCTION(ledThread, arg) {
 
   (void)arg;
@@ -538,6 +543,8 @@ int main(void) {
 
   //adcConvert(&ADCD1, &adcgrpcfg2, samples2, ADC_GRP2_BUF_DEPTH);
 
+  chEvtRegister(&inserted_event, &el0, 0);
+  chEvtRegister(&removed_event, &el1, 1);
    while (true) {
     if (!shelltp) {
       if (SDU1.config->usbp->state == USB_ACTIVE) {
