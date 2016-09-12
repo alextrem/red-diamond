@@ -355,6 +355,43 @@ static const ADCConversionGroup adcgrpcfg2 = {
   ADC_SQR2_SQ8_N(ADC_CHANNEL_SENSOR) | ADC_SQR2_SQ7_N(ADC_CHANNEL_VREFINT) |
   ADC_SQR3_SQ6_N(ADC_CHANNEL_IN12) | ADC_SQR3_SQ5_N(ADC_CHANNEL_IN13)
 };
+/*===========================================================================*/
+/* Main and generic code                                                     */
+/*===========================================================================*/
+
+thread_t *shelltp = NULL;
+
+static void InserHandler(eventid_t id) {
+  FRESULT err;
+
+  (void) id;
+
+  if (sdcConnect(&SDCD1))
+    return;
+
+  /* On SD insertion do file system mount */
+  err = f_mount(&SDC_FS, "/", 1);
+  if (err != FR_OK) {
+    sdcDisconnect(&SDCD1);
+    return;
+  }
+  fs_ready = TRUE;
+}
+
+static void RemoveHandler(eventid_t id) {
+  (void) id;
+  sdcDisconnect(&SDCD1);
+  fs_ready = FALSE;
+}
+
+static void ShellHandler(eventid_t id) {
+  (void) id;
+  if (chThdTerminatedX(shelltp)) {
+    /* Return memory to heap*/
+    chThdWait(shelltp);
+    shelltp = NULL;
+  }
+}
 
 /*===========================================================================*/
 /* Initialization and main thread.                                           */
@@ -364,7 +401,12 @@ static const ADCConversionGroup adcgrpcfg2 = {
  * Application entry point.
  */
 int main(void) {
-  thread_t *shelltp = NULL;
+  static const evhandler_t evhndl[] = {
+    InserHandler,
+    RemoveHandler,
+    ShellHandler
+  };
+  event_listener_t el0, el1, el2;
 
   /*
    * System initializations.
