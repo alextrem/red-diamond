@@ -14,6 +14,7 @@
     limitations under the License.
 */
 
+#include <stdio.h>
 #include <string.h>
 
 #include "ch.h"
@@ -560,6 +561,6 @@ int main(void) {
         shelltp = NULL;
       }
     }
-    chThdSleepMilliseconds(500);
+    chEvtDispatch(evhndl, chEvtWaitOneTimeout(ALL_EVENTS, MS2ST(500)));
   }
 }

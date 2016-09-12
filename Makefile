@@ -173,7 +173,7 @@ INCDIR = $(CHIBIOS)/os/license \
          $(STARTUPINC) $(KERNINC) $(PORTINC) $(OSALINC) $(COMMONINC)\
          $(HALINC) $(PLATFORMINC) $(BOARDINC) $(FATFSINC) $(MP3INC) \
          $(TESTINC) $(CHIBIOS)/os/various $(CHIBIOS)/os/hal/lib/streams \
-         $(AIINC) $(FATFSINC)/option $(DRIVERINC)
+         $(AIINC) $(DRIVERINC)
 
 #
 # Project, sources and paths
