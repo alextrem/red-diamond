@@ -19,10 +19,10 @@
 
 #include "ch.h"
 #include "hal.h"
+#include "test.h"
 
 #include "chprintf.h"
 #include "shell.h"
-#include "ff.h"
 #include "common.h"
 
 #include "usbcfg.h"
@@ -31,6 +31,7 @@
 //#include "pcm1792a.h"
 #include "adv7612.h"
 
+#include "ff.h"
 #include "mad.h"
 
 #define ADC_GRP1_NUM_CHANNELS   1
@@ -428,6 +429,8 @@ int main(void) {
    * Shell manager initialization.
    */
   shellInit();
+
+  sdcStart(&SDCD1, NULL);
 
   /*
    * Initializes a serial-over-USB CDC driver.
