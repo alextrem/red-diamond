@@ -109,9 +109,9 @@ include $(CHIBIOS)/os/hal/boards/ST_STM32F4_DISCOVERY/board.mk
 include $(CHIBIOS)/os/hal/osal/rt/osal.mk
 # RTOS files (optional).
 include $(CHIBIOS)/os/rt/rt.mk
-include $(CHIBIOS)/test/rt/test.mk
 include $(CHIBIOS)/os/rt/ports/ARMCMx/compilers/GCC/mk/port_v7m.mk
 # Other files (optional).
+#include $(CHIBIOS)/test/rt/test.mk
 include $(CHIBIOS)/os/various/fatfs_bindings/fatfs.mk
 include drivers/drivers.mk
 include libmad/mp3.mk
@@ -131,11 +131,11 @@ CSRC = $(STARTUPSRC) \
        $(HALSRC) \
        $(PLATFORMSRC) \
        $(BOARDSRC) \
-       $(TESTSRC) \
        $(FATFSSRC) \
        $(MP3SRC) \
        $(AISRC) \
        $(COMMONSRC) \
+	   $(CHIBIOS)/os/various/evtimer.c \
        $(CHIBIOS)/os/various/shell.c \
        $(CHIBIOS)/os/hal/lib/streams/memstreams.c \
        $(CHIBIOS)/os/hal/lib/streams/chprintf.c \
@@ -169,10 +169,9 @@ TCPPSRC =
 # List ASM source files here
 ASMSRC = $(STARTUPASM) $(PORTASM) $(OSALASM)
 
-INCDIR = $(CHIBIOS)/os/license \
-         $(STARTUPINC) $(KERNINC) $(PORTINC) $(OSALINC) $(COMMONINC)\
+INCDIR = $(STARTUPINC) $(KERNINC) $(PORTINC) $(OSALINC) $(COMMONINC)\
          $(HALINC) $(PLATFORMINC) $(BOARDINC) $(FATFSINC) $(MP3INC) \
-         $(TESTINC) $(CHIBIOS)/os/various $(CHIBIOS)/os/hal/lib/streams \
+         $(CHIBIOS)/os/various $(CHIBIOS)/os/hal/lib/streams \
          $(AIINC) $(DRIVERINC)
 
 #
