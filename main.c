@@ -43,6 +43,8 @@ static THD_WORKING_AREA(pwmThreadWorkingArea, 32);
 //static THD_WORKING_AREA(controlThreadWorkingArea, 256);
 //static THD_WORKING_AREA(audioThreadWorkingArea, 1024);
 
+MMCDriver MMCD1;
+
 /*
  * SD-Card event sources
  */
@@ -78,7 +80,7 @@ THD_FUNCTION(pwmThread, arg) {
 /*
  * @brief FS object
  */
-static FATFS SDC_FS;
+static FATFS MMC_FS;
 
 /* FS ready and mounted */
 static bool fs_ready = FALSE;
@@ -150,8 +152,8 @@ static void cmd_dir(BaseSequentialStream *chp, int argc, char *argv[]) {
   }
   chprintf(chp,
            "FS: %lu free clusters, %lu sectors per cluster, %lu bytes free\r\n",
-           clusters, (uint32_t)SDC_FS.csize,
-           clusters * (uint32_t)SDC_FS.csize * (uint32_t)MMCSD_BLOCK_SIZE);
+           clusters, (uint32_t)MMC_FS.csize,
+           clusters * (uint32_t)MMC_FS.csize * (uint32_t)MMCSD_BLOCK_SIZE);
   fbuff[0] = 0;
   scan_files(chp, (char *)fbuff);
 }
@@ -257,9 +259,15 @@ static const SPIConfig spi1cfg = {
   NULL,
   /* HW dependent part.*/
   GPIOC,
-  GPIOE_CS_SPI,
+  GPIOC_PIN4,
   SPI_CR1_BR_0 | SPI_CR1_BR_1 | SPI_CR1_CPOL | SPI_CR1_CPHA,
   NULL
+};
+
+static const MMCConfig mmc1cfg = {
+  &SPID1,
+  &spi1cfg,
+  &spi1cfg
 };
 
 /*
@@ -372,13 +380,13 @@ static void InserHandler(eventid_t id) {
 
   (void) id;
 
-  if (sdcConnect(&SDCD1))
+  if (mmcConnect(&MMCD1))
     return;
 
   /* On SD insertion do file system mount */
-  err = f_mount(&SDC_FS, "/", 1);
+  err = f_mount(&MMC_FS, "/", 1);
   if (err != FR_OK) {
-    sdcDisconnect(&SDCD1);
+    mmcDisconnect(&MMCD1);
     return;
   }
   fs_ready = TRUE;
@@ -386,7 +394,7 @@ static void InserHandler(eventid_t id) {
 
 static void RemoveHandler(eventid_t id) {
   (void) id;
-  sdcDisconnect(&SDCD1);
+  mmcDisconnect(&MMCD1);
   fs_ready = FALSE;
 }
 
@@ -428,8 +436,6 @@ int main(void) {
    * Shell manager initialization.
    */
   shellInit();
-
-  sdcStart(&SDCD1, NULL);
 
   /*
    * Initializes a serial-over-USB CDC driver.
@@ -490,7 +496,8 @@ int main(void) {
    * Initializes the SPI driver 1 in order to access the MEMS. The signals
    * are already initialized in the board file.
    */
-  spiStart(&SPID1, &spi1cfg);
+  mmcObjectInit(&MMCD1);
+  mmcStart(&MMCD1, &mmc1cfg);
 
   /*
    * Initializes the SPI driver 2. The SPI2 signals are routed as follow:
