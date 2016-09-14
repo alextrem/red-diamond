@@ -259,9 +259,15 @@ static const SPIConfig spi1cfg = {
   NULL,
   /* HW dependent part.*/
   GPIOC,
-  GPIOE_CS_SPI,
+  GPIOC_PIN4,
   SPI_CR1_BR_0 | SPI_CR1_BR_1 | SPI_CR1_CPOL | SPI_CR1_CPHA,
   NULL
+};
+
+static const MMCConfig mmc1cfg = {
+  &SPID1,
+  &spi1cfg,
+  &spi1cfg
 };
 
 /*
@@ -431,9 +437,6 @@ int main(void) {
    */
   shellInit();
 
-  mmcObjectInit(&MMCD1);
-  mmcStart(&MMCD1, NULL);
-
   /*
    * Initializes a serial-over-USB CDC driver.
    */
@@ -493,7 +496,8 @@ int main(void) {
    * Initializes the SPI driver 1 in order to access the MEMS. The signals
    * are already initialized in the board file.
    */
-  spiStart(&SPID1, &spi1cfg);
+  mmcObjectInit(&MMCD1);
+  mmcStart(&MMCD1, &mmc1cfg);
 
   /*
    * Initializes the SPI driver 2. The SPI2 signals are routed as follow:
