@@ -30,7 +30,7 @@
 /*===========================================================================*/
 
 #define CODEC_STANDARD 0x04
-#define CODEC_ADDRESS 0x94
+#define CODEC_ADDRESS 0x4A
 
 #define CODEC_ID   0x01
 #define CODEC_POWER_CTL1 0x02
@@ -177,7 +177,7 @@ extern "C" {
 
 void Codec_Init(I2CDriver *i2cp);
 void Codec_Configure(void);
-void Codec_GetID(void);
+uint8_t Codec_GetID(void);
 void Codec_VolumeCtl(OUTPUT_t set, uint8_t volume);
 void Codec_Balance(const OUTPUT_t set, int8_t balance);
 void Codec_Mute(const OUTPUT_t set);
