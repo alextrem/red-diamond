@@ -42,7 +42,7 @@ static msg_t Codec_WriteRegister(uint8_t address, uint8_t value);
 /* Driver local variables and types.                                         */
 /*===========================================================================*/
 
-static uint8_t rxbuf[2];
+static uint8_t rxbuf[1];
 static uint8_t txbuf[2];
 static const DAC_CS43L22_t factory_default = {
   .master_volume = {0,0},
@@ -80,19 +80,22 @@ static void Codec_Reset(void) {
  *
  */
 static uint8_t Codec_ReadRegister(uint8_t address) {
-  rxbuf[0] = address;
+  txbuf[0] = address;
+  rxbuf[0] = 0x00;
 
-  msg_t msg = i2cMasterReceiveTimeout(dac.i2cp,
-                                      CODEC_ADDRESS,
-                                      rxbuf,
-                                      sizeof(rxbuf),
-                                      MS2ST(4));
+  msg_t msg = i2cMasterTransmitTimeout(dac.i2cp,
+                                       CODEC_ADDRESS,
+                                       txbuf,
+                                       1,
+                                       rxbuf,
+                                       sizeof(rxbuf),
+                                       MS2ST(4));
 
   if (msg != MSG_OK) {
 
   }
 
-  uint8_t data = rxbuf[1];
+  uint8_t data = rxbuf[0];
 
   return data;
 }
@@ -219,8 +222,9 @@ void Codec_Configure(void) {
 /**
  * @brief   Get the ID and Revision of device
  */
-void Codec_GetID(void) {
+uint8_t Codec_GetID(void) {
   dac.deviceID = Codec_ReadRegister(CODEC_ID);
+  return dac.deviceID;
 }
 
 /**
