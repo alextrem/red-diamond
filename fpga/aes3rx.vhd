@@ -1,5 +1,5 @@
 ------------------------------------------------------------------------------
--- Company:
+-- Company:             Red Diamond
 -- Engineer:        	Alexander Geißler
 --
 -- Create Date:     	23:40:00 02/26/2015
@@ -52,8 +52,9 @@ architecture rtl of aes3rx is
 
 	signal sv_aes3					 : std_logic_vector(3 downto 0);
 	signal sl_change 				 : std_logic;
+	signal sl_aes3_clk          : std_logic;
 	signal sv_clk_counter 		 : std_logic_vector(4 downto 0);
-	signal current_state, next_state	: aes3_state_type;
+	signal current_state, next_state	: aes3_state_type := unlocked;
 	signal sv_decoder_shift		 : std_logic_vector(7 downto 0);
    signal sl_preamble_detected : std_logic := '0'; -- Asserted when preamble has been detected
    signal sl_x_detected        : std_logic := '0'; -- Asserted when x preamble has been detected
@@ -62,7 +63,7 @@ architecture rtl of aes3rx is
 
 begin
 
-input_shift_reg_proc: process(clk)
+input_shift_reg_proc: process(clk, reset)
 begin
 	if rising_edge(clk) then
 		if reset = '1' then
@@ -73,7 +74,8 @@ begin
 	end if;
 end process;
 
-change_detect_proc: process(clk)
+-- detects when change on input occurs
+change_detect_proc: process(clk, reset)
 begin
 	if rising_edge(clk) then
 		if reset = '1' then
@@ -88,13 +90,13 @@ aes3_clock_count_proc: process(clk)
 begin
 	if rising_edge(clk) then
 		if reset = '1' then
-			sv_clk_counter <= (others => '0');
---		else if sl_change = '1' or sv_clk_counter = 0 then
---			if sl_change = '1' then
---				
+			sv_clk_counter <= (others => '1');
+		elsif sv_clk_counter = b"0_0000" then
+			if sl_change = '1' then
+				sv_clk_counter <= (others => '1');
 			else
 				sv_clk_counter <= sv_clk_counter - 1;
---			end if;
+			end if;
 		end if;
 	end if;
 end process;
@@ -114,7 +116,7 @@ end process;
 -- Locking state machine for AES3/EBU data stream.
 -- The locking for 192kHz, 96kHz and 48kHz will be done in parallel.
 -- The clock will be set to 122 MHz
-lock_state_proc : process(current_state)
+lock_state_proc : process(current_state, sl_preamble_detected)
 begin
 	case current_state is
 		when unlocked =>
@@ -139,6 +141,45 @@ begin
 end process;
 
 -- Synchronization process for state machine
+lock_state_machine_sync_proc: process(clk)
+begin
+	if rising_edge(clk) then
+		if reset = '1' then
+			current_state <= unlocked;
+		elsif sl_change = '1' then
+			current_state <= next_state;
+		end if;
+	end if;
+end process;
 
+-- Preamble detection processes
+x_preamble_detector : process(sv_decoder_shift)
+begin
+	if sv_decoder_shift = X_PREAMBLE or sv_decoder_shift = not X_PREAMBLE then
+		sl_x_detected <= '1';
+	else
+		sl_x_detected <= '0';
+	end if;
+end process;
+
+y_preamble_detector : process(sv_decoder_shift)
+begin
+	if sv_decoder_shift = Y_PREAMBLE or sv_decoder_shift = not Y_PREAMBLE then
+		sl_y_detected <= '1';
+	else
+		sl_y_detected <= '0';
+	end if;
+end process;
+
+z_preamble_detector : process(sv_decoder_shift)
+begin
+	if sv_decoder_shift = Z_PREAMBLE or sv_decoder_shift = not Z_PREAMBLE then
+		sl_z_detected <= '1';
+	else
+		sl_z_detected <= '0';
+	end if;
+end process;
+
+sl_preamble_detected <= sl_x_detected or sl_y_detected or sl_z_detected;
 
 end rtl;
