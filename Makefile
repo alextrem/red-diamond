@@ -84,7 +84,7 @@ endif
 
 # Enables the use of FPU on Cortex-M4 (no, softfp, hard).
 ifeq ($(USE_FPU),)
-  USE_FPU = hard
+  USE_FPU = no
 endif
 
 #
@@ -101,7 +101,7 @@ PROJECT = red-diamond
 # Imported source files and paths
 CHIBIOS = ChibiOS
 # Startup files.
-include $(CHIBIOS)/os/common/startup/ARMCMx/compilers/GCC/mk/startup_stm32f4xx.mk
+include $(CHIBIOS)/os/common/ports/ARMCMx/compilers/GCC/mk/startup_stm32f4xx.mk
 # HAL-OSAL files (optional).
 include $(CHIBIOS)/os/hal/hal.mk
 include $(CHIBIOS)/os/hal/ports/STM32/STM32F4xx/platform.mk
@@ -109,11 +109,9 @@ include $(CHIBIOS)/os/hal/boards/ST_STM32F4_DISCOVERY/board.mk
 include $(CHIBIOS)/os/hal/osal/rt/osal.mk
 # RTOS files (optional).
 include $(CHIBIOS)/os/rt/rt.mk
-include $(CHIBIOS)/test/rt/test.mk
-include $(CHIBIOS)/os/common/ports/ARMCMx/compilers/GCC/mk/port_v7m.mk
+include $(CHIBIOS)/os/rt/ports/ARMCMx/compilers/GCC/mk/port_v7m.mk
 # Other files (optional).
-include $(CHIBIOS)/os/various/shell/shell.mk
-include $(CHIBIOS)/os/hal/lib/streams/streams.mk
+#include $(CHIBIOS)/test/rt/test.mk
 include $(CHIBIOS)/os/various/fatfs_bindings/fatfs.mk
 include drivers/drivers.mk
 include libmad/mp3.mk
@@ -133,13 +131,14 @@ CSRC = $(STARTUPSRC) \
        $(HALSRC) \
        $(PLATFORMSRC) \
        $(BOARDSRC) \
-       $(TESTSRC) \
        $(FATFSSRC) \
        $(MP3SRC) \
        $(AISRC) \
        $(COMMONSRC) \
-       $(STREAMSSRC) \
-       $(SHELLSRC) \
+	   $(CHIBIOS)/os/various/evtimer.c \
+       $(CHIBIOS)/os/various/shell.c \
+       $(CHIBIOS)/os/hal/lib/streams/memstreams.c \
+       $(CHIBIOS)/os/hal/lib/streams/chprintf.c \
        $(DRIVERSRC) \
        usbcfg.c main.c
 
@@ -168,14 +167,12 @@ TCSRC =
 TCPPSRC =
 
 # List ASM source files here
-ASMSRC =
-ASMXSRC = $(STARTUPASM) $(PORTASM) $(OSALASM)
+ASMSRC = $(STARTUPASM) $(PORTASM) $(OSALASM)
 
-INCDIR = $(CHIBIOS)/os/license \
-         $(STARTUPINC) $(KERNINC) $(PORTINC) $(OSALINC) $(COMMONINC)\
+INCDIR = $(STARTUPINC) $(KERNINC) $(PORTINC) $(OSALINC) $(COMMONINC)\
          $(HALINC) $(PLATFORMINC) $(BOARDINC) $(FATFSINC) $(MP3INC) \
-         $(STREAMSINC) $(TESTINC) $(CHIBIOS)/os/various \
-         $(AIINC) $(SHELLINC) $(FATFSINC)/option $(DRIVERINC)
+         $(CHIBIOS)/os/various $(CHIBIOS)/os/hal/lib/streams \
+         $(AIINC) $(DRIVERINC)
 
 #
 # Project, sources and paths
@@ -223,7 +220,7 @@ CPPWARN = -Wall -Wextra -Wundef
 #
 
 # List all user C define here, like -D_DEBUG=1
-UDEFS = -DFPM_DEFAULT -DSIZEOF_INT=4 -DSHELL_CMD_TEST_ENABLED=FALSE
+UDEFS = -DFPM_ARM -DSIZEOF_INT=4 -DSHELL_CMD_TEST_ENABLED=FALSE
 
 # Define ASM defines here
 UADEFS =
@@ -241,5 +238,5 @@ ULIBDIR = dsp_lib/lib
 # End of user defines
 ##############################################################################
 
-RULESPATH = $(CHIBIOS)/os/common/startup/ARMCMx/compilers/GCC
+RULESPATH = $(CHIBIOS)/os/common/ports/ARMCMx/compilers/GCC
 include $(RULESPATH)/rules.mk

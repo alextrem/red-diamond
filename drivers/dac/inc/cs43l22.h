@@ -29,15 +29,45 @@
 /* Driver constants.                                                         */
 /*===========================================================================*/
 
-#define CODEC_ADDRESS 0x4A
+#define CODEC_STANDARD 0x04
+#define CODEC_ADDRESS 0x94
 
 #define CODEC_ID   0x01
-#define CODEC_HPC  0x04
-
+#define CODEC_POWER_CTL1 0x02
+#define CODEC_POWER_CTL2 0x04
+#define CODEC_CLOCK_CTL 0x05
+#define CODEC_INTERFACE_CTL1 0x06
+#define CODEC_INTERFACE_CTL2 0x07
+#define CODEC_PASS_A 0x08
+#define CODEC_PASS_B 0x09
+#define CODEC_SOFT_RAMP 0x0A
+#define CODEC_PASS_GANG_CTRL 0x0C
+#define CODEC_PLAYBACK_CTL1 0x0D
+#define CODEC_MISC_CTL 0x0E
+#define CODEC_PLAYBACK_CTL2 0x0F
+#define CODEC_PASS_A_VOL 0x14
+#define CODEC_PASS_B_VOL 0x15
+#define CODEC_PCM_A 0x1A
+#define CODEC_PCM_B 0x1B
+#define CODEC_BEEP_FREQ_ON_TIME 0x1C
+#define CODEC_BEEP_VOL_OFF_TIME 0x1D
+#define CODEC_BEEP_TONE_CFG 0x1E
+#define CODEC_TONE_CTRL 0x1F
+#define CODEC_MASTER_VOLUME_CTRL_A 0x20
+#define CODEC_MASTER_VOLUME_CTRL_B 0x21
 #define CODEC_HPA  0x22
 #define CODEC_HPB  0x23
 #define CODEC_SPKA 0x24
 #define CODEC_SPKB 0x25
+#define CODEC_PCM_CHANNEL_SWAP 0x26
+#define CODEC_LIMITER_CTRL1 0x27
+#define CODEC_LIMITER_CTRL2 0x28
+#define CODEC_LIMITER_ATTACK 0x29
+#define CODEC_STATUS 0x2E
+#define CODEC_BATTERY_COMPENSATION 0x2F
+#define CODEC_VP_BATTERY_LEVEL 0x30
+#define CODEC_SPEAKER_STATUS 0x31
+#define CODEC_CHARGE_PUMP_FREQ 0x34
 
 /*===========================================================================*/
 /* Driver pre-compile time settings.                                         */
@@ -148,7 +178,7 @@ extern "C" {
 void Codec_Init(I2CDriver *i2cp);
 void Codec_Configure(void);
 void Codec_GetID(void);
-void Codec_VolumeCtl(const OUTPUT_t set, const uint8_t volume);
+void Codec_VolumeCtl(OUTPUT_t set, uint8_t volume);
 void Codec_Balance(const OUTPUT_t set, int8_t balance);
 void Codec_Mute(const OUTPUT_t set);
 void Codec_BeepGenerator(DAC_CS43L22_t *dac);

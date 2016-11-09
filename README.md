@@ -85,22 +85,48 @@ To be able to handle the use of the alternate functions of the I/O pads the foll
 
 |LQFP100 | Alternate Function | DAC | FPGA | LEDs | ADC | USB | SDIO | HDMI |
 |--------|--------------------|-----|------|------|-----|-----|------|------|
+|PA1     |                    |     |      |      |     |     |      |      |
+|PA2     |                    |     |      |      |     |     |      |      |
+|PA3     |                    |     |      |      |     |     |      |      |
 |PA4     | I2S3_WS            |     |   x  |      |     |     |      |      |
 |PA5     | SPI1_SCK           |  x  |      |      |  x  |     |      |      |
 |PA6     | SPI1_MISO          |  x  |      |      |  x  |     |      |      |
 |PA7     | SPI1_MOSI          |  x  |      |      |  x  |     |      |      |
+|PA8     |                    |     |      |      |     |     |      |      |
 |PA9     | OTG_FS_VBUS        |     |      |      |     |  x  |      |      |
 |PA10    | OTG_FS_ID          |     |      |      |     |  x  |      |      |
 |PA11    | OTG_FS_DM          |     |      |      |     |  x  |      |      |
 |PA12    | OTG_FS_DM          |     |      |      |     |  x  |      |      |
 |PB0     | ETH_MII_RXD2       |     |      |      |     |     |      |      |
 |PB1     | ETH_MII_RXD3       |     |      |      |     |     |      |      |
+|PB2     |                    |     |      |      |     |     |      |      |
+|PB3     |                    |     |      |      |     |     |      |      |
+|PB4     |                    |     |      |      |     |     |      |      |
+|PB5     |                    |     |      |      |     |     |      |      |
 |PB6     | I2C1_SCL           |  x  |      |      |     |     |      |   x  |
+|PB7     |                    |     |      |      |     |     |      |      |
+|PB8     |                    |     |      |      |     |     |      |      |
 |PB9     | I2C1_SDA           |  x  |      |      |     |     |      |   x  |
+|PB10    |                    |     |      |      |     |     |      |      |
+|PB11    |                    |     |      |      |     |     |      |      |
 |PB12    | SPI2_NSS           | CS  |      |      |     |     |      |      |
+|PC0     |                    |     |      |      |     |     |      |      |
+|PC1     |                    |     |      |      |     |     |      |      |
+|PC2     |                    |     |      |      |     |     |      |      |
+|PC3     |                    |     |      |      |     |     |      |      |
+|PC4     |                    |     |      |      |     |     |      |      |
+|PC5     |                    |     |      |      |     |     |      |      |
+|PC6     |                    |     |      |      |     |     |      |      |
 |PC7     | I2S3_MCK           |     |   x  |      |     |     |      |      |
+|PC8     |                    |     |      |      |     |     |      |      |
+|PC9     |                    |     |      |      |     |     |      |      |
 |PC10    | I2S3_CK            |     |   x  |      |     |     |      |      |
+|PC11    |                    |     |      |      |     |     |      |      |
 |PC12    | I2S3_SD            |     |   x  |      |     |     |      |      |
+|PC13    |                    |     |      |      |     |     |      |      |
+|PC14    |                    |     |      |      |     |     |      |      |
+|PC15    |                    |     |      |      |     |     |      |      |
+
 
 ## F.A.Q.
 **Everything builds. I get a binary but it does not seem to work. What's wrong ?**

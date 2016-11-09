@@ -52,16 +52,36 @@ static const AudioCtrl_t factory_default = {
 /* Driver exported functions.                                                */
 /*===========================================================================*/
 
-void set_balance(AudioCtrl_t* const me ) {
-
+/**
+ * @brief Sets the balance of the audio output
+ *
+ * @param[in]   ctrl
+ */
+void set_balance(AudioCtrl_t* const ctrl) {
+ /* TODO: make those user settings store in flash */
 }
 
-void set_volume(AudioCtrl_t* const me) {
-
+/**
+ * @brief Sets the volume of the audio output
+ *
+ * @param[in]   ctrl
+ */
+void set_volume(AudioCtrl_t* const ctrl) {
+  /* TODO: make those user settings store in flash */
 }
 
-void choose_source(AudioCtrl_t* const me) {
-
+void set_source(AudioCtrl_t* const ctrl) {
+ /* TODO: make those usersettings store in flash */
 }
 
+/**
+ * @brief restore factory default settings
+ *
+ * @param[in]   ctrl
+ */
+void set_factory_default (AudioCtrl_t* ctrl) {
+  ctrl->balance = factory_default.balance;
+  ctrl->volume = factory_default.volume;
+  ctrl->source = factory_default.source;
+}
 /** @} */

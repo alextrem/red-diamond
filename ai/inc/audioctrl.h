@@ -67,10 +67,16 @@ typedef struct audioctrl {
 #ifdef __cplusplus
 extern "C" {
 #endif
-void set_balance(AudioCtrl_t* const me);
-void set_volume(AudioCtrl_t* const me);
-void set_filter(AudioCtrl_t * const me);
-void choose_source(AudioCtrl_t* const me);
+void set_balance(AudioCtrl_t* const ctrl);
+void set_volume(AudioCtrl_t* const ctrl);
+void set_filter(AudioCtrl_t * const ctrl);
+void set_source(AudioCtrl_t* const ctrl);
+void set_factory_default(AudioCtrl_t* ctrl);
+
+void audio_ctrl_stop(void);
+void audio_ctrl_pause(void);
+void audio_ctrl_resume(void);
+
 #ifdef __cplusplus
 }
 #endif

@@ -14,6 +14,7 @@
     limitations under the License.
 */
 
+#include <stdio.h>
 #include <string.h>
 
 #include "ch.h"
@@ -21,7 +22,6 @@
 
 #include "chprintf.h"
 #include "shell.h"
-#include "ff.h"
 #include "common.h"
 
 #include "usbcfg.h"
@@ -29,6 +29,9 @@
 #include "cs43l22.h"
 //#include "pcm1792a.h"
 #include "adv7612.h"
+
+#include "ff.h"
+#include "mad.h"
 
 #define ADC_GRP1_NUM_CHANNELS   1
 #define ADC_GRP1_BUF_DEPTH      8
@@ -39,6 +42,11 @@ static THD_WORKING_AREA(ledThreadWorkingArea, 64);
 static THD_WORKING_AREA(pwmThreadWorkingArea, 32);
 //static THD_WORKING_AREA(controlThreadWorkingArea, 256);
 //static THD_WORKING_AREA(audioThreadWorkingArea, 1024);
+
+/*
+ * SD-Card event sources
+ */
+static event_source_t inserted_event, removed_event;
 
 static THD_FUNCTION(ledThread, arg) {
 
@@ -57,8 +65,8 @@ THD_FUNCTION(pwmThread, arg) {
 
   chRegSetThreadName("PWM");
   while (TRUE) {
-    pwmEnableChannel(&PWMD4, 0, (pwmcnt_t)5);
-    pwmEnableChannel(&PWMD4, 1, (pwmcnt_t)10);
+    pwmEnableChannel(&PWMD4, 0, (pwmcnt_t)100);
+    pwmEnableChannel(&PWMD4, 1, (pwmcnt_t)100);
     chThdSleepMilliseconds(250);
   }
 }
@@ -148,14 +156,6 @@ static void cmd_dir(BaseSequentialStream *chp, int argc, char *argv[]) {
   scan_files(chp, (char *)fbuff);
 }
 
-static void cmd_boot(BaseSequentialStream *chp, int argc, char *argv[]) {
-  (void)argv;
-  if (argc > 0) {
-    chprintf(chp, "Usage: boot\r\n");
-    return;
-  }
-}
-
 static void cmd_led(BaseSequentialStream *chp, int argc, char *argv[]) {
   (void)argv;
   if(argc > 0) {
@@ -169,10 +169,31 @@ static void cmd_led(BaseSequentialStream *chp, int argc, char *argv[]) {
   palTogglePad(GPIOD, 15);
 }
 
+static void cmd_mad(BaseSequentialStream *chp, int argc, char *argv[]) {
+  (void) argv;
+  if (argc > 0) {
+    chprintf(chp, "Usage: mad\r\n");
+    return;
+  }
+  chprintf(chp, "Libmad: %s, %s, %s\r\n", __FILE__, __DATE__, __TIME__);
+  chprintf(chp, "%s\r\n", mad_version);
+  chprintf(chp, "%s\r\n", mad_copyright);
+  chprintf(chp, "%s\r\n", mad_author);
+  chprintf(chp, "%s\r\n", mad_build);
+}
+
 static void cmd_adc(BaseSequentialStream *chp, int argc, char *argv[]) {
   (void) argv;
   if (argc > 0) {
     chprintf(chp, "Usage: adc\r\n");
+    return;
+  }
+}
+
+static void cmd_codec(BaseSequentialStream *chp, int argc, char *argv[]) {
+  (void) argv;
+  if (argc > 0) {
+    chprintf(chp, "Usage: codec\r\n");
     return;
   }
 }
@@ -186,9 +207,10 @@ static void cmd_dac(BaseSequentialStream *chp, int argc, char *argv[]) {
 }
 
 static const ShellCommand commands[] = {
-  {"boot", cmd_boot},
   {"led", cmd_led},
+  {"mad", cmd_mad},
   {"adc", cmd_adc},
+  {"codec", cmd_codec},
   {"dac", cmd_dac},
   {"dir", cmd_dir},
   {NULL, NULL}
@@ -209,7 +231,7 @@ static const ShellConfig shell_cfg1 = {
  * the active state is a logic one.
  */
 static const PWMConfig pwmcfg = {
-  100000,                                   /* 100kHz PWM clock frequency.  */
+  10000,                                    /* 10kHz PWM clock frequency.  */
   512,                                      /* PWM period is 128 cycles.    */
   NULL,
   {
@@ -237,7 +259,7 @@ static const SPIConfig spi1cfg = {
   GPIOC,
   GPIOE_CS_SPI,
   SPI_CR1_BR_0 | SPI_CR1_BR_1 | SPI_CR1_CPOL | SPI_CR1_CPHA,
-  SPI_CR2_RXDMAEN
+  NULL
 };
 
 /*
@@ -251,7 +273,7 @@ static const SPIConfig spi2cfg = {
   GPIOB,
   12,
   0,
-  0
+  NULL
 };
 
 /*
@@ -339,16 +361,40 @@ static const ADCConversionGroup adcgrpcfg2 = {
   ADC_SQR2_SQ8_N(ADC_CHANNEL_SENSOR) | ADC_SQR2_SQ7_N(ADC_CHANNEL_VREFINT) |
   ADC_SQR3_SQ6_N(ADC_CHANNEL_IN12) | ADC_SQR3_SQ5_N(ADC_CHANNEL_IN13)
 };
+/*===========================================================================*/
+/* Main and generic code                                                     */
+/*===========================================================================*/
 
-static thread_t *shelltp = NULL;
+thread_t *shelltp = NULL;
 
-/*
- * Shell exit event.
- */
+static void InserHandler(eventid_t id) {
+  FRESULT err;
+
+  (void) id;
+
+  if (sdcConnect(&SDCD1))
+    return;
+
+  /* On SD insertion do file system mount */
+  err = f_mount(&SDC_FS, "/", 1);
+  if (err != FR_OK) {
+    sdcDisconnect(&SDCD1);
+    return;
+  }
+  fs_ready = TRUE;
+}
+
+static void RemoveHandler(eventid_t id) {
+  (void) id;
+  sdcDisconnect(&SDCD1);
+  fs_ready = FALSE;
+}
+
 static void ShellHandler(eventid_t id) {
-  (void)id;
+  (void) id;
   if (chThdTerminatedX(shelltp)) {
-    chThdWait(shelltp);                 /* Returning memory to heap.        */
+    /* Return memory to heap*/
+    chThdWait(shelltp);
     shelltp = NULL;
   }
 }
@@ -362,9 +408,11 @@ static void ShellHandler(eventid_t id) {
  */
 int main(void) {
   static const evhandler_t evhndl[] = {
+    InserHandler,
+    RemoveHandler,
     ShellHandler
   };
-  event_listener_t e10;
+  event_listener_t el0, el1, el2;
 
   /*
    * System initializations.
@@ -381,6 +429,8 @@ int main(void) {
    */
   shellInit();
 
+  sdcStart(&SDCD1, NULL);
+
   /*
    * Initializes a serial-over-USB CDC driver.
    */
@@ -390,7 +440,7 @@ int main(void) {
   /*
    * Set I2S PLL
    */
-  Config_I2S(&I2SD3, SR_48kHz, 1);
+  Config_I2S(&I2SD3, SR_48kHz, BIT_32);
 
   /*
    * Initializes a sd-card driver
@@ -407,14 +457,21 @@ int main(void) {
   usbConnectBus(serusbcfg.usbp);
 
   /*
+   * Activates the serial driver
+   */
+  sdStart(&SD2, NULL);
+  palSetPadMode(GPIOA, 2, PAL_MODE_ALTERNATE(7));
+  palSetPadMode(GPIOA, 3, PAL_MODE_ALTERNATE(7));
+
+  /*
    * Activates an analog interface
    */
 
   /*
    * Activates the ADCD1 driver and temperature sensor
    */
-  adcStart(&ADCD1, NULL);
-  adcSTM32EnableTSVREFE();
+  //adcStart(&ADCD1, NULL);
+  //adcSTM32EnableTSVREFE();
 
   /*
    * Activates the I2C interface
@@ -427,7 +484,7 @@ int main(void) {
   /* Assign driver to Codec interface */
   Codec_Init(&I2CD1);
   /* Configure codecs with defined settings */
-  // TODO
+  Codec_Configure();
 
   /*
    * Initializes the SPI driver 1 in order to access the MEMS. The signals
@@ -485,16 +542,26 @@ int main(void) {
   chThdCreateStatic(pwmThreadWorkingArea, sizeof(pwmThreadWorkingArea),
                     NORMALPRIO+2, pwmThread, NULL);
 
-  adcConvert(&ADCD1, &adcgrpcfg1, samples1, ADC_GRP1_BUF_DEPTH);
+  //adcConvert(&ADCD1, &adcgrpcfg1, samples1, ADC_GRP1_BUF_DEPTH);
 
-  adcConvert(&ADCD1, &adcgrpcfg2, samples2, ADC_GRP2_BUF_DEPTH);
+  //adcConvert(&ADCD1, &adcgrpcfg2, samples2, ADC_GRP2_BUF_DEPTH);
 
-  chEvtRegister(&shell_terminated, &e10, 0);
-  while (TRUE) {
-    if (!shelltp && (SDU1.config->usbp->state == USB_ACTIVE)) {
-       shelltp = chThdCreateFromHeap(NULL, SHELL_WA_SIZE,
-                                     "shell", NORMALPRIO + 1,
-                                     shellThread, (void *)&shell_cfg1);
+  chEvtRegister(&inserted_event, &el0, 0);
+  chEvtRegister(&removed_event, &el1, 1);
+   while (true) {
+    if (!shelltp) {
+      if (SDU1.config->usbp->state == USB_ACTIVE) {
+        /* Spawns a new shell.*/
+        shelltp = shellCreate(&shell_cfg1, SHELL_WA_SIZE, NORMALPRIO);
+      }
+    }
+    else {
+      /* If the previous shell exited.*/
+      if (chThdTerminatedX(shelltp)) {
+        /* Recovers memory of the previous shell.*/
+        chThdRelease(shelltp);
+        shelltp = NULL;
+      }
     }
     chEvtDispatch(evhndl, chEvtWaitOneTimeout(ALL_EVENTS, MS2ST(500)));
   }

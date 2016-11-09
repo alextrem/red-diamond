@@ -56,9 +56,9 @@
  *
  * @note    The default I2S pll values are defined in mcuconf.h
  *          The default samplerate with this setup is 48kHz. Take a closer look
- *          at page 826 of DM00031020.pdf
+ *          at page 913 of DM00031020.pdf
  */
-void Config_I2S(I2SDriver* i2sp, const SAMPLERATE_t samplerate, const uint8_t nbits) {
+void Config_I2S(I2SDriver* i2sp, const SAMPLERATE_t samplerate, const BITS_t nbits) {
   /* Clear I2SCFGR & I2SPR register */
   i2sp->spi->I2SCFGR &= I2SCFGR_CLEAR_MASK;
   i2sp->spi->I2SPR = I2SPR_CLEAR_MASK;
