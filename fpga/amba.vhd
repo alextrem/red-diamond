@@ -1,10 +1,35 @@
+------------------------------------------------------------------------------
+-- Company:          Red Diamond
+-- Engineer:         Alexander Geißler
+--
+-- Create Date:      23:40:00 11/19/2016
+-- Design Name:
+-- Project Name:     red-diamond
+-- Target Device:    EP4CE22C8N
+-- Tool Versions:    16.0
+-- Description:      This AES3/EBU and SPDIF receiver is compliant with
+--                   IEC61937, IEC60958-3 and IEC60958-4
+--                   This package contains constants and type definitions
+--                   for the receiver
+--
+-- Dependencies:
+--
+-- Revision:
+-- Revision 0.1 - File created
+-- Revision 0.2 - Changed indentation
+------------------------------------------------------------------------------
+
+
 library ieee;
 use ieee.std_logic_1164.all;
 use ieee.numeric_std.all;
 
 package amba is
 
-  -- AHB slave inputs
+------------------------------------------------------------------------------
+-- AHB slave inputs
+------------------------------------------------------------------------------
+
   type t_ahb_slave_in is record
     hsel      : std_ulogic;
     haddr     : std_logic_vector(31 downto 0);
@@ -20,9 +45,14 @@ package amba is
 
   -- AHB slave outputs
   type t_ahb_slave_out is record
-    hready : std_ulogic;
-    hresp  : std_logic_vector(1 downto 0);
-    hrdata : std_logic_vector(31 downto 0);
+    hreadyout : std_ulogic;
+    hresp     : std_logic_vector(1 downto 0);
+    hrdata    : std_logic_vector(31 downto 0);
+  end record;
+
+  type t_apb3_slave_in is record
+    psel  : std_ulogic;
+    paddr : std_logic_vector(31 downto 0);
   end record;
 
 ------------------------------------------------------------------------------
@@ -61,6 +91,14 @@ package amba is
 -- functions and procedures
 ------------------------------------------------------------------------------
 
+  function ahb_write_word (
+    hdata : std_logic_vector(AHBDW-1 downto 0);
+    haddr : std_logic_vector(4 downto 2));
+
+  procedure ahb_write_data (
+    haddr : std_logic_vector(4 downto 2);
+    hdata : std_logic_vector(AHBDW-1 downto 0));
+
   function ahb_read_word (
     hdata : std_logic_vector(AHBDW-1 downto 0);
     haddr : std_logic_vector(4 downto 2))
@@ -87,6 +125,12 @@ package amba is
 end;
 
 package body amba is
+
+  procedure ahb_write_data(
+    haddr : in std_logic_vector(4 downto 2);
+    hdata : in std_logic_vector(AHBDW-1 downto 0))
+  begin
+  end ahb_write_data;
 
   function ahb_read_word (
     hdata : std_logic_vector(AHBDW-1 downto 0);
