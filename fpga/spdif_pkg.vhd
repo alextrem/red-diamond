@@ -25,19 +25,20 @@ use IEEE.std_logic_unsigned.all;
 
 package spdif_pkg is
   -- statemachine type
-  type aes3_state_type is (unlocked, confirming, locked);
+  type t_aes3_state is (UNLOCKED, CONFIRMING, LOCKED);
 
   type t_aes_in is record
-    data       : std_ulogic;
-    rx_full    : std_ulogic;
-    rx_fifo_de : std_ulogic;
+    data       : std_logic;
+    --rx_full    : std_ulogic;
+    --rx_fifo_de : std_ulogic;
   end record;
 
   type t_aes_out is record
-    i2s_out      : std_ulogic;
-    rx_de        : std_ulogic;
-    rx_fifo_full : std_ulogic;
-    rx_data      : std_logic_vector(31 downto 0);
+    lock         : std_ulogic;
+    --i2s_out      : std_ulogic;
+    --rx_de        : std_ulogic;
+    --rx_fifo_full : std_ulogic;
+    --rx_data      : std_logic_vector(31 downto 0);
   end record;
 
 -------------------------------------------------------------------------------
@@ -55,55 +56,81 @@ package spdif_pkg is
   constant SUBFRAME : integer := 32;
 
   -- channel status description
-  type byte_0 is record
-    channel_use : std_logic;
-    pcm         : std_logic;
-    preemphasis : std_logic_vector(2 downto 0);
-    --
-    sample_frequency : std_logic_vector(1 downto 0);
-  end record byte_0;
+  type t_byte_0 is record
+    channel_use : std_logic;                         -- professional or consumer
+    pcm         : std_logic;                         -- PCM indication
+    preemphasis : std_logic_vector(2 downto 0);      -- signal pre-emphasis
+    lock        : std_logic;                         -- lock indication
+    sample_frequency : std_logic_vector(1 downto 0); -- encoded sampling freq.
+  end record t_byte_0;
 
-  type byte_1 is record
-      channel_mode : std_logic_vector(3 downto 0);
-      user_bit     : std_logic_vector(3 downto 0);
-  end record byte_1;
+  type t_byte_1 is record
+    channel_mode : std_logic_vector(3 downto 0);
+    user_bit     : std_logic_vector(3 downto 0);
+  end record t_byte_1;
 
-  type byte_2 is record
+  type t_byte_2 is record
       aux_sample_bits    : std_logic_vector(2 downto 0);
       sample_word_length : std_logic_vector(2 downto 0);
       alignment_level    : std_logic_vector(1 downto 0);
-  end record byte_2;
+  end record t_byte_2;
 
-    type byte_3 is record
-        multichannel_mode   : std_logic_vector(6 downto 0);
-        channel_number      : std_logic;
-    end record byte_3;
+  type t_byte_3 is record
+    multichannel_mode   : std_logic_vector(6 downto 0);
+    channel_number      : std_logic;
+  end record t_byte_3;
 
-    type byte_4 is record
-        reference_signal    : std_logic_vector(1 downto 0);
-        reserved            : std_logic;
-        sampling_frequency  : std_logic_vector(3 downto 0);
-        frequency_scaling   : std_logic;
-    end record byte_4;
+  type t_byte_4 is record
+    reference_signal    : std_logic_vector(1 downto 0);
+    reserved            : std_logic;
+    sampling_frequency  : std_logic_vector(3 downto 0);
+    frequency_scaling   : std_logic;
+  end record t_byte_4;
 
-    --type byte_6 is record
-        --channel_origin : string (0 to 3);
-    --end record byte_6;
+  type t_byte_5 is record
+    reserved : std_logic_vector(7 downto 0);
+  end record;
 
-    --type byte_10 is record
-        --channel_destination : string (0 to 3);
-    --end record byte_10;
+  type t_byte_6_to_9 is record
+    channel_origin_1 : std_logic_vector(7 downto 0);
+    channel_origin_2 : std_logic_vector(7 downto 0);
+    channel_origin_3 : std_logic_vector(7 downto 0);
+  end record t_byte_6_to_9;
 
-    type channel_status is record
-        reg_0 : byte_0;
-        reg_1 : byte_1;
-        reg_2 : byte_2;
-        reg_3 : byte_3;
-        reg_4 : byte_4;
-        --origin : byte_6;
-        --destination : byte_10;
-        crc : std_logic_vector(7 downto 0);
-    end record channel_status;
+  type t_byte_10_to_13 is record
+    channel_destination_1 : std_logic_vector(7 downto 0);
+    channel_destination_2 : std_logic_vector(7 downto 0);
+    channel_destination_3 : std_logic_vector(7 downto 0);
+  end record t_byte_10_to_13;
+
+  type t_byte_14_to_17 is record
+    lsac_0 : std_logic_vector(7 downto 0); -- local sample address code
+    lsac_1 : std_logic_vector(7 downto 0); -- local sample address code
+    lsac_2 : std_logic_vector(7 downto 0); -- local sample address code
+    lsac_3 : std_logic_vector(7 downto 0); -- local sample address code
+  end record t_byte_14_to_17;
+
+  type t_byte_18_to_21 is record
+    tsc_0 std_logic_vector(7 downto 0); -- time of day sample code
+    tsc_1 std_logic_vector(7 downto 0); -- time of day sample code
+    tsc_2 std_logic_vector(7 downto 0); -- time of day sample code
+    tsc_3 std_logic_vector(7 downto 0); -- time of day sample code
+  end record t_byte_18_to_21;
+
+  type channel_status is record
+    reg_0          : t_byte_0;
+    reg_1          : t_byte_1;
+    reg_2          : t_byte_2;
+    reg_3          : t_byte_3;
+    reg_4          : t_byte_4;
+    reg_5          : t_byte_5;
+    origin         : t_byte_6_to_9;
+    destination    : t_byte_10_to_13;
+    sample_address : t_byte_14_to_17;
+    time_of_day    : t_byte_18_to_21;
+    reliability    : std_logic_vector(7 downto 0);
+    crc            : std_logic_vector(7 downto 0);
+  end record channel_status;
 
     -- RX data will be 8 times oversampled
     -- 192000 Hz : 24,576  MHz
@@ -113,6 +140,19 @@ package spdif_pkg is
     --  48000 Hz :  6,144  MHz
     --  44100 Hz :  5,6448 MHz
     --  32000 Hz :  4,096  MHz
+-------------------------------------------------------------------------------
+-- Functions
+-------------------------------------------------------------------------------
+
+  function preamble_detection (
+    data  : std_logic_vector(7 downto 0);
+    const : std_logic_vector(7 downto 0) )
+  return std_logic;
+
+  function crcc (
+    data : std_logic_vector(7 downto 0);
+    crc  : std_logic_vector(7 downto 0) )
+  return std_logic_vector;
 
 -------------------------------------------------------------------------------
 -- Components
@@ -122,9 +162,42 @@ package spdif_pkg is
   port (
     clk     : in std_ulogic;
     reset_n : in std_ulogic;
+
+    -- aes/ebu interface definition
     aes_in  : in t_aes_in;
     aes_out : out t_aes_out
   );
   end component;
 
 end spdif_pkg;
+
+package body spdif_pkg is
+
+  function preamble_detection (
+    data  : std_logic_vector(7 downto 0);
+    const : std_logic_vector(7 downto 0))
+  return std_logic is
+    variable v : std_logic := '0';
+  begin
+    if data = const or data = not const then
+      v := '1';
+    else
+      v := '0';
+    end if;
+    return v;
+  end preamble_detection;
+
+  function crcc (
+    data : std_logic_vector(7 downto 0);
+    crc  : std_logic_vector))
+  return std_logic_vector is
+    variable d : std_logic_vector(7 downto 0);
+    variable c : std_logic_vector(7 downto 0);
+  begin
+    d := data;
+    c := crc;
+  
+  end crcc;
+  );
+
+end;
