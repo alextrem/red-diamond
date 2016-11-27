@@ -193,10 +193,21 @@ package body spdif_pkg is
   return std_logic_vector is
     variable d : std_logic_vector(7 downto 0);
     variable c : std_logic_vector(7 downto 0);
+    variable n : std_logic_Vector(7 downto 0);
   begin
     d := data;
     c := crc;
-  
+
+    n(0) := d(0) xor d(4) xor d(5) xor d(6) xor c(0) xor c(4) xor c(5) xor c(6);
+    n(1) := d(1) xor d(5) xor d(6) xor d(7) xor c(1) xor c(5) xor c(6) xor c(7);
+    n(2) := d(0) xor d(2) xor d(4) xor d(5) xor d(7) xor c(0) xor c(2) xor c(4) xor c(5) xor c(7);
+    n(3) := d(0) xor d(1) xor d(3) xor d(4) xor c(0) xor c(1) xor c(3) xor c(4);
+    n(4) := d(0) xor d(1) xor d(2) xor d(6) xor c(0) xor c(1) xor c(2) xor c(6);
+    n(5) := d(1) xor d(2) xor d(3) xor d(7) xor c(1) xor c(2) xor c(3) xor c(7);
+    n(6) := d(2) xor d(3) xor d(4) xor c(2) xor c(3) xor c(4);
+    n(7) := d(3) xor d(4) xor d(5) xor c(3) xor c(4) xor c(5);
+
+  return n; 
   end crcc;
   );
 
