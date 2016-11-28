@@ -21,10 +21,24 @@ use ieee.std_logic_1164.all;
 package i2s_pkg is
 
   type t_i2s_in is record
+    l_channel : std_logic_vector(23 downto 0);
+    r_channel : std_logic_vector(23 downto 0);
   end record;
 
   type t_i2s_out is record
+    wclk  : std_ulogic;
+    bclk  : std_ulogic;
+    sdata : std_logic;
   end record;
 
+  component i2s_tx
+  port (
+    reset   : in std_ulogic;
+    mclk    : in std_ulogic;
+    -- 
+    i2s_in  : in t_i2s_in;
+    i2s_out : out t_i2s_out
+  );
+  end component;
 
 end i2s_pkg;
