@@ -111,10 +111,10 @@ package spdif_pkg is
   end record t_byte_14_to_17;
 
   type t_byte_18_to_21 is record
-    tsc_0 std_logic_vector(7 downto 0); -- time of day sample code
-    tsc_1 std_logic_vector(7 downto 0); -- time of day sample code
-    tsc_2 std_logic_vector(7 downto 0); -- time of day sample code
-    tsc_3 std_logic_vector(7 downto 0); -- time of day sample code
+    tsc_0 : std_logic_vector(7 downto 0); -- time of day sample code
+    tsc_1 : std_logic_vector(7 downto 0); -- time of day sample code
+    tsc_2 : std_logic_vector(7 downto 0); -- time of day sample code
+    tsc_3 : std_logic_vector(7 downto 0); -- time of day sample code
   end record t_byte_18_to_21;
 
   type channel_status is record
@@ -189,7 +189,7 @@ package body spdif_pkg is
 
   function crcc (
     data : std_logic_vector(7 downto 0);
-    crc  : std_logic_vector))
+    crc  : std_logic_vector(7 downto 0))
   return std_logic_vector is
     variable d : std_logic_vector(7 downto 0);
     variable c : std_logic_vector(7 downto 0);
@@ -209,6 +209,5 @@ package body spdif_pkg is
 
   return n; 
   end crcc;
-  );
 
 end;
