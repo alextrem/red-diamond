@@ -70,9 +70,9 @@ package spdif_pkg is
   end record t_byte_1;
 
   type t_byte_2 is record
-      aux_sample_bits    : std_logic_vector(2 downto 0);
-      sample_word_length : std_logic_vector(2 downto 0);
-      alignment_level    : std_logic_vector(1 downto 0);
+    aux_sample_bits    : std_logic_vector(2 downto 0);
+    sample_word_length : std_logic_vector(2 downto 0);
+    alignment_level    : std_logic_vector(1 downto 0);
   end record t_byte_2;
 
   type t_byte_3 is record
