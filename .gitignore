@@ -13,6 +13,9 @@ simulation
 
 tags
 
+# ghdl files
+*.cf
+
 *.a
 *.swp
 *.o
