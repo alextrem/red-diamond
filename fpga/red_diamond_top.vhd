@@ -1,24 +1,27 @@
----------------------------------------
--- Company:
--- Engineer:        Alexander Geißler
+------------------------------------------------------------------------------
+-- Company:             Red Diamond
+-- Engineer:            Alexander Geissler
 --
--- Create Date:     23:40:00 02/26/2015
--- Design Name:
--- Project Name:    red-diamond
--- Target Device:   EP4CE22C8N
--- Tool Versions:   14.0
--- Description:
+-- Create Date:         23:40:00 02/26/2015
+-- Design Name:         red_diamond_top
+-- Project Name:        red-diamond
+-- Target Device:       EP4CE22C8N
+-- Tool Versions:       16.0
+-- Description:	        This AES3/EBU and SPDIF receiver is compliant with
+--                      IEC61937, IEC60958-3 and IEC60958-4
+--                      The input is sampled in by either 
+--                      49.152 MHz for 48kHz, 96kHz and 192kHz samplerates
+--                      45.1584 MHz for 44.1kHz, 88.2kHz or 176.4 kHz
 --
 -- Dependencies:
 --
 -- Revision:
 -- Revision 0.1 - File created
---------------------------------------
+------------------------------------------------------------------------------
 
-library IEEE;
-use IEEE.STD_LOGIC_1164.ALL;
-use IEEE.STD_LOGIC_ARITH.ALL;
-use IEEE.STD_LOGIC_UNSIGNED.ALL;
+library ieee;
+use ieee.std_logic_1164.ALL;
+use ieee.numeric_std.all;
 use work.spdif_pkg.ALL;
 
 entity red_diamond_top is
