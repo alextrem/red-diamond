@@ -21,10 +21,10 @@
 --              - rewrite of the state machine
 ------------------------------------------------------------------------------
 
-library IEEE;
-use IEEE.STD_LOGIC_1164.ALL;
-use IEEE.STD_LOGIC_UNSIGNED.ALL;
-use work.spdif_pkg.ALL;
+library ieee;
+use ieee.std_logic_1164.all;
+use ieee.numeric_std.all;
+use work.spdif_pkg.all;
 
 entity aes3rx is
   port (
@@ -41,13 +41,15 @@ end aes3rx;
 architecture rtl of aes3rx is
 
   type t_reg_type is record
-    slv_aes3  : std_logic_vector(3 downto 0);
-    sl_change : std_logic;
-    slv_clk_counter : std_logic_vector(7 downto 0);
+    slv_aes3          : std_logic_vector(3 downto 0);
+    sl_aes3_clk       : std_logic;
+    sl_change         : std_logic; -- detects
+    slv_sync_count    : std_logic_vector(5 downto 0);
+    slv_clk_counter   : std_logic_vector(7 downto 0);
     slv_decoder_shift : std_logic_vector(7 downto 0);
-    sl_x_detected : std_logic; -- Asserted when x preamble has been detected
-    sl_y_detected : std_logic; -- Asserted when y preamble has been detected
-    sl_z_detected : std_logic; -- Asserted when z preamble has been detected
+    sl_x_detected     : std_logic; -- Asserted when x preamble has been detected
+    sl_y_detected     : std_logic; -- Asserted when y preamble has been detected
+    sl_z_detected     : std_logic; -- Asserted when z preamble has been detected
     sl_preamble_detected : std_logic; -- Asserted when all preambles
     sl_lock : std_logic;
     state : t_aes3_state;
@@ -56,6 +58,10 @@ architecture rtl of aes3rx is
   signal r, r_next : t_reg_type;
 
 begin
+--  _   _   _   _   _   _   _
+-- / \_/ \_/ \_/ \_/ \_/ \_/ \_/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\
+--    __
+-- __/
 
   input_shift_proc: process(aes_in, reset, r)
     variable v : t_reg_type;
@@ -67,6 +73,13 @@ begin
     -- detecting signal change
     v.sl_change := r.slv_aes3(2) xor r.slv_aes3(1);
 
+    -- counts number of aes_clk pulses since last detected preamble
+    if r.sl_preamble_detected = '1' then
+      v.slv_sync_count := (others => '0');
+    else
+      v.slv_sync_count := std_logic_vector(unsigned(r.slv_sync_count) + 1);
+    end if;
+
     -- counting
     if r.slv_clk_counter = b"0000_0000" then
       if r.sl_change = '1' then
@@ -76,19 +89,32 @@ begin
       end if;
     end if;
 
-  -- decoder shift register
-  v.slv_decoder_shift := r.slv_aes3(0) & r.slv_decoder_shift(7 downto 1);
+    -- decoder shift register
+    v.slv_decoder_shift := r.slv_aes3(0) & r.slv_decoder_shift(7 downto 1);
 
-  -- preamble detection
-  v.sl_x_detected := preamble_detection(r.slv_decoder_shift, X_PREAMBLE);
-  v.sl_y_detected := preamble_detection(r.slv_decoder_shift, Y_PREAMBLE);
-  v.sl_z_detected := preamble_detection(r.slv_decoder_shift, Z_PREAMBLE);
+    -- Generates a clock pulse when clk_counter counts to zero
+    if r.slv_clk_counter = x"00" then
+      v.sl_aes3_clk := '1';
+    else
+      v.sl_aes3_clk := '0';
+    end if;
 
-  v.sl_preamble_detected := r.sl_x_detected and r.sl_y_detected and r.sl_z_detected;
-  -- Locking state machine for AES3/EBU data stream.
-  -- The locking for 192kHz, 96kHz and 48kHz will be done in parallel.
-  -- The clock will be set to 122 MHz
-  case r.state is
+    -- preamble detection
+    v.sl_x_detected := preamble_detection(r.slv_decoder_shift, X_PREAMBLE);
+    v.sl_y_detected := preamble_detection(r.slv_decoder_shift, Y_PREAMBLE);
+    v.sl_z_detected := preamble_detection(r.slv_decoder_shift, Z_PREAMBLE);
+
+    v.sl_preamble_detected := v.sl_x_detected or v.sl_y_detected or v.sl_z_detected;
+
+    -- preamble detection
+    if r.sl_preamble_detected = '1' then
+    
+    end if;
+
+    -- Locking state machine for AES3/EBU data stream.
+    -- The locking for 192kHz, 96kHz and 48kHz will be done in parallel.
+    -- The clock will be set to 122 MHz
+    case r.state is
     when UNLOCKED =>
       if r.sl_preamble_detected = '1' then
         v.state := CONFIRMING;
@@ -103,13 +129,15 @@ begin
         v.state := UNLOCKED;
         v.sl_lock := '1';
       end if;
-  end case;
+    end case;
 
-  if (reset = '0') then
-    v.state := UNLOCKED;
-  end if;
+    if (reset = '0') then
+      v.state := UNLOCKED;
+    end if;
 
-  r_next <= v;
+    r_next <= v;
+  
+    aes_out.lock <= r.sl_lock;  
   end process input_shift_proc;
 
   proc : process (clk)
@@ -118,7 +146,5 @@ begin
       r <= r_next;
     end if;
   end process proc;
-
-  aes_out.lock <= r.sl_lock;  
 
 end rtl;
