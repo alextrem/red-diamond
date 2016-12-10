@@ -1,6 +1,6 @@
 ------------------------------------------------------------------------------
 -- Company:          Red Diamond
--- Engineer:         Alexander Geißler
+-- Engineer:         Alexander Geissler
 --
 -- Create Date:      23:40:00 02/26/2015
 -- Design Name:
@@ -21,7 +21,7 @@
 
 library IEEE;
 use IEEE.std_logic_1164.all;
-use IEEE.std_logic_unsigned.all;
+use IEEE.numeric_std.all;
 
 package spdif_pkg is
   -- statemachine type
