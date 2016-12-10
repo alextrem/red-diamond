@@ -1,6 +1,6 @@
 ------------------------------------------------------------------------------
 -- Company:             Red Diamond
--- Engineer:            Alexander Geißler
+-- Engineer:            Alexander Geissler
 --
 -- Create Date:         23:40:00 02/26/2015
 -- Design Name:
