@@ -29,9 +29,9 @@ use work.spdif_pkg.all;
 entity aes3rx is
   port (
     -- Synchronous reset
-    reset   : in std_logic;
+    reset   : in std_ulogic;
     -- Master clock
-    clk     : in std_logic;
+    clk     : in std_ulogic;
     
     aes_in  : in t_aes_in;
     aes_out : out t_aes_out
@@ -85,7 +85,7 @@ begin
       if r.sl_change = '1' then
         v.slv_clk_counter := (others => '1');
       else
-        v.slv_clk_counter := r.slv_clk_counter - 1;
+        v.slv_clk_counter := std_logic_vector(unsigned(r.slv_clk_counter) - 1);
       end if;
     end if;
 
