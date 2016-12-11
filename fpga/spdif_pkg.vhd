@@ -158,10 +158,10 @@ package spdif_pkg is
 -- Components
 -------------------------------------------------------------------------------
 
-  component aes_ebu_rx
+  component aes3rx
   port (
     clk     : in std_ulogic;
-    reset_n : in std_ulogic;
+    reset   : in std_ulogic;
 
     -- aes/ebu interface definition
     aes_in  : in t_aes_in;
