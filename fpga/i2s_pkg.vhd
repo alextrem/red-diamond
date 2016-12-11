@@ -17,6 +17,7 @@
 
 library ieee;
 use ieee.std_logic_1164.all;
+use ieee.numeric_std.all;
 
 package i2s_pkg is
 
@@ -33,7 +34,7 @@ package i2s_pkg is
 
   component i2s_tx
   port (
-    reset   : in std_ulogic;
+    reset_n : in std_ulogic;
     mclk    : in std_ulogic;
     -- 
     i2s_in  : in t_i2s_in;
