@@ -1,6 +1,6 @@
 ------------------------------------------------------------------------------
 -- Company:          Red Diamond
--- Engineer:         Alexander Geißler
+-- Engineer:         Alexander Geissler
 --
 -- Create Date:      23:40:00 11/27/2016
 -- Design Name:      i2s_tx.vhd
