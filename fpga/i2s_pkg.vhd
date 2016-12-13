@@ -19,10 +19,13 @@
 library ieee;
 use ieee.math_real.all;
 use ieee.std_logic_1164.all;
---use ieee.numeric_std.all;
 use ieee.std_logic_arith.all;
 
 package i2s_pkg is
+
+-------------------------------------------------------------------------------
+-- Constants
+-------------------------------------------------------------------------------
 
   constant c_addr : integer := 12; 
 
@@ -37,7 +40,7 @@ package i2s_pkg is
     sdata : std_logic;
   end record;
 
-  type mem_array is array(0 to (2**c_addr)-1) of std_logic_vector(15 downto 0);
+  type mem_array is array(0 to (2**c_addr)-1) of std_logic_vector(23 downto 0);
 
 -------------------------------------------------------------------------------
 -- Functions
@@ -74,7 +77,7 @@ package body i2s_pkg is
     for k in 0 to N-1 loop
       k1      := (real(k)+0.5)/N1;
       w       := cos(math_pi_over_2 * k1); -- first quadrant of cosine wave
-      memx(k) := std_logic_vector(conv_signed(integer(round(8388608.0*w)),16));
+      memx(k) := std_logic_vector(conv_signed(integer(round(8388608.0*w)),24));
     end loop;
     return memx;
   end function cos_lut;
