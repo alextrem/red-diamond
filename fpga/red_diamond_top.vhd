@@ -17,12 +17,14 @@
 --
 -- Revision:
 -- Revision 0.1 - File created
+-- Revision 0.2 - Added first simple I2S transmitter
 ------------------------------------------------------------------------------
 
 library ieee;
 use ieee.std_logic_1164.ALL;
 use ieee.numeric_std.all;
-use work.spdif_pkg.ALL;
+use work.spdif_pkg.all;
+use work.i2s_pkg.all;
 
 entity red_diamond_top is
 port (
@@ -68,15 +70,6 @@ component heartbeat
     counter_out : out std_logic
   );
 end component;
-	
-component aes3rx
-  port ( 
-    reset   : in std_logic := '0';
-    clk     : in std_logic;
-    aes_in  : in t_aes_in;
-    aes_out : out t_aes_out
-  );
-end component aes3rx;
 
 component sys_pll
   port (
@@ -107,6 +100,17 @@ begin
     clk => sl_clk,
     aes_in.data => aes_din,
     aes_out.lock => aes_lock
+  );
+
+  inst_i2s_tx : i2s_tx
+  port map (
+    reset_n          => '1',
+    mclk             => sl_clk,
+    i2s_in.l_channel => x"00FFFF",
+    i2s_in.r_channel => x"FFFF00",
+    i2s_out.wclk     => da_lrck,
+    i2s_out.bclk     => da_bclk,
+    i2s_out.sdata    => da_data
   );
 
   inst_heartbeat: heartbeat
