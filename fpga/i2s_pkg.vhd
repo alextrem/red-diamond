@@ -27,7 +27,8 @@ package i2s_pkg is
 -- Constants
 -------------------------------------------------------------------------------
 
-  constant c_addr : integer := 12; 
+  constant c_addr    : integer := 12; 
+  constant c_cos_rom : mem_array := cos_lut;
 
   type t_i2s_in is record
     l_channel : std_logic_vector(23 downto 0);
@@ -55,8 +56,8 @@ package i2s_pkg is
 
   component i2s_tx
   port (
-    reset_n : in std_ulogic;
-    mclk    : in std_ulogic;
+    reset_n : in std_logic;
+    mclk    : in std_logic;
     -- 
     i2s_in  : in t_i2s_in;
     i2s_out : out t_i2s_out
