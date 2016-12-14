@@ -29,13 +29,13 @@ use ieee.numeric_std.all;
 use work.i2s_pkg.all;
 
 entity i2s_tx is
---  generic ( DATA_WIDTH : integer range 16 to 32
---  );
+  --generic ( DATA_WIDTH : integer range 16 to 24
+  --);
   port (
     -- Synchronous reset
-    reset_n : in std_ulogic;
+    reset_n : in std_logic;
     -- Master clock
-    mclk    : in std_ulogic;
+    mclk    : in std_logic;
 		
     -- I2S interface
     -- input
