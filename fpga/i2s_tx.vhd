@@ -47,6 +47,8 @@ end entity;
 
 architecture rtl of i2s_tx is
 
+  constant c_cos_rom : mem_array := cos_lut;
+
   type t_reg_type is record
     word_clock : std_logic;
     temp_reg   : std_logic_vector(23 downto 0);
