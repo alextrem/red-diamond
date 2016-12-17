@@ -36,7 +36,7 @@ entity i2s_tx is
     reset_n : in std_logic;
     -- Master clock
     mclk    : in std_logic;
-		
+
     -- I2S interface
     -- input
     i2s_in  : in t_i2s_in;
@@ -64,21 +64,23 @@ begin
   begin
     v := r;
 
-    -- 
     v.counter := std_logic_vector(unsigned(v.counter) + 1);
 
-    -- toggle word clock when 32bit have been clocked in 
-    if r.counter = b"10000" then -- 32
-      v.word_clock := not v.word_clock;
-      v.counter := b"00000";
+    -- toggle word clock when 32bit have been clocked in
+    if r.counter = b"10000" then        -- 32
+      v.word_clock := not v.word_clock; -- toggle word clock
+      v.counter := b"00000";            -- reset counter
+
+      -- latch data to temporariy register when 32 bit have been counted
+      if r.word_clock = '0' then
+        v.temp_reg := i2s_in.l_channel;
+      else
+        v.temp_reg := i2s_in.r_channel;
+      end if;
     end if;
 
     -- shift data to output
-    if r.word_clock = '0' then
-      v.temp_reg(23  downto 1) := i2s_in.l_channel(22 downto 0);
-    else
-      v.temp_reg(23 downto 1) := i2s_in.r_channel(22 downto 0);
-    end if;
+    v.temp_reg(23 downto 1) := v.temp_reg(22 downto 0);
 
     if reset_n = '0' then
       v.word_clock := '0'; -- 0=left, 1=right
