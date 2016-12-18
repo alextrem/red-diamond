@@ -28,6 +28,9 @@ use ieee.std_logic_1164.all;
 use ieee.numeric_std.all;
 use work.i2s_pkg.all;
 
+use ieee.std_logic_textio.all;
+use ieee.textio.all;
+
 entity i2s_tx_tb is
 end entity i2s_tx_tb;
 
@@ -37,9 +40,28 @@ architecture sim of i2s_tx_tb is
   signal sl_clock : std_logic := '0';
   signal slv_addr : std_logic_vector(c_addr-1 downto 0);
 
+  signal slv_l_channel : std_logic_vector(23 downto 0);
+  signal slv_r_channel : std_logic_vector(23 downto 0);
+
+  signal sl_wclk  : std_logic;
+  signal sl_bclk  : std_logic;
+  signal sl_sdata : std_logic;
+
 begin
 
   sl_clock <= not sl_clock after 10 ns;
-  sl_reset <= '1' after 20 ns, '0' after 60 ns;
+  sl_reset <= '0' after 20 ns, '1' after 60 ns;
+
+  uut: i2s_tx port map (
+    reset_n => sl_reset,
+    mclk => sl_clk,
+    -- input
+    i2s_in.l_channel => slv_l_channel,
+    i2s_in.r_channel => slv_r_channel,
+    -- output
+    i2s_out.wclk  => sl_wclk,
+    i2s_out.bclk  => sl_bclk,
+    i2s_out.sdata => sl_sdata,
+  );
 
 end rtl;
