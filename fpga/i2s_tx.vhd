@@ -64,11 +64,11 @@ begin
   begin
     v := r;
 
-    v.counter := std_logic_vector(unsigned(v.counter) + 1);
+    v.counter := std_logic_vector(unsigned(r.counter) + 1);
 
     -- toggle word clock when 32bit have been clocked in
     if r.counter = b"10000" then        -- 32
-      v.word_clock := not v.word_clock; -- toggle word clock
+      v.word_clock := not r.word_clock; -- toggle word clock
       v.counter := b"00000";            -- reset counter
 
       -- latch data to temporariy register when 32 bit have been counted
@@ -80,7 +80,7 @@ begin
     end if;
 
     -- shift data to output
-    v.temp_reg(23 downto 1) := v.temp_reg(22 downto 0);
+    v.temp_reg(23 downto 1) := r.temp_reg(22 downto 0);
 
     if reset_n = '0' then
       v.word_clock := '0'; -- 0=left, 1=right
