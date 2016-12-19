@@ -29,7 +29,6 @@ use ieee.numeric_std.all;
 use work.i2s_pkg.all;
 
 use ieee.std_logic_textio.all;
-use ieee.textio.all;
 
 entity i2s_tx_tb is
 end entity i2s_tx_tb;
@@ -54,14 +53,14 @@ begin
 
   uut: i2s_tx port map (
     reset_n => sl_reset,
-    mclk => sl_clk,
+    mclk => sl_clock,
     -- input
     i2s_in.l_channel => slv_l_channel,
     i2s_in.r_channel => slv_r_channel,
     -- output
     i2s_out.wclk  => sl_wclk,
     i2s_out.bclk  => sl_bclk,
-    i2s_out.sdata => sl_sdata,
+    i2s_out.sdata => sl_sdata
   );
 
-end rtl;
+end sim;
