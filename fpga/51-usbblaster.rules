@@ -1,0 +1,7 @@
+# For Altera USB-Blaster permission
+
+#USB-Blaster
+ACTION=="add|change", SUBSYSTEM=="usb", ATTRS{idVendor}=="09fb", ATTRS{idProduct}=="6001|6002|6003", MODE="0666", TAG+="uaccess"
+
+# USB-Blaster II
+ACTION=="add|change", SUBSYSTEM=="usb", ATTRS{idVendor}=="09fb", ATTRS{idProduct}=="6010|6810", MODE="0666", TAG+="uaccess"
