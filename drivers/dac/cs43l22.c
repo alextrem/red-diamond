@@ -150,8 +150,8 @@ void Codec_Init(I2CDriver *i2cp) {
   Codec_WriteRegister(0x00, 0x00);
 
   /* Set master volume */
-  dac.master_volume[0] = 0x00;
-  dac.master_volume[1] = 0x00;
+  dac.master_volume[0] = 0x0A;
+  dac.master_volume[1] = 0x0A;
 
   /* Set headphone volume */
   dac.headphone_volume[0] = 0x00;
