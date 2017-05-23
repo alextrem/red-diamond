@@ -315,7 +315,7 @@ void Codec_BeepGenerator(DAC_CS43L22_t *dac) {
  *
  * @param[in]   dac
  */
-void Codec_FactoryDefault(DAC_CS43L22_t *dac) {
-  dac = (DAC_CS43L22_t*) &factory_default;
+void Codec_FactoryDefault(void) {
+  dac = factory_default;
 }
 /** @} */

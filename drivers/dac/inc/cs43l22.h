@@ -183,7 +183,7 @@ void Codec_Balance(const OUTPUT_t set, int8_t balance);
 void Codec_Mute(const OUTPUT_t set);
 void Codec_BeepGenerator(DAC_CS43L22_t *dac);
 void Codec_BeepSetFrequency(DAC_CS43L22_t *dac);
-void Codec_FactoryDefault(DAC_CS43L22_t *dac);
+void Codec_FactoryDefault(void);
 
 #ifdef __cplusplus
 }
