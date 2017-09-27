@@ -193,7 +193,7 @@ static void cmd_adc(BaseSequentialStream *chp, int argc, char *argv[]) {
 static void cmd_codec(BaseSequentialStream *chp, int argc, char *argv[]) {
   (void) argv;
   if (argc > 0) {
-    chprintf(chp, "Usage: codec\r\n");
+    chprintf(chp, "Usage: codec [command]\r\n");
     return;
   }
 }
@@ -259,7 +259,6 @@ static const SPIConfig spi1cfg = {
   GPIOC,
   GPIOE_CS_SPI,
   SPI_CR1_BR_0 | SPI_CR1_BR_1 | SPI_CR1_CPOL | SPI_CR1_CPHA,
-  NULL
 };
 
 /*
@@ -273,7 +272,6 @@ static const SPIConfig spi2cfg = {
   GPIOB,
   12,
   0,
-  NULL
 };
 
 /*
@@ -470,8 +468,8 @@ int main(void) {
   /*
    * Activates the ADCD1 driver and temperature sensor
    */
-  //adcStart(&ADCD1, NULL);
-  //adcSTM32EnableTSVREFE();
+  adcStart(&ADCD1, NULL);
+  adcSTM32EnableTSVREFE();
 
   /*
    * Activates the I2C interface
@@ -542,9 +540,9 @@ int main(void) {
   chThdCreateStatic(pwmThreadWorkingArea, sizeof(pwmThreadWorkingArea),
                     NORMALPRIO+2, pwmThread, NULL);
 
-  //adcConvert(&ADCD1, &adcgrpcfg1, samples1, ADC_GRP1_BUF_DEPTH);
+  adcConvert(&ADCD1, &adcgrpcfg1, samples1, ADC_GRP1_BUF_DEPTH);
 
-  //adcConvert(&ADCD1, &adcgrpcfg2, samples2, ADC_GRP2_BUF_DEPTH);
+  adcConvert(&ADCD1, &adcgrpcfg2, samples2, ADC_GRP2_BUF_DEPTH);
 
   chEvtRegister(&inserted_event, &el0, 0);
   chEvtRegister(&removed_event, &el1, 1);
