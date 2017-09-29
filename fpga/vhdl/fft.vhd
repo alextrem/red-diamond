@@ -7,7 +7,7 @@
 -- Project Name:    	red-diamond
 -- Target Device:   	EP4CE22C8N
 -- Tool Versions:   	15.0
--- Description:		    4K fft implementation for audio spectrum
+-- Description:		4K fft implementation for audio spectrum
 --
 -- Dependencies:
 --
@@ -31,7 +31,7 @@ entity fft is
         );
 end fft;
 
-architecture rtl of aes3rx is
+architecture rtl of fft is
 
 begin
 
