@@ -79,7 +79,6 @@ component pll
     inclk0    : in std_logic  := '0';
     inclk1    : in std_logic  := '0';
     c0	      : out std_logic;
-    c1        : out std_logic;
     locked    : out std_logic 
   );
 end component pll;
@@ -93,7 +92,6 @@ begin
     inclk0 => clk_48,
     inclk1 => clk_44_1,
     c0 => sl_clk,
-    c1 => sl_clk1, 
     locked => pll_lock
   );
 
