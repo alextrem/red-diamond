@@ -34,7 +34,8 @@ package spdif_pkg is
   end record;
 
   type t_aes_out is record
-    lock         : std_ulogic;
+    lock         : std_logic;
+    frame_clock  : std_logic;
     --i2s_out      : std_ulogic;
     --rx_de        : std_ulogic;
     --rx_fifo_full : std_ulogic;
@@ -207,7 +208,7 @@ package body spdif_pkg is
     n(6) := d(2) xor d(3) xor d(4) xor c(2) xor c(3) xor c(4);
     n(7) := d(3) xor d(4) xor d(5) xor c(3) xor c(4) xor c(5);
 
-  return n; 
+  return n;
   end crcc;
 
 end;

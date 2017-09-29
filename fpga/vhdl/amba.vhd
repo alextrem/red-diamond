@@ -1,16 +1,14 @@
 ------------------------------------------------------------------------------
 -- Company:          Red Diamond
--- Engineer:         Alexander Geißler
+-- Engineer:         Alexander Geissler
 --
 -- Create Date:      23:40:00 11/19/2016
 -- Design Name:
 -- Project Name:     red-diamond
 -- Target Device:    EP4CE22C8N
 -- Tool Versions:    16.0
--- Description:      This AES3/EBU and SPDIF receiver is compliant with
---                   IEC61937, IEC60958-3 and IEC60958-4
---                   This package contains constants and type definitions
---                   for the receiver
+-- Description:      This is the package for all sort of axi interfaces. AHBi,
+--                   APB etc.
 --
 -- Dependencies:
 --
@@ -65,16 +63,18 @@ package amba is
 ------------------------------------------------------------------------------
 
   type t_ahb_slave_in is record
-    hsel      : std_ulogic;
-    haddr     : std_logic_vector(31 downto 0);
-    hwrite    : std_ulogic;
-    htrans    : std_logic_vector(1 downto 0);
-    hsize     : std_logic_vector(2 downto 0);
-    hburst    : std_logic_vector(3 downto 0);
-    hwdata    : std_logic_vector(31 downto 0);
-    hprot     : std_logic_vector(3 downto 0);
-    hready    : std_ulogic;
-    hmastlock : std_ulogic;
+    hsel      : std_ulogic;                    -- slave select
+    haddr     : std_logic_vector(31 downto 0); -- address bus
+    hwrite    : std_ulogic;                    -- read/write
+    htrans    : std_logic_vector(1 downto 0);  -- transfer type
+    hsize     : std_logic_vector(2 downto 0);  -- transfer size
+    hburst    : std_logic_vector(3 downto 0);  -- burst type
+    hwdata    : std_logic_vector(31 downto 0); -- write data bus
+    hprot     : std_logic_vector(3 downto 0);  -- protection protocol
+    hready    : std_ulogic;                    -- transfer done
+    hmastlock : std_ulogic;                    -- locked access
+    hmbsel    : std_logic_vector(3 downto 0);  -- memory bank select
+    hcache    : std_ulogic;                    -- cachable
   end record;
 
   -- AHB slave outputs
@@ -99,8 +99,8 @@ package amba is
 --    return std_logic_vector;
 
   procedure ahb_write_data (
-    haddr : std_logic_vector(4 downto 2);
-    hdata : std_logic_vector(AHBDW-1 downto 0));
+    haddr : in std_logic_vector(4 downto 2);
+    hdata : in std_logic_vector(AHBDW-1 downto 0));
 
   function ahb_read_word (
     hdata : std_logic_vector(AHBDW-1 downto 0);
@@ -129,7 +129,7 @@ end amba;
 
 package body amba is
 
-  procedure ahb_write_data(
+  procedure ahb_write_data (
     haddr : in std_logic_vector(4 downto 2);
     hdata : in std_logic_vector(AHBDW-1 downto 0)) is
   begin

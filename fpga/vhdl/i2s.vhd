@@ -24,18 +24,35 @@ entity i2s is
         -- Synchrounous reset
         reset   : in std_logic;
         -- I2S interface
-        -- Data outputclock for left and right channel
-        lrclk   : in std_logic;
+        -- Data output for left and right channel
+        sd   : inout std_logic;
         -- Bit clock
-        sclk    : in std_logic;
+        sck    : inout std_logic;
         -- Audio master clock output
-        mclk    : in std_logic
+        ws    : inout std_logic;
+		  -- left channel data
+		  left_channel : inout std_logic_vector(31 downto 0);
+		  -- right channel data
+		  right_channel : inout std_logic_vector(31 downto 0)
          );
 end entity;
 
 architecture rtl of i2s is
 
+signal sv_sr	: std_logic_vector(31 downto 0);
 
 begin
-
+	SHIFT_REGISTER: process(reset, sck)
+	begin
+	if rising_edge(sck) then
+		if reset = '1' then
+			left_channel <= (others=>'0');
+			right_channel <= (others=>'0');
+			sck <= '0';
+			sd <= '0';
+		else
+			sv_sr <= sd & sv_sr(31 downto 1);
+		end if;
+	end if;
+	end process;
 end rtl;
