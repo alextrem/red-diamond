@@ -17,6 +17,7 @@ timing
 *.ppf
 *.srf
 *.cmp
+*.bak
 
 tags
 
