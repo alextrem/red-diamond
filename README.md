@@ -38,25 +38,6 @@ So far I don't use this library. If so
     $ make all
     $ cd ..
 
-### File Tree: ###
-
-|-- board
-    |-- schematic
-    |-- pcb
-|-- ai
-|-- ChibiOS
-|-- dsplib
-|-- fpga
-|-- gui
-|-- drivers
-|   |-- adc
-|   |-- dac
-|   |-- hdmi
-|-- libmad
-|-- LICENSE
-|-- Makefile
-|-- README.md
-
 ## Interfaces
 * AES/EBU and SPDIF
 * HDMI RX
