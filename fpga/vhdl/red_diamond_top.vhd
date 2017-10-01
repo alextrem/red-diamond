@@ -9,7 +9,7 @@
 -- Tool Versions:       16.0
 -- Description:	        This AES3/EBU and SPDIF receiver is compliant with
 --                      IEC61937, IEC60958-3 and IEC60958-4
---                      The input is sampled in by either 
+--                      The input is sampled in by either
 --                      49.152 MHz for 48kHz, 96kHz and 192kHz samplerates
 --                      45.1584 MHz for 44.1kHz, 88.2kHz or 176.4 kHz
 --
@@ -32,7 +32,7 @@ port (
   clk_48   : in std_logic;
   clk_44_1 : in std_logic;
   pll_lock : out std_logic;
-	
+
   -- aes3/ebu or spdif input
   aes_din  : in std_logic;
   aes_lock : out std_logic;
@@ -41,21 +41,21 @@ port (
   ad_bclk  : out std_logic := '0';
   ad_lrck  : out std_logic := '0';
   ad_data  : out std_logic := '0';
-	
+
   -- hdmi input
 
   -- d/a output
   da_bclk	: out std_logic := '0';
   da_lrck	: out std_logic := '0';
   da_data	: out std_logic := '0';
-	
+
   -- processor i2c connection
   --mcu_i2c_scl	: in std_logic;
   --mcu_i2c_sda	: inout std_logic;
-	
+
   -- LEDs
   heartbeat_led	: out std_logic
-	
+
   -- display
   );
 end red_diamond_top;
@@ -78,7 +78,7 @@ component pll
     inclk0    : in std_logic  := '0';
     inclk1    : in std_logic  := '0';
     c0	      : out std_logic;
-    locked    : out std_logic 
+    locked    : out std_logic
   );
 end component pll;
 
@@ -106,11 +106,11 @@ begin
   port map (
     reset_n          => '1',
     mclk             => sl_clk,
-    i2s_in.l_channel => x"00FFFF",
-    i2s_in.r_channel => x"FFFF00",
-    i2s_out.wclk     => da_lrck,
-    i2s_out.bclk     => da_bclk,
-    i2s_out.sdata    => da_data
+    r_i2s_in.slv_l_channel => x"00FFFF",
+    r_i2s_in.slv_r_channel => x"FFFF00",
+    r_i2s_out.sl_wclk     => da_lrck,
+    r_i2s_out.sl_bclk     => da_bclk,
+    r_i2s_out.sl_sdata    => da_data
   );
 
   inst_heartbeat: heartbeat
