@@ -269,12 +269,6 @@ static const MMCConfig mmc1cfg = {
   &spi1cfg
 };
 
-static const MMCConfig mmc1cfg = {
-  &SPID1,
-  &spi1cfg,
-  &spi1cfg
-};
-
 /*
  * SPI2 configuration structure.
  * Speed 21MHz, CPHA=0, CPOL=0, 8bits frames, MSb transmitted first.
