@@ -5,7 +5,7 @@ The FPGA is the heart of this amplifier. All interfaces to ADCs, AES/EBU and oth
 The HDL related sources are located in this structure
 
 | Directory       | Description                             |
-|-----------------|-----------------------------------------|
+| :-------------- | :-------------------------------------- |
 | vdhl            |                                         |
 | vhdl/simulation | all simulation files are located here   |
 | vhdl/tb         | all modul testbench files               |
