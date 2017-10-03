@@ -30,10 +30,10 @@ use work.i2s_pkg.all;
 
 use ieee.std_logic_textio.all;
 
-entity i2s_tx_tb is
-end entity i2s_tx_tb;
+entity tb_i2s_tx is
+end entity tb_i2s_tx;
 
-architecture sim of i2s_tx_tb is
+architecture sim of tb_i2s_tx is
 
   signal sl_reset : std_logic := '0';
   signal sl_clock : std_logic := '0';
@@ -55,12 +55,12 @@ begin
     reset_n => sl_reset,
     mclk => sl_clock,
     -- input
-    i2s_in.l_channel => slv_l_channel,
-    i2s_in.r_channel => slv_r_channel,
+    r_i2s_in.slv_l_channel => slv_l_channel,
+    r_i2s_in.slv_r_channel => slv_r_channel,
     -- output
-    i2s_out.wclk  => sl_wclk,
-    i2s_out.bclk  => sl_bclk,
-    i2s_out.sdata => sl_sdata
+    r_i2s_out.sl_wclk  => sl_wclk,
+    r_i2s_out.sl_bclk  => sl_bclk,
+    r_i2s_out.sl_sdata => sl_sdata
   );
 
 end sim;
