@@ -21,7 +21,8 @@ library ieee;
 use ieee.math_real.all;
 --! standard signal types
 use ieee.std_logic_1164.all;
-use ieee.std_logic_arith.all;
+--! standard numerical types import
+use ieee.numeric_std.all;
 
 --! @brief   I2S types definition
 --! @details This package contains constants, type definitions and subprograms
@@ -36,13 +37,20 @@ package i2s_pkg is
    constant c_addr    : integer := 12;
 
    type t_i2s_in is record
+      --! left channel parallel interface
       slv_l_channel : std_logic_vector(23 downto 0);
+      --! right channel parallel interface
       slv_r_channel : std_logic_vector(23 downto 0);
    end record;
 
+   --! @brief   I2S output
+   --! @details record for I2S interface
    type t_i2s_out is record
+      --! word clock of I2S interface
       sl_wclk  : std_ulogic;
+      --! bit clock of the I2S interface
       sl_bclk  : std_ulogic;
+      --! serialized data stream of the I2S interface
       sl_sdata : std_ulogic;
    end record;
 
@@ -56,6 +64,7 @@ package i2s_pkg is
 -- Functions
 -------------------------------------------------------------------------------
 
+  --! @brief create cosinus LUT
   function cos_lut
   return mem_array;
 
@@ -88,7 +97,7 @@ package body i2s_pkg is
       for k in 0 to N-1 loop
          k1      := (real(k)+0.5)/N1;
          w       := cos(math_pi_over_2 * k1); -- first quadrant of cosine wave
-         memx(k) := std_logic_vector(conv_signed(integer(round(8388608.0*w)),24));
+         memx(k) := std_logic_vector(to_unsigned (integer(round(8388608.0*w)),24));
       end loop;
       return memx;
   end function cos_lut;
