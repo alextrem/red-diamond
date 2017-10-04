@@ -40,9 +40,9 @@ entity i2s_tx is
       mclk    : in std_logic;
 
       -- I2S interface
-      -- input
+      --! input
       r_i2s_in  : in t_i2s_in;
-      -- output
+      --! output
       r_i2s_out : out t_i2s_out
    );
 end entity;
@@ -53,7 +53,7 @@ architecture rtl of i2s_tx is
 
    type t_reg_type is record
       sl_word_clock : std_logic;
-      slv_temp_reg   : std_logic_vector(DATA_WIDTH-1 downto 0);
+      slv_temp_reg  : std_logic_vector(DATA_WIDTH-1 downto 0);
       counter    : integer range 0 to 31;
    end record;
 
@@ -70,10 +70,10 @@ begin
 
     v.counter := r.counter + 1;
 
-    -- toggle word clock when 32bit have been clocked in
+    -- toggle word clock when 32 have been clocked in
     if r.counter = 31 then
       v.sl_word_clock := not r.sl_word_clock; -- toggle word clock
-      v.counter := 0;            -- reset counter
+      v.counter := 0;                         -- reset counter
 
       -- latch data to temporariy register when 32 bit have been counted
       if r.sl_word_clock = '0' then
