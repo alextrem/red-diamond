@@ -39,17 +39,18 @@ architecture sim of tb_i2s_tx is
   signal sl_clock : std_logic := '0';
   signal slv_addr : std_logic_vector(c_addr-1 downto 0);
 
-  signal slv_l_channel : std_logic_vector(23 downto 0);
-  signal slv_r_channel : std_logic_vector(23 downto 0);
+  signal slv_l_channel : std_logic_vector(23 downto 0) := x"ABCDEF";
+  signal slv_r_channel : std_logic_vector(23 downto 0) := x"EDCBA9";
 
-  signal sl_wclk  : std_logic;
+  signal sl_wclk  : std_logic := '0';
   signal sl_bclk  : std_logic;
   signal sl_sdata : std_logic;
 
 begin
 
   sl_clock <= not sl_clock after 10 ns;
-  sl_reset <= '0' after 20 ns, '1' after 60 ns;
+  -- release reset after 30 ns
+  sl_reset <= '0' after 15 ns, '1' after 30 ns;
 
   uut: i2s_tx port map (
     reset_n => sl_reset,
