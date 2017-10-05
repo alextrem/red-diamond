@@ -58,17 +58,13 @@ architecture rtl of i2s_tx is
    end record;
 
    signal r, r_next : t_reg_type;
-   signal r_i2s : t_i2s_in;
 
 begin
 
-  comb_proc : process(reset_n, r, r_i2s)
+  comb_proc : process(reset_n, r, r_i2s_in)
     variable v     : t_reg_type;
-    variable v_i2s : t_i2s_in;
   begin
     v := r;
-
-    v.counter := r.counter + 1;
 
     -- toggle word clock when 32 have been clocked in
     if r.counter = 31 then
@@ -77,10 +73,13 @@ begin
 
       -- latch data to temporariy register when 32 bit have been counted
       if r.sl_word_clock = '0' then
-        v.slv_temp_reg := v_i2s.slv_l_channel;
+        v.slv_temp_reg := r_i2s_in.slv_l_channel;
       else
-        v.slv_temp_reg := v_i2s.slv_r_channel;
+        v.slv_temp_reg := r_i2s_in.slv_r_channel;
       end if;
+    else
+      -- increment counter by one
+      v.counter := r.counter + 1;
     end if;
 
     -- shift data to output
@@ -89,12 +88,14 @@ begin
     if reset_n = '0' then
       v.sl_word_clock := '0'; -- 0=left, 1=right
       v.counter := 0;
+      v.slv_temp_reg := x"0AB000";
     end if;
 
     r_next <= v;
-
+    
     r_i2s_out.sl_sdata <= r.slv_temp_reg(23);
     r_i2s_out.sl_wclk <= r.sl_word_clock;
+
   end process comb_proc;
 
   seq_proc : process(mclk)
