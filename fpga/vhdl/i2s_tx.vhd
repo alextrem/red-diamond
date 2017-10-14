@@ -6,7 +6,7 @@
 -- Design Name:      i2s_tx.vhd
 -- Project Name:     red-diamond
 -- Target Device:    EP4CE22C8N
--- Tool Versions:    16.0
+-- Tool Versions:    17.0
 -- Description:      This is a i2s tx modul. Two 24 bit shift registers clock
 --                   data to a D/A.
 --                   Key Features:
@@ -31,7 +31,7 @@ use ieee.numeric_std.all;
 use work.i2s_pkg.all;
 
 entity i2s_tx is
-   generic ( DATA_WIDTH : integer range 16 to 24 := 24
+   generic ( DATA_WIDTH : integer range 16 to 32 := 24
    );
    port (
       -- Synchronous reset
@@ -54,7 +54,7 @@ architecture rtl of i2s_tx is
    type t_reg_type is record
       sl_word_clock : std_logic;
       slv_temp_reg  : std_logic_vector(DATA_WIDTH-1 downto 0);
-      counter    : integer range 0 to 31;
+      counter       : integer range 0 to 31;
    end record;
 
    signal r, r_next : t_reg_type;
@@ -66,12 +66,12 @@ begin
   begin
     v := r;
 
-    -- toggle word clock when 32 have been clocked in
-    if r.counter = 31 then
+    -- toggle word clock when DATA_WIDTH have been clocked in
+    if r.counter = DATA_WIDTH-1 then
       v.sl_word_clock := not r.sl_word_clock; -- toggle word clock
       v.counter := 0;                         -- reset counter
 
-      -- latch data to temporariy register when 32 bit have been counted
+      -- latch data to temporariy register when DATA_WIDTH has been counted
       if r.sl_word_clock = '0' then
         v.slv_temp_reg := r_i2s_in.slv_l_channel;
       else
@@ -83,17 +83,17 @@ begin
     end if;
 
     -- shift data to output
-    v.slv_temp_reg(23 downto 1) := r.slv_temp_reg(22 downto 0);
+    v.slv_temp_reg(DATA_WIDTH-1 downto 1) := r.slv_temp_reg(DATA_WIDTH-2 downto 0);
 
     if reset_n = '0' then
       v.sl_word_clock := '0'; -- 0=left, 1=right
       v.counter := 0;
-      v.slv_temp_reg := x"0AB000";
+      v.slv_temp_reg := r_i2s_in.slv_l_channel;
     end if;
 
     r_next <= v;
     
-    r_i2s_out.sl_sdata <= r.slv_temp_reg(23);
+    r_i2s_out.sl_sdata <= r.slv_temp_reg(DATA_WIDTH-1);
     r_i2s_out.sl_wclk <= r.sl_word_clock;
 
   end process comb_proc;
