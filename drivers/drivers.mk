@@ -4,7 +4,7 @@ DRIVERPATH = drivers
 # All subdirectories end up here
 DRIVERDIRS = dac \
              hdmi \
-			 sensors \
+             sensors \
 
 # Source files
 
