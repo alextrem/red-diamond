@@ -29,6 +29,7 @@
 #include "cs43l22.h"
 //#include "pcm1792a.h"
 #include "adv7612.h"
+#include "max30101.h"
 
 #include "ff.h"
 #include "mad.h"
@@ -206,6 +207,15 @@ static void cmd_dac(BaseSequentialStream *chp, int argc, char *argv[]) {
   }
 }
 
+static void cmd_sensor(BaseSequentialStream *chp, int argc, char *argv[]) {
+  (void) argv;
+  if (argc > 0) {
+    chprintf(chp, "Usage: sensor [command]\r\n");
+    return;
+  }
+}
+
+
 static const ShellCommand commands[] = {
   {"led", cmd_led},
   {"mad", cmd_mad},
@@ -213,6 +223,7 @@ static const ShellCommand commands[] = {
   {"codec", cmd_codec},
   {"dac", cmd_dac},
   {"dir", cmd_dir},
+  {"sensor", cmd_sensor},
   {NULL, NULL}
 };
 
@@ -472,7 +483,7 @@ int main(void) {
   adcSTM32EnableTSVREFE();
 
   /*
-   * Activates the I2C interface
+   * Activates the I2C1 interface
    * The HDMI, DAC, and maybe the ADC are using this interface
    */
   i2cStart(&I2CD1, &i2cfg);
@@ -483,6 +494,16 @@ int main(void) {
   Codec_Init(&I2CD1);
   /* Configure codecs with defined settings */
   Codec_Configure();
+
+  /*
+   * Activates the I2C3 interface
+   */
+  i2cStart(&I2CD3, &i2cfg);
+  palSetPadMode(GPIOC, 9, PAL_STM32_OTYPE_OPENDRAIN | PAL_MODE_ALTERNATE(4)); /* SDA */
+  palSetPadMode(GPIOA, 8, PAL_STM32_OTYPE_OPENDRAIN | PAL_MODE_ALTERNATE(4)); /* SCL */
+
+  /* Assign driver to Sensor */
+  MAX30101_Init(&I2CD3);
 
   /*
    * Initializes the SPI driver 1 in order to access the MEMS. The signals
