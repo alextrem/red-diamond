@@ -63,6 +63,7 @@ end red_diamond_top;
 architecture rtl of red_diamond_top is
 
 signal sl_clk	: std_logic;
+signal sl_clk1	: std_logic;
 
 component heartbeat
   port (
@@ -71,7 +72,7 @@ component heartbeat
   );
 end component;
 
-component sys_pll
+component pll
   port (
     areset    : in std_logic  := '0';
     clkswitch : in std_logic := '0';
@@ -80,11 +81,11 @@ component sys_pll
     c0	      : out std_logic;
     locked    : out std_logic 
   );
-end component sys_pll;
+end component pll;
 
 begin
 
-  inst_pll: sys_pll
+  inst_pll: pll
   port map (
     areset => '0',
     clkswitch => '1',

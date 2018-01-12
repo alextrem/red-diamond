@@ -7,6 +7,7 @@ MODULES = \
         aes3rx.vhd \
         i2s_tx.vhd \
         i2s_pkg.vhd \
+        tb_i2s_tx.vhd \
         spdif_pkg.vhd
 
 analyze:

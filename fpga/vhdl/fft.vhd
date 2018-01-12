@@ -7,7 +7,7 @@
 -- Project Name:    	red-diamond
 -- Target Device:   	EP4CE22C8N
 -- Tool Versions:   	15.0
--- Description:		    4K fft implementation for audio spectrum
+-- Description:		4K fft implementation for audio spectrum
 --
 -- Dependencies:
 --
@@ -21,17 +21,22 @@ use IEEE.STD_LOGIC_ARITH.ALL;
 use IEEE.STD_LOGIC_UNSIGNED.ALL;
 
 entity fft is
-    port (
-        -- Synchronous reset
-        reset   	: in std_logic;
-        -- Master clock
-        clk		: in std_logic;
-        -- receiver has valid input data
-        lock	 : out std_logic := '0'
-        );
+  generic(
+    N : natural in range 8 to 8192 := 1024
+  );
+  port (
+    -- Synchronous reset
+    reset   	: in std_logic;
+    -- Master clock
+    clk		: in std_logic;
+    -- receiver has valid input data
+    lock	 : out std_logic := '0'
+    -- fft input
+    din : in std_logic_vector(N-1 downto 0)
+    );
 end fft;
 
-architecture rtl of aes3rx is
+architecture rtl of fft is
 
 begin
 
