@@ -95,10 +95,6 @@ static FRESULT scan_files(BaseSequentialStream *chp, char *path) {
   int i;
   char *fn;
 
-#if _USE_LFN
-  fno.lfname = 0;
-  fno.lfsize = 0;
-#endif
   res = f_opendir(&dir, path);
   if (res == FR_OK) {
     i = strlen(path);
@@ -371,7 +367,7 @@ static const ADCConversionGroup adcgrpcfg2 = {
 /* Main and generic code                                                     */
 /*===========================================================================*/
 
-thread_t *shelltp = NULL;
+static thread_t *shelltp = NULL;
 
 static void InserHandler(eventid_t id) {
   FRESULT err;
@@ -468,16 +464,6 @@ int main(void) {
   palSetPadMode(GPIOA, 3, PAL_MODE_ALTERNATE(7));
 
   /*
-   * Activates an analog interface
-   */
-
-  /*
-   * Activates the ADCD1 driver and temperature sensor
-   */
-  adcStart(&ADCD1, NULL);
-  adcSTM32EnableTSVREFE();
-
-  /*
    * Activates the I2C interface
    * The HDMI, DAC, and maybe the ADC are using this interface
    */
@@ -547,26 +533,27 @@ int main(void) {
   chThdCreateStatic(pwmThreadWorkingArea, sizeof(pwmThreadWorkingArea),
                     NORMALPRIO+2, pwmThread, NULL);
 
-  adcConvert(&ADCD1, &adcgrpcfg1, samples1, ADC_GRP1_BUF_DEPTH);
+  /*
+   * Activates the ADCD1 driver and temperature sensor
+   */
 
-  adcConvert(&ADCD1, &adcgrpcfg2, samples2, ADC_GRP2_BUF_DEPTH);
+  palSetGroupMode(GPIOC, PAL_PORT_BIT(0) | PAL_PORT_BIT(2) | PAL_PORT_BIT(3), 0, PAL_MODE_INPUT_ANALOG);
+  adcStart(&ADCD1, NULL);
+  adcSTM32EnableTSVREFE();
+
+  //adcConvert(&ADCD1, &adcgrpcfg1, samples1, ADC_GRP1_BUF_DEPTH);
+
+  //adcConvert(&ADCD1, &adcgrpcfg2, samples2, ADC_GRP2_BUF_DEPTH);
 
   chEvtRegister(&inserted_event, &el0, 0);
   chEvtRegister(&removed_event, &el1, 1);
+  chEvtRegister(&shell_terminated, &el2, 2);
    while (true) {
-    if (!shelltp) {
-      if (SDU1.config->usbp->state == USB_ACTIVE) {
+    if (!shelltp && (SDU1.config->usbp->state == USB_ACTIVE)) {
         /* Spawns a new shell.*/
-        shelltp = shellCreate(&shell_cfg1, SHELL_WA_SIZE, NORMALPRIO);
-      }
-    }
-    else {
-      /* If the previous shell exited.*/
-      if (chThdTerminatedX(shelltp)) {
-        /* Recovers memory of the previous shell.*/
-        chThdRelease(shelltp);
-        shelltp = NULL;
-      }
+        shelltp = chThdCreateFromHeap( NULL, SHELL_WA_SIZE, 
+                                       "shell", NORMALPRIO + 1,
+                                       shellThread, (void *)&shell_cfg1);
     }
     chEvtDispatch(evhndl, chEvtWaitOneTimeout(ALL_EVENTS, MS2ST(500)));
   }
