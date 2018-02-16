@@ -35,7 +35,7 @@
 
 #define ADC_GRP1_NUM_CHANNELS   1
 #define ADC_GRP1_BUF_DEPTH      8
-#define ADC_GRP2_NUM_CHANNELS   4
+#define ADC_GRP2_NUM_CHANNELS   2
 #define ADC_GRP2_BUF_DEPTH      16
 
 static THD_WORKING_AREA(ledThreadWorkingArea, 64);
@@ -257,6 +257,7 @@ static const SPIConfig spi1cfg = {
   GPIOC,
   GPIOC_PIN4,
   SPI_CR1_BR_0 | SPI_CR1_BR_1 | SPI_CR1_CPOL | SPI_CR1_CPHA,
+  0
 };
 
 static const MMCConfig mmc1cfg = {
@@ -275,7 +276,8 @@ static const SPIConfig spi2cfg = {
   /* HW dependent part.*/
   GPIOB,
   12,
-  0,
+  SPI_CR1_BR_0 | SPI_CR1_BR_1 | SPI_CR1_CPOL | SPI_CR1_CPHA,
+  0
 };
 
 /*
@@ -310,19 +312,27 @@ static const I2CConfig i2cfg = {
 /*
  * ADC configuration structure.
  */
+//static adcsample_t samples1[ADC_GRP1_NUM_CHANNELS * ADC_GRP1_BUF_DEPTH];
+static adcsample_t samples2[ADC_GRP2_NUM_CHANNELS * ADC_GRP2_BUF_DEPTH];
+static float temperature = 0;
 
-static void adccb(ADCDriver *adcp, adcsample_t *buffer, size_t n) {
+static void adccallback(ADCDriver *adcp, adcsample_t *buffer, size_t n) {
   (void)adcp;
 
+  int32_t temp_avg = 0;
+  //samples2 = buffer;
+
+  /* Compute avarage of temperature sensor raw data */
+  for (int i = 0; i < (ADC_GRP2_NUM_CHANNELS * ADC_GRP2_BUF_DEPTH); i += 2 ) {
+    temp_avg += samples2[i];
+  }
+  temp_avg /= ADC_GRP2_BUF_DEPTH;
 }
 
 static void adcerrcb(ADCDriver *adcp, adcerror_t err) {
   (void)adcp;
   (void)err;
 }
-
-static adcsample_t samples1[ADC_GRP1_NUM_CHANNELS * ADC_GRP1_BUF_DEPTH];
-static adcsample_t samples2[ADC_GRP2_NUM_CHANNELS * ADC_GRP2_BUF_DEPTH];
 
 /*
  * ADC conversion group
@@ -340,28 +350,26 @@ static const ADCConversionGroup adcgrpcfg1 = {
   0,                                      /* SMPR2 */
   ADC_SQR1_NUM_CH(ADC_GRP1_NUM_CHANNELS), /* SQR1 */
   0,                                      /* SQR2 */
-  ADC_SQR3_SQ1_N(ADC_CHANNEL_IN10)
+  ADC_SQR3_SQ1_N(ADC_CHANNEL_IN10)        /* SQR3 */
 };
 
 /*
  * ADC Conversion group
- * Mode:        Continous, 16 samples of 4 channels, SW triggered
- * Channels:    IN12, IN13, Sensor, Vref
+ * Mode:        Continous, 16 samples of 2 channels, SW triggered
+ * Channels:    Sensor, Vref
  */
 static const ADCConversionGroup adcgrpcfg2 = {
-  TRUE,
+  TRUE,            /* circular buffer */
   ADC_GRP2_NUM_CHANNELS,
-  adccb,
+  adccallback,
   adcerrcb,
   0,               /* CR1 */
   ADC_CR2_SWSTART, /* CR2 */
-  ADC_SMPR1_SMP_AN12(ADC_SAMPLE_56) | ADC_SMPR1_SMP_AN11(ADC_SAMPLE_56) |
-  ADC_SMPR1_SMP_SENSOR(ADC_SAMPLE_144) | ADC_SMPR1_SMP_VREF(ADC_SAMPLE_144),
+  ADC_SMPR1_SMP_SENSOR(ADC_SAMPLE_480) | ADC_SMPR1_SMP_VREF(ADC_SAMPLE_480), /* SMPR1 */
   0,               /* SMPR2 */
   ADC_SQR1_NUM_CH(ADC_GRP2_NUM_CHANNELS), /* SQR1 */
-  0,
-  ADC_SQR2_SQ8_N(ADC_CHANNEL_SENSOR) | ADC_SQR2_SQ7_N(ADC_CHANNEL_VREFINT) |
-  ADC_SQR3_SQ6_N(ADC_CHANNEL_IN12) | ADC_SQR3_SQ5_N(ADC_CHANNEL_IN13)
+  ADC_SQR2_SQ8_N(ADC_CHANNEL_SENSOR) | ADC_SQR2_SQ7_N(ADC_CHANNEL_VREFINT), /* SQR2 */
+  0 /* SQR3 */
 };
 /*===========================================================================*/
 /* Main and generic code                                                     */
@@ -534,16 +542,19 @@ int main(void) {
                     NORMALPRIO+2, pwmThread, NULL);
 
   /*
-   * Activates the ADCD1 driver and temperature sensor
+   * Configure I/Os for ADC1
    */
-
   palSetGroupMode(GPIOC, PAL_PORT_BIT(0) | PAL_PORT_BIT(2) | PAL_PORT_BIT(3), 0, PAL_MODE_INPUT_ANALOG);
+
+  /*
+   * Configure and activate ADC1
+   */
   adcStart(&ADCD1, NULL);
   adcSTM32EnableTSVREFE();
 
   //adcConvert(&ADCD1, &adcgrpcfg1, samples1, ADC_GRP1_BUF_DEPTH);
-
-  //adcConvert(&ADCD1, &adcgrpcfg2, samples2, ADC_GRP2_BUF_DEPTH);
+  /* Begin asynchronous ADC conversion */
+  adcStartConversion(&ADCD1, &adcgrpcfg2, samples2, ADC_GRP2_BUF_DEPTH);
 
   chEvtRegister(&inserted_event, &el0, 0);
   chEvtRegister(&removed_event, &el1, 1);
