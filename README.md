@@ -20,6 +20,8 @@ I'm using the GCC ARM launchpad [cross compiler](https://launchpad.net/gcc-arm-e
 
 To build the software clone the repo, init and update the submodules and type:
 
+    $ git submodule update --init
+
     $ make extract
     $ cd dsp_lib; make all; cd ..
     $ make all
