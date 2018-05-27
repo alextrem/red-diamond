@@ -37,6 +37,7 @@
 #define ADC_GRP1_BUF_DEPTH      8
 #define ADC_GRP2_NUM_CHANNELS   2
 #define ADC_GRP2_BUF_DEPTH      16
+static uint32_t temperature = 0;
 
 static THD_WORKING_AREA(ledThreadWorkingArea, 64);
 static THD_WORKING_AREA(pwmThreadWorkingArea, 32);
@@ -182,6 +183,7 @@ static void cmd_mad(BaseSequentialStream *chp, int argc, char *argv[]) {
 
 static void cmd_adc(BaseSequentialStream *chp, int argc, char *argv[]) {
   (void) argv;
+  chprintf(chp, "Temperature: %d \r\n", temperature );
   if (argc > 0) {
     chprintf(chp, "Usage: adc\r\n");
     return;
@@ -275,7 +277,7 @@ static const SPIConfig spi2cfg = {
   NULL,
   /* HW dependent part.*/
   GPIOB,
-  12,
+  GPIOB_PIN12,
   SPI_CR1_BR_0 | SPI_CR1_BR_1 | SPI_CR1_CPOL | SPI_CR1_CPHA,
   0
 };
@@ -314,7 +316,6 @@ static const I2CConfig i2cfg = {
  */
 //static adcsample_t samples1[ADC_GRP1_NUM_CHANNELS * ADC_GRP1_BUF_DEPTH];
 static adcsample_t samples2[ADC_GRP2_NUM_CHANNELS * ADC_GRP2_BUF_DEPTH];
-static float temperature = 0;
 
 static void adccallback(ADCDriver *adcp, adcsample_t *buffer, size_t n) {
   (void)adcp;
@@ -327,6 +328,7 @@ static void adccallback(ADCDriver *adcp, adcsample_t *buffer, size_t n) {
     temp_avg += samples2[i];
   }
   temp_avg /= ADC_GRP2_BUF_DEPTH;
+  temperature = temp_avg;
 }
 
 static void adcerrcb(ADCDriver *adcp, adcerror_t err) {
@@ -371,6 +373,23 @@ static const ADCConversionGroup adcgrpcfg2 = {
   ADC_SQR2_SQ8_N(ADC_CHANNEL_SENSOR) | ADC_SQR2_SQ7_N(ADC_CHANNEL_VREFINT), /* SQR2 */
   0 /* SQR3 */
 };
+
+/*==========================================================================*/
+/* DAC Conversion Group                                                     */
+/*==========================================================================*/
+static const DACConfig dac1cfg = {
+  .init = 0U,
+  DAC_DHRM_12BIT_RIGHT,
+  0
+};
+
+static const DACConversionGroup dacgrpcfg = {
+  .num_channels = 1U,
+  NULL,
+  NULL,
+  .trigger = DAC_TRG_SW
+};
+
 /*===========================================================================*/
 /* Main and generic code                                                     */
 /*===========================================================================*/
@@ -476,8 +495,8 @@ int main(void) {
    * The HDMI, DAC, and maybe the ADC are using this interface
    */
   i2cStart(&I2CD1, &i2cfg);
-  palSetPadMode(GPIOB, 6, PAL_STM32_OTYPE_OPENDRAIN | PAL_MODE_ALTERNATE(4)); /* SCL */
-  palSetPadMode(GPIOB, 9, PAL_STM32_OTYPE_OPENDRAIN | PAL_MODE_ALTERNATE(4)); /* SDA */
+  palSetGroupMode(GPIOB, PAL_PORT_BIT(6) | PAL_PORT_BIT(9), 0,
+                  PAL_STM32_OTYPE_OPENDRAIN | PAL_MODE_ALTERNATE(4));
 
   /* Assign driver to Codec interface */
   Codec_Init(&I2CD1);
@@ -500,7 +519,6 @@ int main(void) {
    */
 
   spiStart(&SPID2, &spi2cfg);
-  palSetPad(GPIOB, 12);
   palSetPadMode(GPIOB, 12, PAL_MODE_OUTPUT_PUSHPULL |
                            PAL_STM32_OSPEED_HIGHEST);           /* NSS.     */
   palSetPadMode(GPIOB, 13, PAL_MODE_ALTERNATE(5) |
@@ -517,22 +535,25 @@ int main(void) {
    * PC12 - I2S3_SD.
    */
   i2sStart(&I2SD3, &i2s3cfg);
+  palSetGroupMode(GPIOC, PAL_PORT_BIT(7) |
+                         PAL_PORT_BIT(10) |
+                         PAL_PORT_BIT(12),
+                         0,
+                         PAL_MODE_OUTPUT_PUSHPULL |
+                         PAL_STM32_OSPEED_HIGHEST |
+                         PAL_MODE_ALTERNATE(6));
   palSetPadMode(GPIOA, 4, PAL_MODE_OUTPUT_PUSHPULL | PAL_MODE_ALTERNATE(6) |
                 PAL_STM32_OSPEED_MID2); /* WS  */
-  palSetPadMode(GPIOC, 7, PAL_MODE_OUTPUT_PUSHPULL | PAL_MODE_ALTERNATE(6) |
-                PAL_STM32_OSPEED_MID2); /* MCK */
-  palSetPadMode(GPIOC, 10, PAL_MODE_OUTPUT_PUSHPULL | PAL_MODE_ALTERNATE(6) |
-                PAL_STM32_OSPEED_MID2); /* SCK */
-  palSetPadMode(GPIOC, 12, PAL_MODE_OUTPUT_PUSHPULL | PAL_MODE_ALTERNATE(6) |
-                PAL_STM32_OSPEED_MID2); /* SD */
 
   /*
    * Initializes PWM driver 4
    */
   pwmStart(&PWMD4, &pwmcfg);
-  palSetPadMode(GPIOD, 12, PAL_MODE_ALTERNATE(2));
-  palSetPadMode(GPIOD, 13, PAL_MODE_ALTERNATE(2));
-  palSetPadMode(GPIOD, 14, PAL_MODE_ALTERNATE(2));
+  palSetGroupMode(GPIOC, PAL_PORT_BIT(12) |
+                         PAL_PORT_BIT(13) |
+                         PAL_PORT_BIT(14),
+                         0,
+                         PAL_MODE_ALTERNATE(2));
   //palSetPadMode(GPIOD, 15, PAL_MODE_ALTERNATE(2));
 
   chThdCreateStatic(ledThreadWorkingArea, sizeof(ledThreadWorkingArea),
@@ -544,7 +565,11 @@ int main(void) {
   /*
    * Configure I/Os for ADC1
    */
-  palSetGroupMode(GPIOC, PAL_PORT_BIT(0) | PAL_PORT_BIT(2) | PAL_PORT_BIT(3), 0, PAL_MODE_INPUT_ANALOG);
+  palSetGroupMode(GPIOC, PAL_PORT_BIT(0) |
+                         PAL_PORT_BIT(2) |
+                         PAL_PORT_BIT(3),
+                         0,
+                         PAL_MODE_INPUT_ANALOG);
 
   /*
    * Configure and activate ADC1
@@ -552,7 +577,6 @@ int main(void) {
   adcStart(&ADCD1, NULL);
   adcSTM32EnableTSVREFE();
 
-  //adcConvert(&ADCD1, &adcgrpcfg1, samples1, ADC_GRP1_BUF_DEPTH);
   /* Begin asynchronous ADC conversion */
   adcStartConversion(&ADCD1, &adcgrpcfg2, samples2, ADC_GRP2_BUF_DEPTH);
 
@@ -562,7 +586,7 @@ int main(void) {
    while (true) {
     if (!shelltp && (SDU1.config->usbp->state == USB_ACTIVE)) {
         /* Spawns a new shell.*/
-        shelltp = chThdCreateFromHeap( NULL, SHELL_WA_SIZE, 
+        shelltp = chThdCreateFromHeap( NULL, SHELL_WA_SIZE,
                                        "shell", NORMALPRIO + 1,
                                        shellThread, (void *)&shell_cfg1);
     }
