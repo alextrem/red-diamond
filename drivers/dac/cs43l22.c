@@ -106,6 +106,8 @@ static msg_t Codec_ReadRegister(I2CDriver *i2cp, cs43l22_sad_t sad, uint8_t reg,
  *                      to write
  * @param[in] n         Number of bytes to write not considering the first
  *                      element
+ * @return              the operation status
+ * @notapi
  */
 static msg_t Codec_WriteRegister(I2CDriver *i2cp, cs43l22_sad_t sad,
                                  uint8_t *txbuf, size_t n) {
@@ -114,7 +116,6 @@ static msg_t Codec_WriteRegister(I2CDriver *i2cp, cs43l22_sad_t sad,
 
   /* Check if driver is assigned to a structure */
   return i2cMasterTransmitTimeout(i2cp, sad, txbuf, n + 1, NULL, 0, MS2ST(4));
-
 }
 
 /*===========================================================================*/
@@ -246,11 +247,11 @@ void Codec_VolumeCtrl(I2CDriver *i2cp, OUTPUT_t set, uint8_t volume) {
     case all:
       txbuf[0] = CODEC_SPKA; txbuf[1] = volume;
       Codec_WriteRegister(i2cp, CS43L22_SAD_GND, txbuf, sizeof(txbuf));
-      txbuf[0] = CODEC_SPKB; txbuf[1] = volume;
+      txbuf[0] = CODEC_SPKB;
       Codec_WriteRegister(i2cp, CS43L22_SAD_GND, txbuf, sizeof(txbuf));
-      txbuf[0] = CODEC_HPA; txbuf[1] = volume;
+      txbuf[0] = CODEC_HPA;
       Codec_WriteRegister(i2cp, CS43L22_SAD_GND, txbuf, sizeof(txbuf));
-      txbuf[0] = CODEC_HPB; txbuf[1] = volume;
+      txbuf[0] = CODEC_HPB;
       Codec_WriteRegister(i2cp, CS43L22_SAD_GND, txbuf, sizeof(txbuf));
       break;
     case master:
@@ -258,13 +259,13 @@ void Codec_VolumeCtrl(I2CDriver *i2cp, OUTPUT_t set, uint8_t volume) {
     case headphone:
       txbuf[0] = CODEC_HPA; txbuf[1] = volume;
       Codec_WriteRegister(i2cp, CS43L22_SAD_GND, txbuf, sizeof(txbuf));
-      txbuf[0] = CODEC_HPB; txbuf[1] = volume;
+      txbuf[0] = CODEC_HPB;
       Codec_WriteRegister(i2cp, CS43L22_SAD_GND, txbuf, sizeof(txbuf));
       break;
     case speaker:
       txbuf[0] = CODEC_SPKA; txbuf[1] = volume;
       Codec_WriteRegister(i2cp, CS43L22_SAD_GND, txbuf, sizeof(txbuf));
-      txbuf[0] = CODEC_SPKB; txbuf[1] = volume;
+      txbuf[0] = CODEC_SPKB;
       Codec_WriteRegister(i2cp, CS43L22_SAD_GND, txbuf, sizeof(txbuf));
       break;
   }
@@ -309,11 +310,11 @@ void Codec_Mute(I2CDriver *i2cp, const OUTPUT_t set) {
     case all:
       txbuf[0] = CODEC_SPKA; txbuf[1] = 0x01;
       Codec_WriteRegister(i2cp, CS43L22_SAD_GND, txbuf, sizeof(txbuf));
-      txbuf[0] = CODEC_SPKB; txbuf[1] = 0x01;
+      txbuf[0] = CODEC_SPKB;
       Codec_WriteRegister(i2cp, CS43L22_SAD_GND, txbuf, sizeof(txbuf));
-      txbuf[0] = CODEC_HPA; txbuf[1] = 0x01;
+      txbuf[0] = CODEC_HPA;
       Codec_WriteRegister(i2cp, CS43L22_SAD_GND, txbuf, sizeof(txbuf));
-      txbuf[0] = CODEC_HPB; txbuf[1] = 0x01;
+      txbuf[0] = CODEC_HPB;
       Codec_WriteRegister(i2cp, CS43L22_SAD_GND, txbuf, sizeof(txbuf));
       break;
     case master:
@@ -321,13 +322,13 @@ void Codec_Mute(I2CDriver *i2cp, const OUTPUT_t set) {
     case headphone:
       txbuf[0] = CODEC_HPA; txbuf[1] = 0x01;
       Codec_WriteRegister(i2cp, CS43L22_SAD_GND, txbuf, sizeof(txbuf));
-      txbuf[0] = CODEC_HPB; txbuf[1] = 0x01;
+      txbuf[0] = CODEC_HPB;
       Codec_WriteRegister(i2cp, CS43L22_SAD_GND, txbuf, sizeof(txbuf));
       break;
     case speaker:
       txbuf[0] = CODEC_SPKA; txbuf[1] = 0x01;
       Codec_WriteRegister(i2cp, CS43L22_SAD_GND, txbuf, sizeof(txbuf));
-      txbuf[0] = CODEC_SPKB; txbuf[1] = 0x01;
+      txbuf[0] = CODEC_SPKB;
       Codec_WriteRegister(i2cp, CS43L22_SAD_GND, txbuf, sizeof(txbuf));
       break;
   }

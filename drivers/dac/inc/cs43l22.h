@@ -104,9 +104,9 @@
 /**
  * @brief   CS43L22 I2C interface switch.
  * @details If set to @p TRUE the support for I2C is included.
- * @note    The default is @p FALSE.
+ * @note    The default is @p TRUE.
  */
-#if !defined(LIS302DL_USE_I2C) || defined(__DOXYGEN__)
+#if !defined(CS43L22_USE_I2C) || defined(__DOXYGEN__)
 #define CS43L22_USE_I2C                    TRUE
 #endif
 
