@@ -206,22 +206,22 @@ typedef struct Dac {
 /* Driver macros.                                                            */
 /*===========================================================================*/
 
-#define BEEP_F260 0x00      /** Beep frequency 260 Hz*/
-#define BEEP_F521 0x10      /** Beep frequency 521 Hz*/
-#define BEEP_F585 0x20      /** Beep frequency 585 Hz*/
-#define BEEP_F666 0x30      /** Beep frequency from hell */
-#define BEEP_F705 0x40      /** Beep frequency 705 Hz*/
-#define BEEP_F774 0x50      /** Beep frequency 774 Hz*/
-#define BEEP_F888 0x60      /** Beep frequency 888 Hz*/
-#define BEEP_F1000 0x70     /** Beep frequency 1 kHz*/
-#define BEEP_F1043 0x80     /** Beep frequency 1043 Hz */
-#define BEEP_F1200 0x90     /** Beep frequency 1200 Hz*/
-#define BEEP_F1333 0xA0     /** Beep frequency 1333 Hz*/
-#define BEEP_F1411 0xB0     /** Beep frequency 1411 Hz*/
-#define BEEP_F1600 0xC0     /** Beep frequency 1600 Hz*/
-#define BEEP_F1714 0xD0     /** Beep frequency 1714 Hz */
-#define BEEP_F2000 0xE0     /** Beep frequency 2 kHz Hz*/
-#define BEEP_F2181 0xF0     /** Beep frequency 2181 Hz*/
+#define BEEP_F260   0x00      /** Beep frequency 260 Hz*/
+#define BEEP_F521   0x10      /** Beep frequency 521 Hz*/
+#define BEEP_F585   0x20      /** Beep frequency 585 Hz*/
+#define BEEP_F666   0x30      /** Beep frequency from hell */
+#define BEEP_F705   0x40      /** Beep frequency 705 Hz*/
+#define BEEP_F774   0x50      /** Beep frequency 774 Hz*/
+#define BEEP_F888   0x60      /** Beep frequency 888 Hz*/
+#define BEEP_F1000  0x70      /** Beep frequency 1 kHz*/
+#define BEEP_F1043  0x80      /** Beep frequency 1043 Hz */
+#define BEEP_F1200  0x90      /** Beep frequency 1200 Hz*/
+#define BEEP_F1333  0xA0      /** Beep frequency 1333 Hz*/
+#define BEEP_F1411  0xB0      /** Beep frequency 1411 Hz*/
+#define BEEP_F1600  0xC0      /** Beep frequency 1600 Hz*/
+#define BEEP_F1714  0xD0      /** Beep frequency 1714 Hz */
+#define BEEP_F2000  0xE0      /** Beep frequency 2 kHz Hz*/
+#define BEEP_F2181  0xF0      /** Beep frequency 2181 Hz*/
 
 #define ID()
 #define REVISION()
