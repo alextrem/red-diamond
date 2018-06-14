@@ -192,9 +192,25 @@ static void cmd_adc(BaseSequentialStream *chp, int argc, char *argv[]) {
 
 static void cmd_codec(BaseSequentialStream *chp, int argc, char *argv[]) {
   (void) argv;
-  if (argc > 0) {
+  if (argc > 1) {
     chprintf(chp, "Usage: codec [command]\r\n");
     return;
+  }
+
+  if (strcmp("all", argv[0]) == 0) {
+    chprintf(chp, "All Registers\r\n");
+  }
+  else if (strcmp("mute", argv[0]) == 0) {
+    Codec_Mute(&I2CD1, all);
+    chprintf(chp, "Muting outputs\r\n");
+  }
+  else if (strcmp("beep", argv[0]) == 0) {
+    Codec_BeepGenerator(&I2CD1);
+    chprintf(chp, "Setting Beep frequency to \r\n");
+  }
+  else if (strcmp("vol", argv[0]) == 0) {
+    Codec_VolumeCtrl(&I2CD1, all, 100);
+    chprintf(chp, "Set volume to %d\r\n", argv[1]);
   }
 }
 
@@ -385,8 +401,8 @@ static const DACConfig dac1cfg = {
 
 static const DACConversionGroup dacgrpcfg = {
   .num_channels = 1U,
-  NULL,
-  NULL,
+  .end_cb = NULL,
+  .error_cb = NULL,
   .trigger = DAC_TRG_SW
 };
 
@@ -501,7 +517,7 @@ int main(void) {
   /* Assign driver to Codec interface */
   Codec_Init(&I2CD1);
   /* Configure codecs with defined settings */
-  Codec_Configure();
+  Codec_Configure(&I2CD1);
 
   /*
    * Initializes the SPI driver 1 in order to access the MEMS. The signals
@@ -534,6 +550,7 @@ int main(void) {
    * PC10 - I2S3_SCK.
    * PC12 - I2S3_SD.
    */
+  //dmaStreamAllocate(I2SD3.txdma, 0, NULL, NULL);
   i2sStart(&I2SD3, &i2s3cfg);
   palSetGroupMode(GPIOC, PAL_PORT_BIT(7) |
                          PAL_PORT_BIT(10) |
