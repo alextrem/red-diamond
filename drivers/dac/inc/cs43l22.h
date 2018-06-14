@@ -140,21 +140,21 @@ typedef enum {
   CS43L22_SAD_VCC = 0x96            /**< Slave Address when SA0 is to VCC    */
 }cs43l22_sad_t;
 
-typedef enum output {
+typedef enum {
   all = 0,                          /**< All outputs */
   master = 1,                       /**< Master Output */
   headphone = 2,                    /**< Headphone output */
   speaker = 3,                      /**< Speaker output */
 } OUTPUT_t;
 
-typedef enum beep_config {
+typedef enum {
   off = 0,                          /** Deactivate beep */
   single = 1,                       /** Just on shot beep */
   multiple = 2,                     /** A bunch of beeps */
   continous = 3,                    /** Beep all the time */
 } BEEP_CONFIG_t;
 
-typedef enum beep_ontime {
+typedef enum {
   beep_on_83ms = 0x00,              /** 83ms beep */
   beep_on_430ms = 0x01,             /** 430ms beep */
   beep_on_780ms = 0x02,             /** 780ms beep */
@@ -173,7 +173,7 @@ typedef enum beep_ontime {
   beep_on_5200ms = 0x0F             /** 5,2s beep */
 } ONTIME_t;
 
-typedef enum beep_offtime {
+typedef enum {
   beep_off_1230ms = 0,              /** 1,23s beep off */
   beep_off_2580ms = 1,              /** 2,58s beep off */
   beep_off_3900ms = 2,              /** 3,9s beep off */
@@ -184,7 +184,7 @@ typedef enum beep_offtime {
   beep_off_10800ms = 7              /** 10,80s beep off */
 } OFFTIME_t;
 
-typedef struct beep {
+typedef struct {
   uint8_t frequency;                /** Choose e a frequency from the macros*/
   ONTIME_t ontime;                  /** Beep ontime setting */
   OFFTIME_t offtime;                /** Beep offtime setting */
@@ -193,7 +193,7 @@ typedef struct beep {
   uint8_t mix;                      /** Activate or deactivate beep mix */
 } BEEP_t;
 
-typedef struct Dac {
+typedef struct {
   I2CDriver *i2cp;                  /** Driver attachement*/
   uint8_t deviceID;                 /** chip device id */
   uint8_t master_volume[2];         /** Master volume control for l+r */
@@ -237,7 +237,7 @@ extern "C" {
 void Codec_Init(I2CDriver *i2cp);
 void Codec_Configure(I2CDriver *i2cp);
 void Codec_GetID(I2CDriver *i2cp);
-void Codec_VolumeCtl(I2CDriver *i2cp, OUTPUT_t set, uint8_t volume);
+void Codec_VolumeCtrl(I2CDriver *i2cp, OUTPUT_t set, uint8_t volume);
 void Codec_Balance(I2CDriver *i2cp, const OUTPUT_t set, int8_t balance);
 void Codec_Mute(I2CDriver *i2cp, const OUTPUT_t set);
 void Codec_BeepGenerator(DAC_CS43L22_t *dac);
