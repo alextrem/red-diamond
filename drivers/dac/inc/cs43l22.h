@@ -54,7 +54,7 @@
 /** @} */
 
 #define CODEC_STANDARD              0x04
-#define CODEC_ADDRESS               0x94
+#define CODEC_ADDRESS               0x4A
 #define CODEC_I2C_AUTOINCR          (1 << 7)
 
 #define CODEC_ID                    0x01
@@ -136,8 +136,8 @@
 /* Driver data structures and types.                                         */
 /*===========================================================================*/
 typedef enum {
-  CS43L22_SAD_GND = 0x94,           /**< Slave Address when SA0 is to GND    */
-  CS43L22_SAD_VCC = 0x96            /**< Slave Address when SA0 is to VCC    */
+  CS43L22_SAD_GND = (0x94 >> 1),    /**< Slave Address when SA0 is to GND    */
+  CS43L22_SAD_VCC = (0x96 >> 1)     /**< Slave Address when SA0 is to VCC    */
 }cs43l22_sad_t;
 
 typedef enum {
@@ -189,7 +189,7 @@ typedef struct {
   ONTIME_t ontime;                  /** Beep ontime setting */
   OFFTIME_t offtime;                /** Beep offtime setting */
   uint8_t volume;                   /** Beep volume */
-  BEEP_CONFIG_t configuration;      /** Beep configuration structure */
+  BEEP_CONFIG_t config       ;      /** Beep configuration structure */
   uint8_t mix;                      /** Activate or deactivate beep mix */
 } BEEP_t;
 
@@ -236,11 +236,11 @@ extern "C" {
 
 void Codec_Init(I2CDriver *i2cp);
 void Codec_Configure(I2CDriver *i2cp);
-void Codec_GetID(I2CDriver *i2cp);
+uint8_t Codec_GetID(I2CDriver *i2cp);
 void Codec_VolumeCtrl(I2CDriver *i2cp, OUTPUT_t set, uint8_t volume);
 void Codec_Balance(I2CDriver *i2cp, const OUTPUT_t set, int8_t balance);
 void Codec_Mute(I2CDriver *i2cp, const OUTPUT_t set);
-void Codec_BeepGenerator(DAC_CS43L22_t *dac);
+void Codec_BeepGenerator(I2CDriver *i2cp);
 void Codec_BeepSetFrequency(DAC_CS43L22_t *dac);
 void Codec_FactoryDefault(void);
 
