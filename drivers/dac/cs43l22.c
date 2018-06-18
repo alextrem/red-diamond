@@ -53,7 +53,7 @@ static const DAC_CS43L22_t factory_default = {
   .beep = {.frequency = BEEP_F1000,
            .ontime = beep_on_5200ms,
            .offtime = beep_off_1230ms,
-           .configuration = off,
+           .config = off,
            .volume = 0x00}
 };
 static DAC_CS43L22_t dac;
@@ -91,9 +91,9 @@ static msg_t Codec_ReadRegister(I2CDriver *i2cp, cs43l22_sad_t sad, uint8_t reg,
                                   uint8_t *rxbuf, size_t n) {
   if (n > 1)
       reg |= CODEC_I2C_AUTOINCR;
-  uint8_t txbuf = reg;
+  uint8_t buf = reg;
 
-  return i2cMasterTransmitTimeout(i2cp, sad, &txbuf, 1, rxbuf, n, MS2ST(4));
+  return i2cMasterTransmitTimeout(i2cp, sad, &buf, 1, rxbuf, 1, MS2ST(4));
 }
 
 /**
@@ -115,7 +115,7 @@ static msg_t Codec_WriteRegister(I2CDriver *i2cp, cs43l22_sad_t sad,
       (*txbuf) |= CODEC_I2C_AUTOINCR;
 
   /* Check if driver is assigned to a structure */
-  return i2cMasterTransmitTimeout(i2cp, sad, txbuf, n + 1, NULL, 0, MS2ST(4));
+  return i2cMasterTransmitTimeout(i2cp, sad, txbuf, n , NULL, 0, MS2ST(4));
 }
 
 /*===========================================================================*/
@@ -137,15 +137,15 @@ void Codec_Init(I2CDriver *i2cp) {
 
   /* Recommended initialization sequence from datasheet 4.11*/
   txbuf[0] = 0x00; txbuf[1] = 0x99;
-  Codec_WriteRegister(i2cp, CS43L22_SAD_GND, txbuf, sizeof(txbuf));
+  Codec_WriteRegister(i2cp, CS43L22_SAD_GND, &txbuf[0], sizeof(txbuf));
   txbuf[0] = 0x47; txbuf[1] = 0x80;
-  Codec_WriteRegister(i2cp, CS43L22_SAD_GND, txbuf, sizeof(txbuf));
+  Codec_WriteRegister(i2cp, CS43L22_SAD_GND, &txbuf[0], sizeof(txbuf));
   txbuf[0] = 0x32; txbuf[1] = 0x80;
-  Codec_WriteRegister(i2cp, CS43L22_SAD_GND, txbuf, sizeof(txbuf));
+  Codec_WriteRegister(i2cp, CS43L22_SAD_GND, &txbuf[0], sizeof(txbuf));
   txbuf[0] = 0x32; txbuf[1] = 0x00;
-  Codec_WriteRegister(i2cp, CS43L22_SAD_GND, txbuf, sizeof(txbuf));
+  Codec_WriteRegister(i2cp, CS43L22_SAD_GND, &txbuf[0], sizeof(txbuf));
   txbuf[0] = 0x00; txbuf[1] = 0x00;
-  Codec_WriteRegister(i2cp, CS43L22_SAD_GND, txbuf, sizeof(txbuf));
+  Codec_WriteRegister(i2cp, CS43L22_SAD_GND, &txbuf[0], sizeof(txbuf));
 
   /* Set master volume */
   dac.master_volume[0] = 0x0A;
@@ -168,10 +168,10 @@ void Codec_PowerDown(I2CDriver *i2cp) {
   //Codec_WriteRegister();
   /* Disable soft ramp and zero cross volume transitions */
   txbuf[0] = 0x0A; txbuf[1] = 0x00;
-  Codec_WriteRegister(i2cp, CS43L22_SAD_GND, txbuf, sizeof(txbuf));
+  Codec_WriteRegister(i2cp, CS43L22_SAD_GND, &txbuf[0], sizeof(txbuf));
   /* Power down the codec */
   txbuf[0] = 0x02; txbuf[1] = 0x9F;
-  Codec_WriteRegister(i2cp, CS43L22_SAD_GND, txbuf, sizeof(txbuf));
+  Codec_WriteRegister(i2cp, CS43L22_SAD_GND, &txbuf[0], sizeof(txbuf));
 }
 
 /**
@@ -183,90 +183,98 @@ void Codec_Configure(I2CDriver *i2cp) {
 
   /* Keep Codec powered OFF */
   txbuf[0] = CODEC_POWER_CTL1; txbuf[1] = 0x01;
-  Codec_WriteRegister(i2cp, CS43L22_SAD_GND, txbuf, sizeof(txbuf));
+  Codec_WriteRegister(i2cp, CS43L22_SAD_GND, &txbuf[0], sizeof(txbuf));
 
   /* Recommended initialization sequence from datasheet 4.11 */
   txbuf[0] = 0x00; txbuf[1] = 0x99;
-  Codec_WriteRegister(i2cp, CS43L22_SAD_GND, txbuf, sizeof(txbuf));
+  Codec_WriteRegister(i2cp, CS43L22_SAD_GND, &txbuf[0], sizeof(txbuf));
   txbuf[0] = 0x47; txbuf[1] = 0x80;
-  Codec_WriteRegister(i2cp, CS43L22_SAD_GND, txbuf, sizeof(txbuf));
+  Codec_WriteRegister(i2cp, CS43L22_SAD_GND, &txbuf[0], sizeof(txbuf));
   txbuf[0] = 0x32; txbuf[1] = 0x80;
-  Codec_WriteRegister(i2cp, CS43L22_SAD_GND, txbuf, sizeof(txbuf));
+  Codec_WriteRegister(i2cp, CS43L22_SAD_GND, &txbuf[0], sizeof(txbuf));
   txbuf[0] = 0x32; txbuf[1] = 0x00;
-  Codec_WriteRegister(i2cp, CS43L22_SAD_GND, txbuf, sizeof(txbuf));
+  Codec_WriteRegister(i2cp, CS43L22_SAD_GND, &txbuf[0], sizeof(txbuf));
   txbuf[0] = 0x00; txbuf[1] = 0x00;
-  Codec_WriteRegister(i2cp, CS43L22_SAD_GND, txbuf, sizeof(txbuf));
+  Codec_WriteRegister(i2cp, CS43L22_SAD_GND, &txbuf[0], sizeof(txbuf));
 
   /* Speaker always OFF, Headphone always ON */
   txbuf[0] = CODEC_POWER_CTL2; txbuf[1] = 0xAF;
-  Codec_WriteRegister(i2cp, CS43L22_SAD_GND, txbuf, sizeof(txbuf));
+  Codec_WriteRegister(i2cp, CS43L22_SAD_GND, &txbuf[0], sizeof(txbuf));
 
   /* Clock configuration */
   txbuf[0] = CODEC_CLOCK_CTL; txbuf[1] = 0x81;
-  Codec_WriteRegister(i2cp, CS43L22_SAD_GND, txbuf, sizeof(txbuf));
+  Codec_WriteRegister(i2cp, CS43L22_SAD_GND, &txbuf[0], sizeof(txbuf));
 
   /* Set slave mode and the audio interface standard */
   txbuf[0] = CODEC_INTERFACE_CTL1; txbuf[1] = CODEC_STANDARD;
-  Codec_WriteRegister(i2cp, CS43L22_SAD_GND, txbuf, sizeof(txbuf));
+  Codec_WriteRegister(i2cp, CS43L22_SAD_GND, &txbuf[0], sizeof(txbuf));
 
   /* Set the volume on all outputs */
   //Codec_SetVolume(all);
 
   /* Power on codec */
   txbuf[0] = CODEC_POWER_CTL1; txbuf[1] = 0x9E;
-  Codec_WriteRegister(i2cp, CS43L22_SAD_GND, txbuf, sizeof(txbuf));
+  Codec_WriteRegister(i2cp, CS43L22_SAD_GND, &txbuf[0], sizeof(txbuf));
 
   /* Disable the analog soft ramp */
   txbuf[0] = CODEC_SOFT_RAMP; txbuf[1] = 0x00;
-  Codec_WriteRegister(i2cp, CS43L22_SAD_GND, txbuf, sizeof(txbuf));
+  Codec_WriteRegister(i2cp, CS43L22_SAD_GND, &txbuf[0], sizeof(txbuf));
 
   /* Disable the limiter attack level */
   txbuf[0] = CODEC_LIMITER_CTRL1; txbuf[1] = 0x00;
-  Codec_WriteRegister(i2cp, CS43L22_SAD_GND, txbuf, sizeof(txbuf));
+  Codec_WriteRegister(i2cp, CS43L22_SAD_GND, &txbuf[0], sizeof(txbuf));
 
   /* Adjust base and treble levels */
   txbuf[0] = CODEC_TONE_CTRL; txbuf[1] = 0x0F;
-  Codec_WriteRegister(i2cp, CS43L22_SAD_GND, txbuf, sizeof(txbuf));
+  Codec_WriteRegister(i2cp, CS43L22_SAD_GND, &txbuf[0], sizeof(txbuf));
 }
 
 /**
  * @brief   Get the ID and Revision of device
  */
-void Codec_GetID(I2CDriver *i2cp) {
-  Codec_ReadRegister(i2cp, CS43L22_SAD_GND, CODEC_ID, rxbuf, 1);
+uint8_t Codec_GetID(I2CDriver *i2cp) {
+  msg_t status = MSG_OK;
+
+  status = Codec_ReadRegister(i2cp, CS43L22_SAD_GND, CODEC_ID, &rxbuf[0], 1);
+//  if (status != MSG_OK)
+//    return status;
+//  else
+  return rxbuf[0];
 }
 
 /**
- * @brief  Sets volume of the codec for all, headphone or speaker
+ * @brief   Sets volume of the codec for all, headphone or speaker
+ * @note    The I2C interface must be configured
  *
- * @param[in]   set
- * @param[in]   value
+ * @param[in]   i2cp    pointer to the I2C driver
+ * @param[in]   set     set volume for headphone, speaker or both
+ * @param[in]   volume  volume value
  */
 void Codec_VolumeCtrl(I2CDriver *i2cp, OUTPUT_t set, uint8_t volume) {
   switch(set) {
     case all:
       txbuf[0] = CODEC_SPKA; txbuf[1] = volume;
-      Codec_WriteRegister(i2cp, CS43L22_SAD_GND, txbuf, sizeof(txbuf));
+      Codec_WriteRegister(i2cp, CS43L22_SAD_GND, &txbuf[0], sizeof(txbuf));
       txbuf[0] = CODEC_SPKB;
-      Codec_WriteRegister(i2cp, CS43L22_SAD_GND, txbuf, sizeof(txbuf));
+      Codec_WriteRegister(i2cp, CS43L22_SAD_GND, &txbuf[0], sizeof(txbuf));
       txbuf[0] = CODEC_HPA;
-      Codec_WriteRegister(i2cp, CS43L22_SAD_GND, txbuf, sizeof(txbuf));
+      Codec_WriteRegister(i2cp, CS43L22_SAD_GND, &txbuf[0], sizeof(txbuf));
       txbuf[0] = CODEC_HPB;
-      Codec_WriteRegister(i2cp, CS43L22_SAD_GND, txbuf, sizeof(txbuf));
+      Codec_WriteRegister(i2cp, CS43L22_SAD_GND, &txbuf[0], sizeof(txbuf));
       break;
     case master:
       break;
     case headphone:
       txbuf[0] = CODEC_HPA; txbuf[1] = volume;
-      Codec_WriteRegister(i2cp, CS43L22_SAD_GND, txbuf, sizeof(txbuf));
+      Codec_WriteRegister(i2cp, CS43L22_SAD_GND, &txbuf[0], sizeof(txbuf));
       txbuf[0] = CODEC_HPB;
-      Codec_WriteRegister(i2cp, CS43L22_SAD_GND, txbuf, sizeof(txbuf));
+      Codec_WriteRegister(i2cp, CS43L22_SAD_GND, &txbuf[0], sizeof(txbuf));
       break;
     case speaker:
       txbuf[0] = CODEC_SPKA; txbuf[1] = volume;
-      Codec_WriteRegister(i2cp, CS43L22_SAD_GND, txbuf, sizeof(txbuf));
+      Codec_WriteRegister(i2cp, CS43L22_SAD_GND, &txbuf[0], sizeof(txbuf));
       txbuf[0] = CODEC_SPKB;
-      Codec_WriteRegister(i2cp, CS43L22_SAD_GND, txbuf, sizeof(txbuf));
+      Codec_WriteRegister(i2cp, CS43L22_SAD_GND, &txbuf[0], sizeof(txbuf));
       break;
   }
 }
@@ -275,8 +283,9 @@ void Codec_VolumeCtrl(I2CDriver *i2cp, OUTPUT_t set, uint8_t volume) {
  * @brief   Sets balance of the outputs. For a negative balance value right
  *          channel will be attenuated. For a positive otherwise
  *
- * @param[in]   set
- * @param[in]   balance
+ * @param[in]   i2cp    pointer to the I2C driver
+ * @param[in]   set     set volume for headphone, speaker or both
+ * @param[in]   balance value to set balance
  */
 void Codec_Balance(I2CDriver *i2cp, const OUTPUT_t set, int8_t balance) {
 
@@ -288,11 +297,11 @@ void Codec_Balance(I2CDriver *i2cp, const OUTPUT_t set, int8_t balance) {
     case headphone:
       if ( balance < 0 ) {
         txbuf[0] = CODEC_HPA; txbuf[1] = balance;
-        Codec_WriteRegister(i2cp, CS43L22_SAD_GND, txbuf, sizeof(txbuf));
+        Codec_WriteRegister(i2cp, CS43L22_SAD_GND, &txbuf[0], sizeof(txbuf));
       }
       else {
         txbuf[0] = CODEC_HPB; txbuf[1] = balance;
-        Codec_WriteRegister(i2cp, CS43L22_SAD_GND, txbuf, sizeof(txbuf));
+        Codec_WriteRegister(i2cp, CS43L22_SAD_GND, &txbuf[0], sizeof(txbuf));
       }
       break;
     case speaker:
@@ -303,33 +312,34 @@ void Codec_Balance(I2CDriver *i2cp, const OUTPUT_t set, int8_t balance) {
 /**
  * @brief   Mute outputs
  *
- * @param[in]   set
+ * @param[in]   i2cp    pointer to the I2C driver
+ * @param[in]   set     mute output for headphone speaker or both
  */
 void Codec_Mute(I2CDriver *i2cp, const OUTPUT_t set) {
   switch(set) {
     case all:
       txbuf[0] = CODEC_SPKA; txbuf[1] = 0x01;
-      Codec_WriteRegister(i2cp, CS43L22_SAD_GND, txbuf, sizeof(txbuf));
+      Codec_WriteRegister(i2cp, CS43L22_SAD_GND, &txbuf[0], sizeof(txbuf));
       txbuf[0] = CODEC_SPKB;
-      Codec_WriteRegister(i2cp, CS43L22_SAD_GND, txbuf, sizeof(txbuf));
+      Codec_WriteRegister(i2cp, CS43L22_SAD_GND, &txbuf[0], sizeof(txbuf));
       txbuf[0] = CODEC_HPA;
-      Codec_WriteRegister(i2cp, CS43L22_SAD_GND, txbuf, sizeof(txbuf));
+      Codec_WriteRegister(i2cp, CS43L22_SAD_GND, &txbuf[0], sizeof(txbuf));
       txbuf[0] = CODEC_HPB;
-      Codec_WriteRegister(i2cp, CS43L22_SAD_GND, txbuf, sizeof(txbuf));
+      Codec_WriteRegister(i2cp, CS43L22_SAD_GND, &txbuf[0], sizeof(txbuf));
       break;
     case master:
       break;
     case headphone:
       txbuf[0] = CODEC_HPA; txbuf[1] = 0x01;
-      Codec_WriteRegister(i2cp, CS43L22_SAD_GND, txbuf, sizeof(txbuf));
+      Codec_WriteRegister(i2cp, CS43L22_SAD_GND, &txbuf[0], sizeof(txbuf));
       txbuf[0] = CODEC_HPB;
-      Codec_WriteRegister(i2cp, CS43L22_SAD_GND, txbuf, sizeof(txbuf));
+      Codec_WriteRegister(i2cp, CS43L22_SAD_GND, &txbuf[0], sizeof(txbuf));
       break;
     case speaker:
       txbuf[0] = CODEC_SPKA; txbuf[1] = 0x01;
-      Codec_WriteRegister(i2cp, CS43L22_SAD_GND, txbuf, sizeof(txbuf));
+      Codec_WriteRegister(i2cp, CS43L22_SAD_GND, &txbuf[0], sizeof(txbuf));
       txbuf[0] = CODEC_SPKB;
-      Codec_WriteRegister(i2cp, CS43L22_SAD_GND, txbuf, sizeof(txbuf));
+      Codec_WriteRegister(i2cp, CS43L22_SAD_GND, &txbuf[0], sizeof(txbuf));
       break;
   }
 }
@@ -337,10 +347,21 @@ void Codec_Mute(I2CDriver *i2cp, const OUTPUT_t set) {
 /**
  * @brief   Configure beep generator
  *
- * @param[in]   dac
+ * @param[in]   i2cp    pointer to the I2C driver
  */
-void Codec_BeepGenerator(DAC_CS43L22_t *dac) {
-  dac->beep.frequency = BEEP_F1000;
+void Codec_BeepGenerator(I2CDriver *i2cp) {
+  //beep.frequency = BEEP_F1000;
+  //beep.ontime = beep_on_1200ms;
+  //beep.offtime = beep_off_2580ms;
+  //beep.config = continous;
+
+  /* Set beep frequency */
+  txbuf[0] = CODEC_BEEP_FREQ_ON_TIME; txbuf[1] = 0x73;
+  Codec_WriteRegister(i2cp, CS43L22_SAD_GND, &txbuf[0], sizeof(txbuf));
+
+  /* Continous Beep mode */
+  txbuf[0] = CODEC_BEEP_TONE_CFG; txbuf[1] = 0xC0;
+  Codec_WriteRegister(i2cp, CS43L22_SAD_GND, &txbuf[0], sizeof(txbuf));
 }
 
 /**
