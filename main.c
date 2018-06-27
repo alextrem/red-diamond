@@ -16,6 +16,7 @@
 
 #include <stdio.h>
 #include <string.h>
+#include <stdlib.h>
 
 #include "ch.h"
 #include "hal.h"
@@ -192,13 +193,14 @@ static void cmd_adc(BaseSequentialStream *chp, int argc, char *argv[]) {
 
 static void cmd_codec(BaseSequentialStream *chp, int argc, char *argv[]) {
   (void) argv;
-  if (argc > 1) {
+  if (argc > 2) {
     chprintf(chp, "Usage: codec [command]\r\n");
     return;
   }
 
   if (strcmp("all", argv[0]) == 0) {
-    chprintf(chp, "All Registers\r\n");
+    uint8_t id = Codec_GetID(&I2CD1);
+    chprintf(chp, "ID: 0x%x\r\n", id);
   }
   else if (strcmp("mute", argv[0]) == 0) {
     Codec_Mute(&I2CD1, all);
@@ -206,11 +208,14 @@ static void cmd_codec(BaseSequentialStream *chp, int argc, char *argv[]) {
   }
   else if (strcmp("beep", argv[0]) == 0) {
     Codec_BeepGenerator(&I2CD1);
-    chprintf(chp, "Setting Beep frequency to \r\n");
+    chprintf(chp, "Setting Beep frequency to 1kHz\r\n");
   }
   else if (strcmp("vol", argv[0]) == 0) {
-    Codec_VolumeCtrl(&I2CD1, all, 100);
-    chprintf(chp, "Set volume to %d\r\n", argv[1]);
+    uint32_t volume = atoi(argv[1]);
+    if (volume < 256) {
+      Codec_VolumeCtrl(&I2CD1, all, volume);
+      chprintf(chp, "Set volume to %d\r\n", volume);
+    }
   }
 }
 
@@ -308,7 +313,7 @@ static uint32_t audio_rx_buf[1024];
 static const I2SConfig i2s3cfg = {
   &audio_tx_buf,
   &audio_rx_buf,
-  sizeof(audio_rx_buf),
+  sizeof(audio_rx_buf) / 4,
   NULL,
   0,
   16
@@ -335,6 +340,8 @@ static adcsample_t samples2[ADC_GRP2_NUM_CHANNELS * ADC_GRP2_BUF_DEPTH];
 
 static void adccallback(ADCDriver *adcp, adcsample_t *buffer, size_t n) {
   (void)adcp;
+  (void)buffer;
+  (void)n;
 
   int32_t temp_avg = 0;
   //samples2 = buffer;
@@ -517,7 +524,8 @@ int main(void) {
   /* Assign driver to Codec interface */
   Codec_Init(&I2CD1);
   /* Configure codecs with defined settings */
-  Codec_Configure(&I2CD1);
+  Codec_BeepGenerator(&I2CD1);
+  i2sStartExchange(&I2SD3);
 
   /*
    * Initializes the SPI driver 1 in order to access the MEMS. The signals
@@ -556,11 +564,9 @@ int main(void) {
                          PAL_PORT_BIT(10) |
                          PAL_PORT_BIT(12),
                          0,
-                         PAL_MODE_OUTPUT_PUSHPULL |
-                         PAL_STM32_OSPEED_HIGHEST |
+                         PAL_STM32_OSPEED_MID2 |
                          PAL_MODE_ALTERNATE(6));
-  palSetPadMode(GPIOA, 4, PAL_MODE_OUTPUT_PUSHPULL | PAL_MODE_ALTERNATE(6) |
-                PAL_STM32_OSPEED_MID2); /* WS  */
+  palSetPadMode(GPIOA, 4, PAL_MODE_ALTERNATE(6) | PAL_STM32_OSPEED_MID2); /* WS  */
 
   /*
    * Initializes PWM driver 4
