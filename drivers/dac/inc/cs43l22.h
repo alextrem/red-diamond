@@ -235,8 +235,8 @@ extern "C" {
 #endif
 
 void Codec_Init(I2CDriver *i2cp);
-void Codec_Configure(I2CDriver *i2cp);
 uint8_t Codec_GetID(I2CDriver *i2cp);
+void Codec_PowerCtrl(I2CDriver *i2cp, bool power);
 void Codec_VolumeCtrl(I2CDriver *i2cp, OUTPUT_t set, uint8_t volume);
 void Codec_Balance(I2CDriver *i2cp, const OUTPUT_t set, int8_t balance);
 void Codec_Mute(I2CDriver *i2cp, const OUTPUT_t set);
