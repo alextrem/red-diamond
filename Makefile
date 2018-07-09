@@ -101,6 +101,7 @@ PROJECT = red-diamond
 # Imported source files and paths
 CHIBIOS = ChibiOS
 # Startup files.
+include $(CHIBIOS)/os/license/license.mk
 include $(CHIBIOS)/os/common/startup/ARMCMx/compilers/GCC/mk/startup_stm32f4xx.mk
 # HAL-OSAL files (optional).
 include $(CHIBIOS)/os/hal/hal.mk
