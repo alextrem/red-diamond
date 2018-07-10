@@ -275,6 +275,7 @@ static const PWMConfig pwmcfg = {
  * The slave select line is the pin GPIOE_CS_SPI on the port GPIOE.
  */
 static const SPIConfig spi1cfg = {
+  false,
   NULL,
   /* HW dependent part.*/
   GPIOC,
@@ -295,6 +296,7 @@ static const MMCConfig mmc1cfg = {
  * The slave select line is the pin 12 on the port GPIOA.
  */
 static const SPIConfig spi2cfg = {
+  false,
   NULL,
   /* HW dependent part.*/
   GPIOB,
@@ -373,6 +375,8 @@ static const ADCConversionGroup adcgrpcfg1 = {
   ADC_CR2_SWSTART,                        /* CR2 */
   ADC_SMPR1_SMP_AN10(ADC_SAMPLE_3),       /* SMPR1 */
   0,                                      /* SMPR2 */
+  0,
+  0,
   ADC_SQR1_NUM_CH(ADC_GRP1_NUM_CHANNELS), /* SQR1 */
   0,                                      /* SQR2 */
   ADC_SQR3_SQ1_N(ADC_CHANNEL_IN10)        /* SQR3 */
@@ -392,6 +396,8 @@ static const ADCConversionGroup adcgrpcfg2 = {
   ADC_CR2_SWSTART, /* CR2 */
   ADC_SMPR1_SMP_SENSOR(ADC_SAMPLE_480) | ADC_SMPR1_SMP_VREF(ADC_SAMPLE_480), /* SMPR1 */
   0,               /* SMPR2 */
+  0,
+  0,
   ADC_SQR1_NUM_CH(ADC_GRP2_NUM_CHANNELS), /* SQR1 */
   ADC_SQR2_SQ8_N(ADC_CHANNEL_SENSOR) | ADC_SQR2_SQ7_N(ADC_CHANNEL_VREFINT), /* SQR2 */
   0 /* SQR3 */
@@ -613,6 +619,6 @@ int main(void) {
                                        "shell", NORMALPRIO + 1,
                                        shellThread, (void *)&shell_cfg1);
     }
-    chEvtDispatch(evhndl, chEvtWaitOneTimeout(ALL_EVENTS, MS2ST(500)));
+    chEvtDispatch(evhndl, chEvtWaitOneTimeout(ALL_EVENTS, TIME_MS2I(500)));
   }
 }
